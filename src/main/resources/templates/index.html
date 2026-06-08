@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Luz del Saber</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="content-wrap">
+            <!-- NAVBAR -->
+            <nav class="navbar navbar-expand-lg navbar-custom sticky-top bg-white">
+                <div class="container justify-content-between">
+                    <div class="d-flex align-items-center gap-4 flex-grow-1">
+                        <a th:href="@{/}" class="text-decoration-none d-flex align-items-center gap-2">
+                            <img th:src="@{/img/Logo_LuzdelSaber.png}" alt="Logo" class="logo-img d-none d-md-block">
+                            <h5 class="m-0 fw-bold text-dark d-none d-md-block">Luz del Saber</h5>
+                        </a>
+
+                        <form class="d-flex flex-grow-1" role="search">
+                            <div class="position-relative w-100">
+                                <i
+                                    class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                                <input class="form-control bg-light border-0 rounded-pill ps-5" type="search"
+                                    placeholder="Buscar libros a tu elección..." aria-label="Search">
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="d-flex align-items-center ms-4" th:if="${usuarioActual == null}">
+                        <a th:href="@{/login}" class="login-nav-button" title="Iniciar sesion">
+                            Login
+                        </a>
+                    </div>
+                    <div class="d-flex align-items-center ms-4" th:if="${usuarioActual != null}">
+                        <div th:replace="~{fragments/perfil-menu :: perfilMenu}"></div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- CAROUSEL SECTION (CON IMÁGENES CAMBIANTES) -->
+            <div class="container-fluid px-0 mb-4">
+                <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel"
+                    data-bs-interval="2000">
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0"
+                            class="active"></button>
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+                    </div>
+                    <div class="carousel-inner">
+                        <!-- Slide 1: Novelas Clásicas -->
+                        <div class="carousel-item active">
+                            <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1600&q=80"
+                                alt="Novelas Clásicas">
+                            <div class="carousel-img-overlay"></div>
+                            <div class="carousel-caption">
+                                <span class="badge bg-warning text-dark fw-bold px-3 py-2 mb-3">
+                                    Novelas Clásicas
+                                </span>
+                                <h2 class="display-4 fw-bold text-white mb-3">
+                                    Descubre las Grandes Obras de la Literatura
+                                </h2>
+                                <p class="lead text-white-50 mb-4 max-w-lg">
+                                    Encuentra clásicos universales que han marcado generaciones de lectores.
+                                </p>
+                                <a th:href="${usuarioActual == null} ? @{/login} : (${session.usuarioRol == 'PRESTATARIO'} ? @{/inicio} : @{/pedidos})"
+                                    class="btn btn-warning btn-hover-lift fw-bold px-5 py-3 rounded-pill shadow-lg text-decoration-none text-dark">
+                                    Explorar Catálogo
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2: Literatura Latinoamericana -->
+                        <div class="carousel-item">
+                            <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1600&q=80"
+                                alt="Literatura Latinoamericana">
+                            <div class="carousel-img-overlay"></div>
+                            <div class="carousel-caption">
+                                <span class="badge bg-warning text-dark fw-bold px-3 py-2 mb-3">
+                                    Literatura Latinoamericana
+                                </span>
+                                <h2 class="display-4 fw-bold text-white mb-3">
+                                    Historias que Reflejan Nuestra Cultura
+                                </h2>
+                                <p class="lead text-white-50 mb-4 max-w-lg">
+                                    Explora obras de autores latinoamericanos que han dejado huella en la literatura
+                                    mundial.
+                                </p>
+                                <a th:href="${usuarioActual == null} ? @{/login} : (${session.usuarioRol == 'PRESTATARIO'} ? @{/inicio} : @{/pedidos})"
+                                    class="btn btn-warning btn-hover-lift fw-bold px-5 py-3 rounded-pill shadow-lg text-decoration-none text-dark">
+                                    Ver Libros
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3: Fantasía, Ciencia Ficción y Literatura Juvenil -->
+                        <div class="carousel-item">
+                            <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1600&q=80"
+                                alt="Literatura Juvenil y Fantasía">
+                            <div class="carousel-img-overlay"></div>
+                            <div class="carousel-caption">
+                                <span class="badge bg-warning text-dark fw-bold px-3 py-2 mb-3">
+                                    Fantasía y Ciencia Ficción
+                                </span>
+                                <h2 class="display-4 fw-bold text-white mb-3">
+                                    Viaja a Mundos Extraordinarios
+                                </h2>
+                                <p class="lead text-white-50 mb-4 max-w-lg">
+                                    Descubre literatura juvenil, fantasía épica y ciencia ficción para todos los gustos.
+                                </p>
+                                <a th:href="${usuarioActual == null} ? @{/login} : (${session.usuarioRol == 'PRESTATARIO'} ? @{/inicio} : @{/pedidos})"
+                                    class="btn btn-warning btn-hover-lift fw-bold px-5 py-3 rounded-pill shadow-lg text-decoration-none text-dark">
+                                    Conocer Más
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- LIBROS DE MARIO VARGAS LLOSA -->
+            <div class="container py-5">
+                <div class="mb-5">
+                    <h3 class="fw-bold m-0 text-dark">Libros de Mario Vargas Llosa</h3>
+                    <p class="text-muted mt-1">Descubre las obras más emblemáticas de nuestro Nobel peruano.</p>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Book loop -->
+                    <div class="col-12 col-md-6 col-lg-4" th:each="libro : ${librosMario}">
+                        <div class="card book-card h-100 border-0 shadow-sm rounded-4 p-4">
+                            <div class="book-cover-wrapper">
+                                <img th:src="@{/image/{id}.jpg(id=${libro.id})}" alt="Portada" class="book-cover-img">
+                            </div>
+                            <span class="text-warning text-uppercase fw-bold small mb-2"
+                                th:text="${libro.categoria != null ? libro.categoria.nombre : 'General'}">Categoría</span>
+                            <h4 class="h5 fw-bold text-dark mb-2" th:text="${libro.titulo}">Título del Libro</h4>
+                            <p class="text-muted small flex-grow-1 mb-4"
+                                th:text="${libro.autor.nombre + ' ' + libro.autor.apellido}">Mario Vargas Llosa</p>
+                            <a th:href="${usuarioActual == null} ? @{/login} : (${session.usuarioRol == 'PRESTATARIO'} ? @{/inicio} : @{/pedidos})"
+                                class="btn btn-warning btn-hover-lift text-dark fw-bold w-100 rounded-3 text-decoration-none">Reservar
+                                Libro</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-5">
+                    <a th:href="${usuarioActual == null} ? @{/login} : (${session.usuarioRol == 'PRESTATARIO'} ? @{/inicio} : @{/pedidos})"
+                        class="btn btn-outline-dark btn-hover-lift rounded-pill px-5 py-2 fw-bold text-decoration-none">Ver
+                        todos los libros</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer-custom bg-dark text-light mt-5">
+            <div class="container py-5">
+                <div class="row g-4">
+                    <div class="col-12 col-lg-4">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <img th:src="@{/img/Logo_LuzdelSaber.png}" alt="Logo Footer" class="footer-logo-img">
+                            <div>
+                                <h5 class="fw-bold text-white mb-1">Luz del Saber</h5>
+                                <span class="text-warning small fw-bold text-uppercase">Biblioteca comunitaria</span>
+                            </div>
+                        </div>
+                        <p class="text-secondary mb-4">
+                            Fomentando la cultura y el conocimiento academico con espacios cercanos para leer,
+                            aprender y compartir.
+                        </p>
+                        <div class="d-flex gap-2">
+                            <a href="#"
+                                class="btn btn-outline-warning btn-sm rounded-circle footer-social-btn d-inline-flex align-items-center justify-content-center p-0"
+                                aria-label="Facebook">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+                            <a href="#"
+                                class="btn btn-outline-warning btn-sm rounded-circle footer-social-btn d-inline-flex align-items-center justify-content-center p-0"
+                                aria-label="Instagram">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+                            <a href="#"
+                                class="btn btn-outline-warning btn-sm rounded-circle footer-social-btn d-inline-flex align-items-center justify-content-center p-0"
+                                aria-label="WhatsApp">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <h6 class="fw-bold text-white text-uppercase mb-2">Contactanos</h6>
+                        <p class="text-secondary small mb-3">Servicio de atencion al lector</p>
+
+                        <div class="d-flex gap-2 text-secondary small mb-2">
+                            <i class="fa-solid fa-phone text-warning mt-1"></i>
+                            <span>Lima (01) 315 9600</span>
+                        </div>
+                        <div class="d-flex gap-2 text-secondary small mb-2">
+                            <i class="fa-solid fa-location-dot text-warning mt-1"></i>
+                            <span>Av. Del Aire 1240, San Luis, Lima</span>
+                        </div>
+                        <div class="d-flex gap-2 text-secondary small">
+                            <i class="fa-solid fa-envelope text-warning mt-1"></i>
+                            <span>hola@luzdelsaber.pe</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <h6 class="fw-bold text-white text-uppercase mb-2">Horario</h6>
+                        <p class="text-secondary small mb-3">Atencion presencial</p>
+
+                        <div class="mb-3">
+                            <span class="d-block text-secondary small">Lunes a viernes</span>
+                            <strong class="text-white small">8:00 a.m. - 7:00 p.m.</strong>
+                        </div>
+                        <div>
+                            <span class="d-block text-secondary small">Sabados</span>
+                            <strong class="text-white small">9:00 a.m. - 1:00 p.m.</strong>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-2">
+                        <h6 class="fw-bold text-white text-uppercase mb-3">Enlaces</h6>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="#" class="link-light link-opacity-75-hover text-decoration-none small">Politicas de
+                                privacidad</a>
+                            <a href="#" class="link-light link-opacity-75-hover text-decoration-none small">Terminos y
+                                condiciones</a>
+                            <a th:href="${usuarioActual == null} ? @{/login} : (${session.usuarioRol == 'PRESTATARIO'} ? @{/inicio} : @{/pedidos})"
+                                class="link-light link-opacity-75-hover text-decoration-none small">Catalogo de
+                                libros</a>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div
+                            class="border-top border-secondary d-flex flex-column flex-md-row justify-content-between gap-2 pt-4 mt-3 text-secondary small">
+                            <span>&copy; 2026 Luz del Saber. Todos los derechos reservados.</span>
+                            <span>Hecho para lectores curiosos.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

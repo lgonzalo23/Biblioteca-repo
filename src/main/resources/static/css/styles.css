@@ -1,0 +1,210 @@
+:root {
+    --bs-primary: #F59E0B;
+    /* Ámbar de Luz del Saber */
+    --bs-dark: #1E293B;
+    /* Slate oscuro */
+    --bg-light: #F8FAFC;
+    --border-color: #e2e8f0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--bs-dark);
+    margin: 0;
+    padding: 0;
+}
+
+/* MAIN CONTENT - Ajustado para ocupar el 100% */
+.main-content {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-wrap {
+    flex: 1;
+}
+
+/* NAVBAR */
+.navbar-custom {
+    height: 80px;
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo-img {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* CAROUSEL - DINÁMICO CON IMÁGENES */
+.carousel-inner {
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.carousel-item {
+    height: 500px;
+    background: var(--bs-dark);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Estilo para las imágenes de fondo */
+.carousel-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    opacity: 0.8;
+    /* Un poco de transparencia para el tono oscuro */
+}
+
+.carousel-caption {
+    text-align: left;
+    left: 10%;
+    bottom: 25%;
+    z-index: 3;
+}
+
+.carousel-img-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(30, 41, 59, 0.9) 0%, rgba(30, 41, 59, 0.5) 50%, rgba(30, 41, 59, 0.2) 100%);
+    z-index: 2;
+}
+
+/* SECTION: Libros más elegidos */
+.book-card {
+    transition: all 0.3s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Contenedor de la imagen del libro */
+.book-cover-wrapper {
+    width: 100%;
+    height: 280px;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f1f5f9;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.book-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Cambiar a 'contain' si prefieres ver el libro completo con fondo */
+    transition: transform 0.5s ease;
+}
+
+.book-card:hover .book-cover-img {
+    transform: scale(1.05);
+}
+
+.btn-hover-lift {
+    transition: all 0.25s ease;
+}
+
+.btn-hover-lift:hover {
+    box-shadow: 0 0.75rem 1.25rem rgba(245, 158, 11, 0.25);
+    transform: translateY(-2px);
+}
+
+.btn-warning.btn-hover-lift:hover {
+    background-color: #d97706;
+    border-color: #d97706;
+}
+
+.profile-avatar {
+    width: 45px;
+    height: 45px;
+    background-color: var(--bs-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.profile-avatar:hover {
+    background-color: var(--bs-dark);
+    color: var(--bs-primary) !important;
+}
+
+.login-nav-button {
+    min-width: 86px;
+    height: 45px;
+    background-color: var(--bs-primary);
+    color: white;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.login-nav-button:hover {
+    background-color: var(--bs-dark);
+    color: var(--bs-primary) !important;
+}
+
+.profile-menu {
+    min-width: 190px;
+    border-radius: 8px;
+}
+
+.profile-modal-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: #FFFBEB;
+    color: var(--bs-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.modal .form-label i {
+    width: 18px;
+    text-align: center;
+}
+
+/* FOOTER */
+.footer-custom {
+    background: #111827 !important;
+}
+
+.footer-logo-img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    border-radius: 14px;
+    background: white;
+    padding: 0.35rem;
+}
+
+.footer-social-btn {
+    height: 40px;
+    width: 40px;
+}

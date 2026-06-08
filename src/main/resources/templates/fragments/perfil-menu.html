@@ -1,0 +1,127 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="perfilMenu">
+    <div class="dropdown">
+        <button class="profile-avatar border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+            title="Perfil de usuario">
+            <i class="fa-solid fa-user"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 profile-menu">
+            <li>
+                <button class="dropdown-item d-flex align-items-center gap-2" type="button" data-bs-toggle="modal"
+                    data-bs-target="#perfilModal">
+                    <i class="fa-solid fa-gear text-warning"></i>
+                    Configuracion
+                </button>
+            </li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="dropdown-item d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-right-from-bracket text-warning"></i>
+                        Cerrar sesion
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+
+    <div class="modal fade" id="perfilModal" tabindex="-1" aria-labelledby="perfilModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/perfil}" method="post">
+                    <div class="modal-header align-items-center gap-3">
+                        <div class="profile-modal-icon">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="modal-title fw-bold" id="perfilModalTitle">Configuracion de perfil</h5>
+                            <p class="text-muted small mb-0" th:text="${session.usuarioRol}">ROL</p>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div th:if="${perfilSuccessMessage}" class="alert alert-success" role="alert"
+                            th:text="${perfilSuccessMessage}">Perfil actualizado correctamente.</div>
+
+                        <div th:if="${perfilErrorMessages}" class="alert alert-danger" role="alert">
+                            <div th:each="error : ${perfilErrorMessages}" th:text="${error}">Error</div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-id-card text-warning"></i>
+                                    Nombre
+                                </label>
+                                <input type="text" name="nombre" class="form-control" minlength="2" maxlength="50"
+                                    th:value="${usuarioActual != null ? usuarioActual.nombre : ''}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-signature text-warning"></i>
+                                    Apellido
+                                </label>
+                                <input type="text" name="apellido" class="form-control" minlength="2" maxlength="50"
+                                    th:value="${usuarioActual != null ? usuarioActual.apellido : ''}" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-envelope text-warning"></i>
+                                    Correo electronico
+                                </label>
+                                <input type="email" name="correo" class="form-control" maxlength="50"
+                                    th:value="${usuarioActual != null ? usuarioActual.correo : ''}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-key text-warning"></i>
+                                    Nueva contrasena
+                                </label>
+                                <input type="password" name="contrasena" class="form-control" minlength="8"
+                                    maxlength="50" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,50}"
+                                    title="Debe incluir mayuscula, minuscula, numero y caracter especial.">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-shield-halved text-warning"></i>
+                                    Confirmar contrasena
+                                </label>
+                                <input type="password" name="confirmContrasena" class="form-control" minlength="8"
+                                    maxlength="50">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark me-1"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-warning fw-bold">
+                            <i class="fa-solid fa-floppy-disk me-1"></i>
+                            Guardar cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            function moveProfileModalToBody() {
+                var modal = document.getElementById('perfilModal');
+
+                if (modal && modal.parentElement !== document.body) {
+                    document.body.appendChild(modal);
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', moveProfileModalToBody);
+            } else {
+                moveProfileModalToBody();
+            }
+        })();
+    </script>
+</div>

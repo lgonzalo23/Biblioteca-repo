@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Luz del Saber | Libros</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-shell d-lg-flex align-items-start">
+        <aside class="sidebar d-none d-lg-block flex-shrink-0">
+            <a th:href="@{/}" class="brand-container text-decoration-none">
+                <img src="/img/Logo_LuzdelSaber.png" th:src="@{/img/Logo_LuzdelSaber.png}" alt="Luz del Saber"
+                    class="logo-img">
+                <div>
+                    <h5 class="m-0 fw-bold text-dark">Luz del Saber</h5>
+                    <p class="m-0 text-warning fw-bold uppercase" style="font-size: 10px;">Gestion de Biblioteca</p>
+                </div>
+            </a>
+
+            <p class="nav-section-title">Menu</p>
+            <nav class="nav flex-column">
+                <a th:href="@{/pedidos}" class="nav-link">
+                    <i class="fa-solid fa-box-open"></i> Pedidos
+                </a>
+                <a th:href="@{/libros}" class="nav-link active">
+                    <i class="fa-solid fa-book"></i> Libros
+                </a>
+                <a th:href="@{/usuarios}" class="nav-link" th:if="${session.usuarioRol == 'ADMINISTRADOR'}">
+                    <i class="fa-solid fa-users"></i> Usuarios
+                </a>
+                <a th:href="@{/dashboard}" class="nav-link">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content flex-grow-1 min-vh-100">
+            <div class="content-wrap">
+                <nav class="navbar navbar-expand-lg navbar-custom sticky-top bg-white">
+                    <div class="container-fluid d-flex align-items-center gap-3 gap-lg-4">
+                        <div class="d-flex align-items-center gap-3 gap-lg-4 flex-grow-1">
+                            <a th:href="@{/}" class="text-decoration-none d-flex align-items-center gap-2">
+                                <img src="/img/Logo_LuzdelSaber.png" th:src="@{/img/Logo_LuzdelSaber.png}" alt="Logo"
+                                    class="logo-img d-none d-md-block">
+                                <h5 class="m-0 fw-bold text-dark d-none d-md-block">Luz del Saber</h5>
+                            </a>
+
+                            <form class="d-flex flex-grow-1" th:action="@{/libros}" method="get" role="search">
+                                <div class="position-relative w-100">
+                                    <i
+                                        class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                                    <input class="form-control bg-light border-0 rounded-pill ps-5" type="search"
+                                        name="q" th:value="${q}"
+                                        placeholder="Buscar por titulo, ISBN, autor, categoria o ubicacion"
+                                        aria-label="Buscar libros">
+                                </div>
+                            </form>
+                        </div>
+
+                        <div th:replace="~{fragments/perfil-menu :: perfilMenu}"></div>
+                    </div>
+                </nav>
+
+                <section class="orders-content">
+                    <div class="catalog-header mb-4 d-flex flex-column flex-md-row gap-3 justify-content-between">
+                        <div>
+                            <h2 class="fw-bold m-0">Mantenimiento de libros</h2>
+                            <p class="text-muted m-0">Gestion de libros, categorias y autores.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="#categorias" class="btn btn-outline-dark btn-sm fw-bold">
+                                <i class="fa-solid fa-tags"></i> Categorias
+                            </a>
+                            <a href="#autores" class="btn btn-outline-dark btn-sm fw-bold">
+                                <i class="fa-solid fa-feather-pointed"></i> Autores
+                            </a>
+                        </div>
+                    </div>
+
+                    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}">
+                        Operacion correcta
+                    </div>
+
+                    <div th:if="${errorMessages}" class="alert alert-danger" role="alert">
+                        <div class="d-flex gap-2">
+                            <i class="fa-solid fa-circle-exclamation mt-1"></i>
+                            <div>
+                                <div th:each="error : ${errorMessages}" th:text="${error}">Error</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3 shadow-sm border p-4 mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="fa-solid fa-book-medical text-warning"></i>
+                            <h5 class="fw-bold mb-0">Registrar libro</h5>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(categorias) or #lists.isEmpty(autores)}"
+                            class="alert alert-warning" role="alert">
+                            Registra al menos una categoria y un autor antes de crear libros.
+                        </div>
+
+                        <form th:action="@{/libros}" th:object="${libroForm}" method="post" class="row g-3">
+                            <div class="col-md-6">
+                                <label for="titulo" class="form-label">Titulo</label>
+                                <input id="titulo" type="text" th:field="*{titulo}" class="form-control" maxlength="150"
+                                    required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="isbn" class="form-label">ISBN</label>
+                                <input id="isbn" type="text" th:field="*{isbn}" class="form-control" maxlength="20"
+                                    required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="fechaPublicacion" class="form-label">Fecha publicacion</label>
+                                <input id="fechaPublicacion" type="date" th:field="*{fechaPublicacion}"
+                                    class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="categoriaId" class="form-label">Categoria</label>
+                                <select id="categoriaId" th:field="*{categoriaId}" class="form-select" required>
+                                    <option value="">Seleccione</option>
+                                    <option th:each="categoria : ${categorias}" th:value="${categoria.idCategoria}"
+                                        th:text="${categoria.nombre}">Categoria</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="estado" class="form-label">Estado</label>
+                                <select id="estado" th:field="*{estado}" class="form-select" required>
+                                    <option th:each="estado : ${estadosLibro}" th:value="${estado}"
+                                        th:text="${#strings.capitalize(#strings.toLowerCase(estado))}">Disponible</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="stock" class="form-label">Stock</label>
+                                <input id="stock" type="number" th:field="*{stock}" class="form-control" min="0"
+                                    step="1" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="ubicacion" class="form-label">Ubicacion</label>
+                                <input id="ubicacion" type="text" th:field="*{ubicacion}" class="form-control"
+                                    maxlength="50" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="urlImagen" class="form-label">Enlace de imagen</label>
+                                <input id="urlImagen" type="url" th:field="*{urlImagen}" class="form-control"
+                                    maxlength="255" placeholder="https://ejemplo.com/portada.jpg">
+                            </div>
+                            <div class="col-12">
+                                <label for="autorIds" class="form-label">Autores</label>
+                                <select id="autorIds" th:field="*{autorIds}" class="form-select" multiple size="4"
+                                    required>
+                                    <option th:each="autor : ${autores}" th:value="${autor.idAutor}"
+                                        th:text="${autor.nombreCompleto + ' - ' + (autor.nacionalidad != null ? autor.nacionalidad : 'Sin nacionalidad')}">
+                                        Autor</option>
+                                </select>
+                            </div>
+                            <div class="col-12 d-flex justify-content-end">
+                                <button type="submit" class="btn btn-warning fw-bold">
+                                    <i class="fa-solid fa-plus"></i> Registrar libro
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-3 shadow-sm border overflow-hidden mb-4">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Libro</th>
+                                        <th>Categoria</th>
+                                        <th>Autores</th>
+                                        <th>Estado</th>
+                                        <th>Stock</th>
+                                        <th>Ubicacion</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="libro : ${libros}">
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img th:if="${libro.urlImagen != null and !#strings.isEmpty(libro.urlImagen)}"
+                                                    th:src="${libro.urlImagen}" alt="Portada" class="book-table-cover"
+                                                    onerror="this.onerror=null; this.src='/img/Logo_LuzdelSaber.png';">
+                                                <div th:if="${libro.urlImagen == null or #strings.isEmpty(libro.urlImagen)}"
+                                                    class="book-table-cover book-table-cover-empty">
+                                                    <i class="fa-solid fa-book"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold" th:text="${libro.titulo}">Titulo</div>
+                                                    <div class="text-muted small">
+                                                        ID <span th:text="${libro.idLibro}">1</span> - ISBN
+                                                        <span th:text="${libro.isbn}">000</span>
+                                                    </div>
+                                                    <div class="text-muted small" th:if="${libro.fechaPublicacion != null}"
+                                                        th:text="${libro.fechaPublicacion}">2026-01-01</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td th:text="${libro.categoria.nombre}">Categoria</td>
+                                        <td>
+                                            <span th:each="autor, iter : ${libro.autores}">
+                                                <span th:text="${autor.nombreCompleto}">Autor</span><span
+                                                    th:if="${!iter.last}">, </span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge"
+                                                th:classappend="${libro.estado == 'NO DISPONIBLE'} ? ' text-bg-secondary' : (${libro.estado == 'DISPONIBLE'} ? ' text-bg-success' : ' text-bg-warning')"
+                                                th:text="${#strings.capitalize(#strings.toLowerCase(libro.estado))}">
+                                                Disponible
+                                            </span>
+                                        </td>
+                                        <td th:text="${libro.stock}">0</td>
+                                        <td th:text="${libro.ubicacion}">A-1</td>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                                data-bs-toggle="modal" th:data-bs-target="'#editarLibro' + ${libro.idLibro}"
+                                                title="Modificar">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                            <form th:action="@{/libros/{id}/baja(id=${libro.idLibro})}" method="post"
+                                                class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                                    title="Marcar como No disponible">
+                                                    <i class="fa-solid fa-eye-slash"></i>
+                                                </button>
+                                            </form>
+                                            <form th:action="@{/libros/{id}/eliminar(id=${libro.idLibro})}" method="post"
+                                                class="d-inline"
+                                                onsubmit="return confirm('Esta accion eliminara el libro definitivamente. Continuar?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    title="Eliminar definitivamente">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(libros)}">
+                                        <td colspan="7" class="text-center py-5">
+                                            <i class="fa-solid fa-book-open fs-2 text-muted mb-2"></i>
+                                            <p class="fw-bold mb-1">No se encontraron libros</p>
+                                            <p class="text-muted m-0">Registra el primer libro desde el formulario.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-12 col-xl-6" id="categorias">
+                            <div class="bg-white rounded-3 shadow-sm border p-4 h-100">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="fa-solid fa-tags text-warning"></i>
+                                    <h5 class="fw-bold mb-0">Categorias</h5>
+                                </div>
+                                <form th:action="@{/libros/categorias}" th:object="${categoriaForm}" method="post"
+                                    class="row g-3 mb-4">
+                                    <div class="col-md-5">
+                                        <label for="nombreCategoria" class="form-label">Nombre</label>
+                                        <input id="nombreCategoria" type="text" th:field="*{nombre}"
+                                            class="form-control" maxlength="50" required>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <label for="descripcionCategoria" class="form-label">Descripcion</label>
+                                        <input id="descripcionCategoria" type="text" th:field="*{descripcion}"
+                                            class="form-control" maxlength="150">
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-warning fw-bold">
+                                            <i class="fa-solid fa-plus"></i> Registrar categoria
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div class="table-responsive">
+                                    <table class="table align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Descripcion</th>
+                                                <th>Estado</th>
+                                                <th class="text-end">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="categoria : ${categorias}">
+                                                <td class="fw-bold" th:text="${categoria.nombre}">Categoria</td>
+                                                <td th:text="${categoria.descripcion}">Descripcion</td>
+                                                <td>
+                                                    <span class="badge"
+                                                        th:classappend="${categoria.estado == 'ACTIVO'} ? ' text-bg-success' : ' text-bg-secondary'"
+                                                        th:text="${categoria.estado}">ACTIVO</span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                                        data-bs-toggle="modal"
+                                                        th:data-bs-target="'#editarCategoria' + ${categoria.idCategoria}"
+                                                        title="Modificar categoria">
+                                                        <i class="fa-solid fa-pen"></i>
+                                                    </button>
+                                                    <form th:action="@{/libros/categorias/{id}/baja(id=${categoria.idCategoria})}"
+                                                        method="post" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                                            title="Marcar como inactivo">
+                                                            <i class="fa-solid fa-eye-slash"></i>
+                                                        </button>
+                                                    </form>
+                                                    <form th:action="@{/libros/categorias/{id}/eliminar(id=${categoria.idCategoria})}"
+                                                        method="post" class="d-inline"
+                                                        onsubmit="return confirm('Esta accion eliminara la categoria definitivamente. Continuar?');">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                            title="Eliminar definitivamente">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            <tr th:if="${#lists.isEmpty(categorias)}">
+                                                <td colspan="4" class="text-center text-muted py-4">No hay categorias registradas.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-xl-6" id="autores">
+                            <div class="bg-white rounded-3 shadow-sm border p-4 h-100">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="fa-solid fa-feather-pointed text-warning"></i>
+                                    <h5 class="fw-bold mb-0">Autores</h5>
+                                </div>
+                                <form th:action="@{/libros/autores}" th:object="${autorForm}" method="post"
+                                    class="row g-3 mb-4">
+                                    <div class="col-md-4">
+                                        <label for="nombreAutor" class="form-label">Nombre</label>
+                                        <input id="nombreAutor" type="text" th:field="*{nombre}" class="form-control"
+                                            maxlength="50" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="apellidoAutor" class="form-label">Apellido</label>
+                                        <input id="apellidoAutor" type="text" th:field="*{apellido}"
+                                            class="form-control" maxlength="50" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="nacionalidadAutor" class="form-label">Nacionalidad</label>
+                                        <input id="nacionalidadAutor" type="text" th:field="*{nacionalidad}"
+                                            class="form-control" maxlength="30">
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-warning fw-bold">
+                                            <i class="fa-solid fa-plus"></i> Registrar autor
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div class="table-responsive">
+                                    <table class="table align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Nacionalidad</th>
+                                                <th>Estado</th>
+                                                <th class="text-end">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="autor : ${autores}">
+                                                <td class="fw-bold" th:text="${autor.nombreCompleto}">Autor</td>
+                                                <td th:text="${autor.nacionalidad}">Peruana</td>
+                                                <td>
+                                                    <span class="badge"
+                                                        th:classappend="${autor.estado == 'ACTIVO'} ? ' text-bg-success' : ' text-bg-secondary'"
+                                                        th:text="${autor.estado}">ACTIVO</span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                                        data-bs-toggle="modal"
+                                                        th:data-bs-target="'#editarAutor' + ${autor.idAutor}"
+                                                        title="Modificar autor">
+                                                        <i class="fa-solid fa-pen"></i>
+                                                    </button>
+                                                    <form th:action="@{/libros/autores/{id}/baja(id=${autor.idAutor})}"
+                                                        method="post" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                                            title="Marcar como inactivo">
+                                                            <i class="fa-solid fa-eye-slash"></i>
+                                                        </button>
+                                                    </form>
+                                                    <form th:action="@{/libros/autores/{id}/eliminar(id=${autor.idAutor})}"
+                                                        method="post" class="d-inline"
+                                                        onsubmit="return confirm('Esta accion eliminara el autor definitivamente. Continuar?');">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                            title="Eliminar definitivamente">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            <tr th:if="${#lists.isEmpty(autores)}">
+                                                <td colspan="4" class="text-center text-muted py-4">No hay autores registrados.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:each="libro : ${libros}" class="modal fade" th:id="'editarLibro' + ${libro.idLibro}"
+                        tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-centered">
+                            <div class="modal-content">
+                                <form th:action="@{/libros/{id}/actualizar(id=${libro.idLibro})}" method="post">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title fw-bold">
+                                            <i class="fa-solid fa-book text-warning me-2"></i>Modificar libro
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Cerrar"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Titulo</label>
+                                                <input type="text" name="titulo" th:value="${libro.titulo}"
+                                                    class="form-control" maxlength="150" required>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">ISBN</label>
+                                                <input type="text" name="isbn" th:value="${libro.isbn}"
+                                                    class="form-control" maxlength="20" required>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Fecha publicacion</label>
+                                                <input type="date" name="fechaPublicacion"
+                                                    th:value="${libro.fechaPublicacion}" class="form-control">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Categoria</label>
+                                                <select name="categoriaId" class="form-select" required>
+                                                    <option th:each="categoria : ${categorias}"
+                                                        th:value="${categoria.idCategoria}"
+                                                        th:selected="${categoria.idCategoria == libro.idCategoria}"
+                                                        th:text="${categoria.nombre}">Categoria</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Estado</label>
+                                                <select name="estado" class="form-select" required>
+                                                    <option th:each="estado : ${estadosLibro}" th:value="${estado}"
+                                                        th:selected="${estado == libro.estado}"
+                                                        th:text="${#strings.capitalize(#strings.toLowerCase(estado))}">
+                                                        Disponible</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Stock</label>
+                                                <input type="number" name="stock" th:value="${libro.stock}"
+                                                    class="form-control" min="0" step="1" required>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Ubicacion</label>
+                                                <input type="text" name="ubicacion" th:value="${libro.ubicacion}"
+                                                    class="form-control" maxlength="50" required>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label">Enlace de imagen</label>
+                                                <input type="url" name="urlImagen" th:value="${libro.urlImagen}"
+                                                    class="form-control" maxlength="255"
+                                                    placeholder="https://ejemplo.com/portada.jpg">
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label">Autores</label>
+                                                <select name="autorIds" class="form-select" multiple size="5" required>
+                                                    <option th:each="autor : ${autores}" th:value="${autor.idAutor}"
+                                                        th:selected="${#lists.contains(libro.autores.![idAutor], autor.idAutor)}"
+                                                        th:text="${autor.nombreCompleto + ' - ' + (autor.nacionalidad != null ? autor.nacionalidad : 'Sin nacionalidad')}">
+                                                        Autor</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-warning fw-bold">
+                                            <i class="fa-solid fa-floppy-disk"></i> Guardar cambios
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:each="categoria : ${categorias}" class="modal fade"
+                        th:id="'editarCategoria' + ${categoria.idCategoria}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <form th:action="@{/libros/categorias/{id}/actualizar(id=${categoria.idCategoria})}"
+                                    method="post">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title fw-bold">
+                                            <i class="fa-solid fa-tags text-warning me-2"></i>Modificar categoria
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Cerrar"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Nombre</label>
+                                            <input type="text" name="nombre" th:value="${categoria.nombre}"
+                                                class="form-control" maxlength="50" required>
+                                        </div>
+                                        <div>
+                                            <label class="form-label">Descripcion</label>
+                                            <textarea name="descripcion" class="form-control" maxlength="150"
+                                                rows="3" th:text="${categoria.descripcion}"></textarea>
+                                        </div>
+                                        <div class="mt-3">
+                                            <label class="form-label">Estado</label>
+                                            <select name="estado" class="form-select" required>
+                                                <option th:each="estado : ${estadosRegistro}" th:value="${estado}"
+                                                    th:selected="${estado == categoria.estado}"
+                                                    th:text="${estado}">ACTIVO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-warning fw-bold">Guardar cambios</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:each="autor : ${autores}" class="modal fade" th:id="'editarAutor' + ${autor.idAutor}"
+                        tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <form th:action="@{/libros/autores/{id}/actualizar(id=${autor.idAutor})}" method="post">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title fw-bold">
+                                            <i class="fa-solid fa-feather-pointed text-warning me-2"></i>Modificar autor
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Cerrar"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Nombre</label>
+                                                <input type="text" name="nombre" th:value="${autor.nombre}"
+                                                    class="form-control" maxlength="50" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Apellido</label>
+                                                <input type="text" name="apellido" th:value="${autor.apellido}"
+                                                    class="form-control" maxlength="50" required>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label">Nacionalidad</label>
+                                                <input type="text" name="nacionalidad" th:value="${autor.nacionalidad}"
+                                                    class="form-control" maxlength="30">
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label">Estado</label>
+                                                <select name="estado" class="form-select" required>
+                                                    <option th:each="estado : ${estadosRegistro}" th:value="${estado}"
+                                                        th:selected="${estado == autor.estado}"
+                                                        th:text="${estado}">ACTIVO</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-warning fw-bold">Guardar cambios</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer-custom bg-dark text-light mt-5">
+        <div class="container py-5">
+            <div class="row g-4">
+                <div class="col-12 col-lg-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img th:src="@{/img/Logo_LuzdelSaber.png}" alt="Logo Footer" class="footer-logo-img">
+                        <div>
+                            <h5 class="fw-bold text-white mb-1">Luz del Saber</h5>
+                            <span class="text-warning small fw-bold text-uppercase">Biblioteca comunitaria</span>
+                        </div>
+                    </div>
+                    <p class="text-secondary mb-4">
+                        Fomentando la cultura y el conocimiento academico con espacios cercanos para leer,
+                        aprender y compartir.
+                    </p>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <h6 class="fw-bold text-white text-uppercase mb-2">Contactanos</h6>
+                    <p class="text-secondary small mb-3">Servicio de atencion al lector</p>
+                    <div class="d-flex gap-2 text-secondary small mb-2">
+                        <i class="fa-solid fa-phone text-warning mt-1"></i>
+                        <span>Lima (01) 315 9600</span>
+                    </div>
+                    <div class="d-flex gap-2 text-secondary small">
+                        <i class="fa-solid fa-envelope text-warning mt-1"></i>
+                        <span>hola@luzdelsaber.pe</span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <h6 class="fw-bold text-white text-uppercase mb-2">Horario</h6>
+                    <p class="text-secondary small mb-3">Atencion presencial</p>
+                    <strong class="text-white small">Lunes a viernes, 8:00 a.m. - 7:00 p.m.</strong>
+                </div>
+
+                <div class="col-12">
+                    <div
+                        class="border-top border-secondary d-flex flex-column flex-md-row justify-content-between gap-2 pt-4 mt-3 text-secondary small">
+                        <span>&copy; 2026 Luz del Saber. Todos los derechos reservados.</span>
+                        <span>Hecho para lectores curiosos.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

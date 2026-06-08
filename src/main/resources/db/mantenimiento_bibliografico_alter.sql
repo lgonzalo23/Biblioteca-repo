@@ -1,0 +1,12 @@
+ALTER TABLE libro
+    ADD COLUMN url_imagen VARCHAR(255) NULL;
+
+ALTER TABLE categoria
+    ADD COLUMN estado_categoria VARCHAR(20) NOT NULL DEFAULT 'ACTIVO';
+
+ALTER TABLE autor
+    ADD COLUMN estado_autor VARCHAR(20) NOT NULL DEFAULT 'ACTIVO';
+
+UPDATE libro
+SET estado_libro = 'NO DISPONIBLE'
+WHERE estado_libro = 'INACTIVO';

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Luz del Saber | Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-shell d-lg-flex align-items-start">
+        <aside class="sidebar d-none d-lg-block flex-shrink-0">
+            <a th:href="@{/}" class="brand-container text-decoration-none">
+                <img src="/img/Logo_LuzdelSaber.png" th:src="@{/img/Logo_LuzdelSaber.png}" alt="Luz del Saber"
+                    class="logo-img">
+                <div>
+                    <h5 class="m-0 fw-bold text-dark">Luz del Saber</h5>
+                    <p class="m-0 text-warning fw-bold uppercase" style="font-size: 10px;">Gestión de Biblioteca</p>
+                </div>
+            </a>
+
+            <p class="nav-section-title">Menú</p>
+            <nav class="nav flex-column">
+                <a th:href="@{/pedidos}" class="nav-link">
+                    <i class="fa-solid fa-box-open"></i> Pedidos
+                </a>
+                <a th:href="@{/libros}" class="nav-link">
+                    <i class="fa-solid fa-book"></i> Libros
+                </a>
+                <a th:href="@{/usuarios}" class="nav-link" th:if="${session.usuarioRol == 'ADMINISTRADOR'}">
+                    <i class="fa-solid fa-users"></i> Usuarios
+                </a>
+                <a th:href="@{/dashboard}" class="nav-link active">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+            </nav>
+
+            <p class="nav-section-title">Categorías</p>
+            <nav class="nav flex-column">
+                <a href="#" class="nav-link">Novelas clásicas</a>
+                <a href="#" class="nav-link">Literatura latinoamericana</a>
+                <a href="#" class="nav-link">Teatro</a>
+                <a href="#" class="nav-link">Poesía</a>
+                <a href="#" class="nav-link">Literatura juvenil y moderna</a>
+                <a href="#" class="nav-link">Ciencia ficción y fantasía</a>
+            </nav>
+        </aside>
+
+        <main class="main-content flex-grow-1 min-vh-100">
+            <div class="content-wrap">
+                <nav class="navbar navbar-expand-lg navbar-custom sticky-top bg-white">
+                    <div class="container-fluid d-flex align-items-center gap-3 gap-lg-4">
+                        <div class="d-flex align-items-center gap-3 gap-lg-4 flex-grow-1">
+                            <a th:href="@{/}" class="text-decoration-none d-flex align-items-center gap-2">
+                                <img src="/img/Logo_LuzdelSaber.png" th:src="@{/img/Logo_LuzdelSaber.png}" alt="Logo"
+                                    class="logo-img d-none d-md-block">
+                                <h5 class="m-0 fw-bold text-dark d-none d-md-block">Luz del Saber</h5>
+                            </a>
+
+                            <form class="d-flex flex-grow-1" role="search">
+                                <div class="position-relative w-100">
+                                    <i
+                                        class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                                    <input class="form-control bg-light border-0 rounded-pill ps-5" type="search"
+                                        placeholder="Buscar en dashboard..." aria-label="Search">
+                                </div>
+                            </form>
+                        </div>
+
+                        <div th:replace="~{fragments/perfil-menu :: perfilMenu}"></div>
+                    </div>
+                </nav>
+
+                <section class="orders-content">
+                    <div class="catalog-header mb-4">
+                        <h2 class="fw-bold m-0">Dashboard</h2>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-12 col-md-4">
+                            <div class="book-card">
+                                <span class="book-tag">Reservas</span>
+                                <h4 class="book-title">Reservas activas</h4>
+                                <p class="book-author mb-0">Resumen de libros reservados por los lectores.</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="book-card">
+                                <span class="book-tag">Pedidos</span>
+                                <h4 class="book-title">Pedidos registrados</h4>
+                                <p class="book-author mb-0">Control de solicitudes pendientes en el sistema.</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="book-card">
+                                <span class="book-tag">Stock</span>
+                                <h4 class="book-title">Libros disponibles</h4>
+                                <p class="book-author mb-0">Vista general del inventario de biblioteca.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+    </div>
+
+    <footer class="footer-custom bg-dark text-light mt-5">
+        <div class="container py-5">
+            <div class="row g-4">
+                <div class="col-12 col-lg-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img th:src="@{/img/Logo_LuzdelSaber.png}" alt="Logo Footer" class="footer-logo-img">
+                        <div>
+                            <h5 class="fw-bold text-white mb-1">Luz del Saber</h5>
+                            <span class="text-warning small fw-bold text-uppercase">Biblioteca comunitaria</span>
+                        </div>
+                    </div>
+                    <p class="text-secondary mb-4">
+                        Fomentando la cultura y el conocimiento academico con espacios cercanos para leer,
+                        aprender y compartir.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="#"
+                            class="btn btn-outline-warning btn-sm rounded-circle footer-social-btn d-inline-flex align-items-center justify-content-center p-0"
+                            aria-label="Facebook">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                        <a href="#"
+                            class="btn btn-outline-warning btn-sm rounded-circle footer-social-btn d-inline-flex align-items-center justify-content-center p-0"
+                            aria-label="Instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="#"
+                            class="btn btn-outline-warning btn-sm rounded-circle footer-social-btn d-inline-flex align-items-center justify-content-center p-0"
+                            aria-label="WhatsApp">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <h6 class="fw-bold text-white text-uppercase mb-2">Contactanos</h6>
+                    <p class="text-secondary small mb-3">Servicio de atencion al lector</p>
+
+                    <div class="d-flex gap-2 text-secondary small mb-2">
+                        <i class="fa-solid fa-phone text-warning mt-1"></i>
+                        <span>Lima (01) 315 9600</span>
+                    </div>
+                    <div class="d-flex gap-2 text-secondary small mb-2">
+                        <i class="fa-solid fa-location-dot text-warning mt-1"></i>
+                        <span>Av. Del Aire 1240, San Luis, Lima</span>
+                    </div>
+                    <div class="d-flex gap-2 text-secondary small">
+                        <i class="fa-solid fa-envelope text-warning mt-1"></i>
+                        <span>hola@luzdelsaber.pe</span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <h6 class="fw-bold text-white text-uppercase mb-2">Horario</h6>
+                    <p class="text-secondary small mb-3">Atencion presencial</p>
+
+                    <div class="mb-3">
+                        <span class="d-block text-secondary small">Lunes a viernes</span>
+                        <strong class="text-white small">8:00 a.m. - 7:00 p.m.</strong>
+                    </div>
+                    <div>
+                        <span class="d-block text-secondary small">Sabados</span>
+                        <strong class="text-white small">9:00 a.m. - 1:00 p.m.</strong>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-2">
+                    <h6 class="fw-bold text-white text-uppercase mb-3">Enlaces</h6>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="#" class="link-light link-opacity-75-hover text-decoration-none small">Politicas de
+                            privacidad</a>
+                        <a href="#" class="link-light link-opacity-75-hover text-decoration-none small">Terminos y
+                            condiciones</a>
+                        <a th:href="@{/dashboard}"
+                            class="link-light link-opacity-75-hover text-decoration-none small">Dashboard</a>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div
+                        class="border-top border-secondary d-flex flex-column flex-md-row justify-content-between gap-2 pt-4 mt-3 text-secondary small">
+                        <span>&copy; 2026 Luz del Saber. Todos los derechos reservados.</span>
+                        <span>Hecho para lectores curiosos.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
