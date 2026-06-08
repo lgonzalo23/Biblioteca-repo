@@ -10,13 +10,19 @@ public class AutorForm {
 
     @NotBlank(message = "El nombre del autor es obligatorio.")
     @Size(max = 50, message = "El nombre del autor no puede superar 50 caracteres.")
+    @Pattern(regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s.'-]+$",
+            message = "El nombre del autor solo puede contener letras.")
     private String nombre;
 
     @NotBlank(message = "El apellido del autor es obligatorio.")
     @Size(max = 50, message = "El apellido del autor no puede superar 50 caracteres.")
+    @Pattern(regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s.'-]+$",
+            message = "El apellido del autor solo puede contener letras.")
     private String apellido;
 
     @Size(max = 30, message = "La nacionalidad no puede superar 30 caracteres.")
+    @Pattern(regexp = "^$|^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s.'-]+$",
+            message = "La nacionalidad solo puede contener letras.")
     private String nacionalidad;
 
     @NotBlank(message = "El estado del autor es obligatorio.")

@@ -58,7 +58,7 @@
                                     <i
                                         class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
                                     <input class="form-control bg-light border-0 rounded-pill ps-5" type="search"
-                                        name="q" th:value="${q}" placeholder="Buscar por nombre, apellido, DNI o correo"
+                                        name="q" th:value="${q}" placeholder="Buscar por nombre, apellido, DNI, correo, rol o estado"
                                         aria-label="Buscar usuarios">
                                 </div>
                             </form>
@@ -131,8 +131,8 @@
                                 <label for="contrasena" class="form-label">Contrasena</label>
                                 <input id="contrasena" type="password" th:field="*{contrasena}" class="form-control"
                                     minlength="8" maxlength="50"
-                                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,50}"
-                                    title="Debe incluir mayuscula, minuscula, numero y caracter especial." required>
+                                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*@)[A-Za-z\d@]{8,50}"
+                                    title="Debe incluir mayuscula, minuscula, numero y solo @ como caracter especial." required>
                             </div>
                             <div class="col-md-3">
                                 <label for="confirmContrasena" class="form-label">Confirmar</label>
@@ -269,8 +269,8 @@
                                                 <label class="form-label">Nueva contrasena</label>
                                                 <input type="password" name="contrasena" class="form-control"
                                                     minlength="8" maxlength="50"
-                                                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,50}"
-                                                    title="Debe incluir mayuscula, minuscula, numero y caracter especial.">
+                                                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*@)[A-Za-z\d@]{8,50}"
+                                                    title="Debe incluir mayuscula, minuscula, numero y solo @ como caracter especial.">
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Confirmar contrasena</label>

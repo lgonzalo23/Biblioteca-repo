@@ -23,7 +23,7 @@ public class Libro {
     public static final String ESTADO_DISPONIBLE = "DISPONIBLE";
     public static final String ESTADO_PRESTADO = "PRESTADO";
     public static final String ESTADO_RESERVADO = "RESERVADO";
-    public static final String ESTADO_NO_DISPONIBLE = "NO DISPONIBLE";
+    public static final String ESTADO_NO_DISPONIBLE = "NO_DISPONIBLE";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,7 +63,7 @@ public class Libro {
     private List<Autor> autores = new ArrayList<>();
 
     public boolean verificarDisponibilidad() {
-        return ESTADO_DISPONIBLE.equals(estado) && stock != null && stock > 0;
+        return estado != null && ESTADO_DISPONIBLE.equalsIgnoreCase(estado) && stock != null && stock > 0;
     }
 
     public void actualizarEstado(String estado) {

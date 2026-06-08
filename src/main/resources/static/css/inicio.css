@@ -113,6 +113,42 @@ body {
     color: var(--bs-primary) !important;
 }
 
+.profile-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--bs-dark);
+    max-width: 260px;
+}
+
+.profile-summary:hover .profile-avatar {
+    background-color: var(--bs-dark);
+    color: var(--bs-primary) !important;
+}
+
+.profile-summary-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    min-width: 0;
+}
+
+.profile-summary-name {
+    font-size: 0.9rem;
+    font-weight: 800;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.profile-summary-role {
+    color: #94a3b8;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
 .profile-menu {
     min-width: 190px;
     border-radius: 8px;
@@ -175,7 +211,7 @@ body {
 
 .book-card {
     background: white;
-    border-radius: 24px;
+    border-radius: 8px;
     border: 1px solid var(--border-color);
     padding: 1.5rem;
     transition: all 0.3s ease;
@@ -193,7 +229,7 @@ body {
 .book-cover {
     width: 100%;
     height: 280px;
-    border-radius: 16px;
+    border-radius: 8px;
     object-fit: cover;
     margin-bottom: 1.2rem;
     background-color: #f1f5f9;
@@ -240,11 +276,27 @@ body {
     font-size: 1.2rem;
 }
 
+.actions-column {
+    min-width: 132px;
+    white-space: nowrap;
+}
+
+.table-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+}
+
+.table-actions form {
+    margin: 0;
+}
+
 .btn-reserve {
     background-color: var(--bs-primary);
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 0.8rem;
     font-weight: 700;
     width: 100%;
@@ -253,6 +305,49 @@ body {
 
 .btn-reserve:hover {
     background-color: #d97706;
+}
+
+.empty-catalog-card {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: #475569;
+    padding: 2.2rem 1rem;
+}
+
+.empty-catalog-icon {
+    color: var(--bs-primary);
+    font-size: 2.4rem;
+    margin-bottom: 0.8rem;
+}
+
+.empty-catalog-title {
+    color: var(--bs-dark);
+    font-weight: 800;
+}
+
+.empty-catalog-text {
+    color: #64748b;
+}
+
+.reservation-modal .modal-content {
+    border: 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.reservation-modal .modal-header,
+.reservation-modal .modal-footer {
+    border-color: var(--border-color);
+}
+
+.reservation-cover {
+    width: 126px;
+    height: 176px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+    background-color: #f1f5f9;
 }
 
 .profile-avatar {
@@ -271,6 +366,12 @@ body {
 .profile-avatar:hover {
     background-color: var(--bs-dark);
     color: var(--bs-primary) !important;
+}
+
+@media (max-width: 575.98px) {
+    .profile-summary-text {
+        display: none;
+    }
 }
 
 /* FOOTER */

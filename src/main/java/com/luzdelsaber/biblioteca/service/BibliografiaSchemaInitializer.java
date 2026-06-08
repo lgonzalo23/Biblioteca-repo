@@ -21,7 +21,7 @@ public class BibliografiaSchemaInitializer implements CommandLineRunner {
 
         jdbcTemplate.update("""
                 update libro
-                set estado_libro = 'NO DISPONIBLE'
+                set estado_libro = 'NO_DISPONIBLE'
                 where estado_libro = 'INACTIVO'
                 """);
     }

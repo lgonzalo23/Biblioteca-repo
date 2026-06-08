@@ -2,8 +2,8 @@ package com.luzdelsaber.biblioteca.service;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.luzdelsaber.biblioteca.model.Rol;
 import com.luzdelsaber.biblioteca.repository.RolRepository;
 
 @Component
@@ -16,6 +16,7 @@ public class RolInitializer implements CommandLineRunner {
     }
 
     @Override
+    @Transactional
     public void run(String... args) {
         crearSiNoExiste("ADMINISTRADOR");
         crearSiNoExiste("ENCARGADO");
@@ -24,7 +25,7 @@ public class RolInitializer implements CommandLineRunner {
 
     private void crearSiNoExiste(String nombreRol) {
         if (rolRepository.findByNombreRolIgnoreCase(nombreRol).isEmpty()) {
-            rolRepository.save(new Rol(nombreRol));
+            rolRepository.insertarRol(nombreRol);
         }
     }
 }

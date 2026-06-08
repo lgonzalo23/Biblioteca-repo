@@ -10,6 +10,8 @@ public class CategoriaForm {
 
     @NotBlank(message = "El nombre de la categoria es obligatorio.")
     @Size(max = 50, message = "El nombre de la categoria no puede superar 50 caracteres.")
+    @Pattern(regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s.'-]+$",
+            message = "El nombre de la categoria solo puede contener letras.")
     private String nombre;
 
     @Size(max = 150, message = "La descripcion de la categoria no puede superar 150 caracteres.")

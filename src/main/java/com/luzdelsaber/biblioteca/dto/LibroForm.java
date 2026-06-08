@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -24,17 +26,20 @@ public class LibroForm {
 
     @NotBlank(message = "El ISBN es obligatorio.")
     @Size(max = 20, message = "El ISBN no puede superar 20 caracteres.")
+    @Pattern(regexp = "^[A-Za-z0-9-]+$", message = "El ISBN solo puede contener letras, numeros y guiones.")
     private String isbn;
 
+    @PastOrPresent(message = "La fecha de publicacion no puede ser futura.")
     private LocalDate fechaPublicacion;
 
     @NotBlank(message = "El estado es obligatorio.")
-    @Pattern(regexp = "DISPONIBLE|PRESTADO|RESERVADO|NO DISPONIBLE",
+    @Pattern(regexp = "DISPONIBLE|PRESTADO|RESERVADO|NO_DISPONIBLE",
             message = "El estado debe ser Disponible, Prestado, Reservado o No disponible.")
     private String estado = "DISPONIBLE";
 
     @NotNull(message = "El stock es obligatorio.")
     @Min(value = 0, message = "El stock debe ser mayor o igual a 0.")
+    @Max(value = 9999, message = "El stock no puede superar 9999 unidades.")
     private Integer stock;
 
     @NotBlank(message = "La ubicacion es obligatoria.")
@@ -42,6 +47,7 @@ public class LibroForm {
     private String ubicacion;
 
     @Size(max = 255, message = "El enlace de imagen no puede superar 255 caracteres.")
+    @Pattern(regexp = "^$|^https?://.+", message = "El enlace de imagen debe iniciar con http:// o https://.")
     private String urlImagen;
 
     @NotEmpty(message = "Debe seleccionar al menos un autor.")

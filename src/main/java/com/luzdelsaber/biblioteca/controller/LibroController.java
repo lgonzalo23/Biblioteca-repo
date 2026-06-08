@@ -75,7 +75,7 @@ public class LibroController {
     public String bajaLogicaLibro(@PathVariable Integer idLibro, RedirectAttributes redirectAttributes) {
         try {
             bibliografiaService.eliminarLibroLogico(idLibro);
-            redirectAttributes.addFlashAttribute("successMessage", "Libro marcado como NO DISPONIBLE.");
+            redirectAttributes.addFlashAttribute("successMessage", "Libro marcado como NO_DISPONIBLE.");
         } catch (BibliografiaValidationException ex) {
             redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
         }
@@ -221,8 +221,10 @@ public class LibroController {
             List<String> errores) {
         model.addAttribute("libros", bibliografiaService.listarLibros(termino));
         model.addAttribute("categorias", bibliografiaService.listarCategorias());
+        model.addAttribute("categoriasActivas", bibliografiaService.listarCategoriasActivas());
         model.addAttribute("autores", bibliografiaService.listarAutores());
-        model.addAttribute("estadosLibro", List.of("DISPONIBLE", "PRESTADO", "RESERVADO", "NO DISPONIBLE"));
+        model.addAttribute("autoresActivos", bibliografiaService.listarAutoresActivos());
+        model.addAttribute("estadosLibro", List.of("DISPONIBLE", "PRESTADO", "RESERVADO", "NO_DISPONIBLE"));
         model.addAttribute("estadosRegistro", List.of("ACTIVO", "INACTIVO"));
         model.addAttribute("libroForm", libroForm);
         model.addAttribute("categoriaForm", categoriaForm);

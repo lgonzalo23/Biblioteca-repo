@@ -25,7 +25,7 @@
                 </div>
             </a>
 
-            <p class="nav-section-title">Menu</p>
+            <p class="nav-section-title">Menú</p>
             <nav class="nav flex-column">
                 <a th:href="@{/pedidos}" class="nav-link">
                     <i class="fa-solid fa-box-open"></i> Pedidos
@@ -70,14 +70,14 @@
                 </nav>
 
                 <section class="orders-content">
-                    <div class="catalog-header mb-4 d-flex flex-column flex-md-row gap-3 justify-content-between">
+                    <div class="catalog-header mb-4 d-flex flex-column flex-md-row gap-3 justify-content-between align-items-md-center">
                         <div>
                             <h2 class="fw-bold m-0">Mantenimiento de libros</h2>
-                            <p class="text-muted m-0">Gestion de libros, categorias y autores.</p>
+                            <p class="text-muted m-0">Gestión de libros, categorias y autores.</p>
                         </div>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex align-items-center gap-2">
                             <a href="#categorias" class="btn btn-outline-dark btn-sm fw-bold">
-                                <i class="fa-solid fa-tags"></i> Categorias
+                                <i class="fa-solid fa-tags "></i> Categorias
                             </a>
                             <a href="#autores" class="btn btn-outline-dark btn-sm fw-bold">
                                 <i class="fa-solid fa-feather-pointed"></i> Autores
@@ -86,7 +86,7 @@
                     </div>
 
                     <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}">
-                        Operacion correcta
+                        Operación correcta
                     </div>
 
                     <div th:if="${errorMessages}" class="alert alert-danger" role="alert">
@@ -104,9 +104,9 @@
                             <h5 class="fw-bold mb-0">Registrar libro</h5>
                         </div>
 
-                        <div th:if="${#lists.isEmpty(categorias) or #lists.isEmpty(autores)}"
+                        <div th:if="${#lists.isEmpty(categoriasActivas) or #lists.isEmpty(autoresActivos)}"
                             class="alert alert-warning" role="alert">
-                            Registra al menos una categoria y un autor antes de crear libros.
+                            Registra al menos una categoria activa y un autor activo antes de crear libros.
                         </div>
 
                         <form th:action="@{/libros}" th:object="${libroForm}" method="post" class="row g-3">
@@ -118,10 +118,11 @@
                             <div class="col-md-3">
                                 <label for="isbn" class="form-label">ISBN</label>
                                 <input id="isbn" type="text" th:field="*{isbn}" class="form-control" maxlength="20"
+                                    pattern="[A-Za-z0-9-]+" title="Solo se permiten letras, numeros y guiones."
                                     required>
                             </div>
                             <div class="col-md-3">
-                                <label for="fechaPublicacion" class="form-label">Fecha publicacion</label>
+                                <label for="fechaPublicacion" class="form-label">Fecha publicación</label>
                                 <input id="fechaPublicacion" type="date" th:field="*{fechaPublicacion}"
                                     class="form-control">
                             </div>
@@ -129,7 +130,7 @@
                                 <label for="categoriaId" class="form-label">Categoria</label>
                                 <select id="categoriaId" th:field="*{categoriaId}" class="form-select" required>
                                     <option value="">Seleccione</option>
-                                    <option th:each="categoria : ${categorias}" th:value="${categoria.idCategoria}"
+                                    <option th:each="categoria : ${categoriasActivas}" th:value="${categoria.idCategoria}"
                                         th:text="${categoria.nombre}">Categoria</option>
                                 </select>
                             </div>
@@ -143,10 +144,10 @@
                             <div class="col-md-3">
                                 <label for="stock" class="form-label">Stock</label>
                                 <input id="stock" type="number" th:field="*{stock}" class="form-control" min="0"
-                                    step="1" required>
+                                    max="9999" step="1" required>
                             </div>
                             <div class="col-md-3">
-                                <label for="ubicacion" class="form-label">Ubicacion</label>
+                                <label for="ubicacion" class="form-label">Ubicación</label>
                                 <input id="ubicacion" type="text" th:field="*{ubicacion}" class="form-control"
                                     maxlength="50" required>
                             </div>
@@ -159,7 +160,7 @@
                                 <label for="autorIds" class="form-label">Autores</label>
                                 <select id="autorIds" th:field="*{autorIds}" class="form-select" multiple size="4"
                                     required>
-                                    <option th:each="autor : ${autores}" th:value="${autor.idAutor}"
+                                    <option th:each="autor : ${autoresActivos}" th:value="${autor.idAutor}"
                                         th:text="${autor.nombreCompleto + ' - ' + (autor.nacionalidad != null ? autor.nacionalidad : 'Sin nacionalidad')}">
                                         Autor</option>
                                 </select>
@@ -182,8 +183,8 @@
                                         <th>Autores</th>
                                         <th>Estado</th>
                                         <th>Stock</th>
-                                        <th>Ubicacion</th>
-                                        <th class="text-end">Acciones</th>
+                                        <th>Ubicación</th>
+                                        <th class="text-end actions-column">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -217,14 +218,15 @@
                                         </td>
                                         <td>
                                             <span class="badge"
-                                                th:classappend="${libro.estado == 'NO DISPONIBLE'} ? ' text-bg-secondary' : (${libro.estado == 'DISPONIBLE'} ? ' text-bg-success' : ' text-bg-warning')"
+                                                th:classappend="${libro.estado == 'NO_DISPONIBLE'} ? ' text-bg-secondary' : (${libro.estado == 'DISPONIBLE'} ? ' text-bg-success' : ' text-bg-warning')"
                                                 th:text="${#strings.capitalize(#strings.toLowerCase(libro.estado))}">
                                                 Disponible
                                             </span>
                                         </td>
                                         <td th:text="${libro.stock}">0</td>
                                         <td th:text="${libro.ubicacion}">A-1</td>
-                                        <td class="text-end">
+                                        <td class="text-end actions-column">
+                                            <div class="table-actions justify-content-end">
                                             <button type="button" class="btn btn-sm btn-outline-primary"
                                                 data-bs-toggle="modal" th:data-bs-target="'#editarLibro' + ${libro.idLibro}"
                                                 title="Modificar">
@@ -245,6 +247,7 @@
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </form>
+                                            </div>
                                         </td>
                                     </tr>
                                     <tr th:if="${#lists.isEmpty(libros)}">
@@ -260,7 +263,7 @@
                     </div>
 
                     <div class="row g-4">
-                        <div class="col-12 col-xl-6" id="categorias">
+                        <div class="col-12 col-xl-7" id="categorias">
                             <div class="bg-white rounded-3 shadow-sm border p-4 h-100">
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <i class="fa-solid fa-tags text-warning"></i>
@@ -271,10 +274,12 @@
                                     <div class="col-md-5">
                                         <label for="nombreCategoria" class="form-label">Nombre</label>
                                         <input id="nombreCategoria" type="text" th:field="*{nombre}"
-                                            class="form-control" maxlength="50" required>
+                                            class="form-control" maxlength="50"
+                                            pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s.'-]+"
+                                            title="Solo se permiten letras." required>
                                     </div>
                                     <div class="col-md-7">
-                                        <label for="descripcionCategoria" class="form-label">Descripcion</label>
+                                        <label for="descripcionCategoria" class="form-label">Descripción</label>
                                         <input id="descripcionCategoria" type="text" th:field="*{descripcion}"
                                             class="form-control" maxlength="150">
                                     </div>
@@ -290,21 +295,22 @@
                                         <thead class="table-light">
                                             <tr>
                                                 <th>Nombre</th>
-                                                <th>Descripcion</th>
+                                                <th>Descripción</th>
                                                 <th>Estado</th>
-                                                <th class="text-end">Acciones</th>
+                                                <th class="text-end actions-column">Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr th:each="categoria : ${categorias}">
                                                 <td class="fw-bold" th:text="${categoria.nombre}">Categoria</td>
-                                                <td th:text="${categoria.descripcion}">Descripcion</td>
+                                                <td th:text="${categoria.descripcion}">Descripción</td>
                                                 <td>
                                                     <span class="badge"
                                                         th:classappend="${categoria.estado == 'ACTIVO'} ? ' text-bg-success' : ' text-bg-secondary'"
                                                         th:text="${categoria.estado}">ACTIVO</span>
                                                 </td>
-                                                <td class="text-end">
+                                                <td class="text-end actions-column">
+                                                    <div class="table-actions justify-content-end">
                                                     <button type="button" class="btn btn-sm btn-outline-primary"
                                                         data-bs-toggle="modal"
                                                         th:data-bs-target="'#editarCategoria' + ${categoria.idCategoria}"
@@ -326,6 +332,7 @@
                                                             <i class="fa-solid fa-trash"></i>
                                                         </button>
                                                     </form>
+                                                    </div>
                                                 </td>
                                             </tr>
                                             <tr th:if="${#lists.isEmpty(categorias)}">
@@ -337,7 +344,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12 col-xl-6" id="autores">
+                        <div class="col-12 col-xl-5" id="autores">
                             <div class="bg-white rounded-3 shadow-sm border p-4 h-100">
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <i class="fa-solid fa-feather-pointed text-warning"></i>
@@ -348,17 +355,22 @@
                                     <div class="col-md-4">
                                         <label for="nombreAutor" class="form-label">Nombre</label>
                                         <input id="nombreAutor" type="text" th:field="*{nombre}" class="form-control"
-                                            maxlength="50" required>
+                                            maxlength="50" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s.'-]+"
+                                            title="Solo se permiten letras." required>
                                     </div>
                                     <div class="col-md-4">
                                         <label for="apellidoAutor" class="form-label">Apellido</label>
                                         <input id="apellidoAutor" type="text" th:field="*{apellido}"
-                                            class="form-control" maxlength="50" required>
+                                            class="form-control" maxlength="50"
+                                            pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s.'-]+"
+                                            title="Solo se permiten letras." required>
                                     </div>
                                     <div class="col-md-4">
                                         <label for="nacionalidadAutor" class="form-label">Nacionalidad</label>
                                         <input id="nacionalidadAutor" type="text" th:field="*{nacionalidad}"
-                                            class="form-control" maxlength="30">
+                                            class="form-control" maxlength="30"
+                                            pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s.'-]+"
+                                            title="Solo se permiten letras.">
                                     </div>
                                     <div class="col-12 d-flex justify-content-end">
                                         <button type="submit" class="btn btn-warning fw-bold">
@@ -374,7 +386,7 @@
                                                 <th>Nombre</th>
                                                 <th>Nacionalidad</th>
                                                 <th>Estado</th>
-                                                <th class="text-end">Acciones</th>
+                                                <th class="text-end actions-column">Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -386,7 +398,8 @@
                                                         th:classappend="${autor.estado == 'ACTIVO'} ? ' text-bg-success' : ' text-bg-secondary'"
                                                         th:text="${autor.estado}">ACTIVO</span>
                                                 </td>
-                                                <td class="text-end">
+                                                <td class="text-end actions-column">
+                                                    <div class="table-actions justify-content-end">
                                                     <button type="button" class="btn btn-sm btn-outline-primary"
                                                         data-bs-toggle="modal"
                                                         th:data-bs-target="'#editarAutor' + ${autor.idAutor}"
@@ -408,6 +421,7 @@
                                                             <i class="fa-solid fa-trash"></i>
                                                         </button>
                                                     </form>
+                                                    </div>
                                                 </td>
                                             </tr>
                                             <tr th:if="${#lists.isEmpty(autores)}">
@@ -442,10 +456,11 @@
                                             <div class="col-md-3">
                                                 <label class="form-label">ISBN</label>
                                                 <input type="text" name="isbn" th:value="${libro.isbn}"
-                                                    class="form-control" maxlength="20" required>
+                                                    class="form-control" maxlength="20" pattern="[A-Za-z0-9-]+"
+                                                    title="Solo se permiten letras, numeros y guiones." required>
                                             </div>
                                             <div class="col-md-3">
-                                                <label class="form-label">Fecha publicacion</label>
+                                                <label class="form-label">Fecha publicación</label>
                                                 <input type="date" name="fechaPublicacion"
                                                     th:value="${libro.fechaPublicacion}" class="form-control">
                                             </div>
@@ -470,10 +485,10 @@
                                             <div class="col-md-3">
                                                 <label class="form-label">Stock</label>
                                                 <input type="number" name="stock" th:value="${libro.stock}"
-                                                    class="form-control" min="0" step="1" required>
+                                                    class="form-control" min="0" max="9999" step="1" required>
                                             </div>
                                             <div class="col-md-3">
-                                                <label class="form-label">Ubicacion</label>
+                                                <label class="form-label">Ubicación</label>
                                                 <input type="text" name="ubicacion" th:value="${libro.ubicacion}"
                                                     class="form-control" maxlength="50" required>
                                             </div>
@@ -522,7 +537,9 @@
                                         <div class="mb-3">
                                             <label class="form-label">Nombre</label>
                                             <input type="text" name="nombre" th:value="${categoria.nombre}"
-                                                class="form-control" maxlength="50" required>
+                                                class="form-control" maxlength="50"
+                                                pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s.'-]+"
+                                                title="Solo se permiten letras." required>
                                         </div>
                                         <div>
                                             <label class="form-label">Descripcion</label>
@@ -564,17 +581,23 @@
                                             <div class="col-md-6">
                                                 <label class="form-label">Nombre</label>
                                                 <input type="text" name="nombre" th:value="${autor.nombre}"
-                                                    class="form-control" maxlength="50" required>
+                                                    class="form-control" maxlength="50"
+                                                    pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s.'-]+"
+                                                    title="Solo se permiten letras." required>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Apellido</label>
                                                 <input type="text" name="apellido" th:value="${autor.apellido}"
-                                                    class="form-control" maxlength="50" required>
+                                                    class="form-control" maxlength="50"
+                                                    pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s.'-]+"
+                                                    title="Solo se permiten letras." required>
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label">Nacionalidad</label>
                                                 <input type="text" name="nacionalidad" th:value="${autor.nacionalidad}"
-                                                    class="form-control" maxlength="30">
+                                                    class="form-control" maxlength="30"
+                                                    pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s.'-]+"
+                                                    title="Solo se permiten letras.">
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label">Estado</label>

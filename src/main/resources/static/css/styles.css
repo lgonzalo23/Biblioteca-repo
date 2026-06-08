@@ -86,6 +86,7 @@ body {
 /* SECTION: Libros más elegidos */
 .book-card {
     transition: all 0.3s ease;
+    border-radius: 8px;
 }
 
 .book-card:hover {
@@ -93,11 +94,20 @@ body {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
+.featured-book-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.featured-book-link:hover {
+    color: inherit;
+}
+
 /* Contenedor de la imagen del libro */
 .book-cover-wrapper {
     width: 100%;
     height: 280px;
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
     background-color: #f1f5f9;
     margin-bottom: 1.5rem;
@@ -130,6 +140,29 @@ body {
     border-color: #d97706;
 }
 
+.empty-featured-card {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: #475569;
+    padding: 2.2rem 1rem;
+}
+
+.empty-featured-icon {
+    color: var(--bs-primary);
+    font-size: 2.4rem;
+    margin-bottom: 0.8rem;
+}
+
+.empty-featured-title {
+    color: var(--bs-dark);
+    font-weight: 800;
+}
+
+.empty-featured-text {
+    color: #64748b;
+}
+
 .profile-avatar {
     width: 45px;
     height: 45px;
@@ -146,6 +179,42 @@ body {
 .profile-avatar:hover {
     background-color: var(--bs-dark);
     color: var(--bs-primary) !important;
+}
+
+.profile-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--bs-dark);
+    max-width: 260px;
+}
+
+.profile-summary:hover .profile-avatar {
+    background-color: var(--bs-dark);
+    color: var(--bs-primary) !important;
+}
+
+.profile-summary-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    min-width: 0;
+}
+
+.profile-summary-name {
+    font-size: 0.9rem;
+    font-weight: 800;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.profile-summary-role {
+    color: #94a3b8;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
 }
 
 .login-nav-button {
@@ -170,6 +239,12 @@ body {
 .profile-menu {
     min-width: 190px;
     border-radius: 8px;
+}
+
+@media (max-width: 575.98px) {
+    .profile-summary-text {
+        display: none;
+    }
 }
 
 .profile-modal-icon {

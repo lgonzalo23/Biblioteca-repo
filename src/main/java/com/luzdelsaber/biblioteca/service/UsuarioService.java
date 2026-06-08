@@ -21,7 +21,7 @@ import com.luzdelsaber.biblioteca.repository.UsuarioRepository;
 public class UsuarioService {
 
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(
-            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,50}$");
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*@)[A-Za-z\\d@]{8,50}$");
 
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
@@ -73,7 +73,16 @@ public class UsuarioService {
 
         Usuario usuario = new Usuario();
         aplicarDatos(usuario, form, true);
-        return usuarioRepository.save(usuario);
+        usuarioRepository.insertarUsuario(
+                usuario.getRol().getIdRol(),
+                usuario.getNombre(),
+                usuario.getApellido(),
+                usuario.getDni(),
+                usuario.getCorreo(),
+                usuario.getContrasena(),
+                usuario.getEstado());
+        return usuarioRepository.findByCorreoIgnoreCase(usuario.getCorreo())
+                .orElseThrow(() -> new UsuarioValidationException(List.of("No se pudo recuperar el usuario registrado.")));
     }
 
     @Transactional
@@ -81,9 +90,24 @@ public class UsuarioService {
         normalizar(form);
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new UsuarioValidationException(List.of("El usuario seleccionado no existe.")));
+        form.setDni(usuario.getDni());
         validarFormulario(form, false, idUsuario);
-        aplicarDatos(usuario, form, StringUtils.hasText(form.getContrasena()));
-        return usuarioRepository.save(usuario);
+        validarRol(form.getRolId());
+
+        usuarioRepository.actualizarDatosUsuario(
+                idUsuario,
+                form.getRolId(),
+                form.getNombre(),
+                form.getApellido(),
+                form.getCorreo(),
+                form.getEstado());
+
+        if (StringUtils.hasText(form.getContrasena())) {
+            usuarioRepository.actualizarContrasena(idUsuario, form.getContrasena());
+        }
+
+        return usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new UsuarioValidationException(List.of("No se pudo recuperar el usuario actualizado.")));
     }
 
     @Transactional
@@ -103,8 +127,20 @@ public class UsuarioService {
 
         normalizar(usuarioForm);
         validarFormulario(usuarioForm, false, idUsuario);
-        aplicarDatos(usuario, usuarioForm, StringUtils.hasText(usuarioForm.getContrasena()));
-        return usuarioRepository.save(usuario);
+        usuarioRepository.actualizarDatosUsuario(
+                idUsuario,
+                usuarioForm.getRolId(),
+                usuarioForm.getNombre(),
+                usuarioForm.getApellido(),
+                usuarioForm.getCorreo(),
+                usuarioForm.getEstado());
+
+        if (StringUtils.hasText(usuarioForm.getContrasena())) {
+            usuarioRepository.actualizarContrasena(idUsuario, usuarioForm.getContrasena());
+        }
+
+        return usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new UsuarioValidationException(List.of("No se pudo recuperar el perfil actualizado.")));
     }
 
     @Transactional
@@ -112,20 +148,19 @@ public class UsuarioService {
         if (!usuarioRepository.existsById(idUsuario)) {
             throw new UsuarioValidationException(List.of("El usuario seleccionado no existe."));
         }
-        usuarioRepository.deleteById(idUsuario);
+        usuarioRepository.eliminarFisico(idUsuario);
     }
 
     @Transactional
     public void eliminarLogico(Integer idUsuario) {
-        Usuario usuario = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new UsuarioValidationException(List.of("El usuario seleccionado no existe.")));
-        usuario.setEstado(Usuario.ESTADO_INACTIVO);
-        usuarioRepository.save(usuario);
+        if (!usuarioRepository.existsById(idUsuario)) {
+            throw new UsuarioValidationException(List.of("El usuario seleccionado no existe."));
+        }
+        usuarioRepository.actualizarEstado(idUsuario, Usuario.ESTADO_INACTIVO);
     }
 
     private void aplicarDatos(Usuario usuario, UsuarioForm form, boolean actualizarContrasena) {
-        Rol rol = rolRepository.findById(form.getRolId())
-                .orElseThrow(() -> new UsuarioValidationException(List.of("El rol seleccionado no existe.")));
+        Rol rol = validarRol(form.getRolId());
         usuario.setRol(rol);
         usuario.setNombre(form.getNombre());
         usuario.setApellido(form.getApellido());
@@ -135,6 +170,11 @@ public class UsuarioService {
         if (actualizarContrasena) {
             usuario.setContrasena(form.getContrasena());
         }
+    }
+
+    private Rol validarRol(Integer idRol) {
+        return rolRepository.findById(idRol)
+                .orElseThrow(() -> new UsuarioValidationException(List.of("El rol seleccionado no existe.")));
     }
 
     private void validarFormulario(UsuarioForm form, boolean requiereContrasena, Integer idActual) {
@@ -194,7 +234,7 @@ public class UsuarioService {
             return;
         }
         if (tieneContrasena && !PASSWORD_PATTERN.matcher(form.getContrasena()).matches()) {
-            errores.add("La contrasena debe tener minimo 8 caracteres, mayuscula, minuscula, numero y especial.");
+            errores.add("La contrasena debe tener minimo 8 caracteres, mayuscula, minuscula, numero y solo @ como caracter especial.");
         }
         if (tieneContrasena && !form.getContrasena().equals(form.getConfirmContrasena())) {
             errores.add("La confirmacion de contrasena no coincide.");

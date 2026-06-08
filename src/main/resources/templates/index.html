@@ -14,10 +14,8 @@
 </head>
 
 <body>
-    <!-- MAIN CONTENT -->
     <main class="main-content">
         <div class="content-wrap">
-            <!-- NAVBAR -->
             <nav class="navbar navbar-expand-lg navbar-custom sticky-top bg-white">
                 <div class="container justify-content-between">
                     <div class="d-flex align-items-center gap-4 flex-grow-1">
@@ -26,12 +24,13 @@
                             <h5 class="m-0 fw-bold text-dark d-none d-md-block">Luz del Saber</h5>
                         </a>
 
-                        <form class="d-flex flex-grow-1" role="search">
+                        <form class="d-flex flex-grow-1" th:action="@{/}" method="get" role="search">
                             <div class="position-relative w-100">
                                 <i
                                     class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
                                 <input class="form-control bg-light border-0 rounded-pill ps-5" type="search"
-                                    placeholder="Buscar libros a tu elección..." aria-label="Search">
+                                    name="q" th:value="${q}" placeholder="Buscar libros a tu eleccion..."
+                                    aria-label="Buscar libros">
                             </div>
                         </form>
                     </div>
@@ -47,7 +46,6 @@
                 </div>
             </nav>
 
-            <!-- CAROUSEL SECTION (CON IMÁGENES CAMBIANTES) -->
             <div class="container-fluid px-0 mb-4">
                 <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel"
                     data-bs-interval="2000">
@@ -58,39 +56,37 @@
                         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
                     </div>
                     <div class="carousel-inner">
-                        <!-- Slide 1: Novelas Clásicas -->
                         <div class="carousel-item active">
                             <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1600&q=80"
-                                alt="Novelas Clásicas">
+                                alt="Novelas clasicas">
                             <div class="carousel-img-overlay"></div>
                             <div class="carousel-caption">
                                 <span class="badge bg-warning text-dark fw-bold px-3 py-2 mb-3">
-                                    Novelas Clásicas
+                                    Novelas clasicas
                                 </span>
                                 <h2 class="display-4 fw-bold text-white mb-3">
-                                    Descubre las Grandes Obras de la Literatura
+                                    Descubre las grandes obras de la literatura
                                 </h2>
                                 <p class="lead text-white-50 mb-4 max-w-lg">
-                                    Encuentra clásicos universales que han marcado generaciones de lectores.
+                                    Encuentra clasicos universales que han marcado generaciones de lectores.
                                 </p>
                                 <a th:href="${usuarioActual == null} ? @{/login} : (${session.usuarioRol == 'PRESTATARIO'} ? @{/inicio} : @{/pedidos})"
                                     class="btn btn-warning btn-hover-lift fw-bold px-5 py-3 rounded-pill shadow-lg text-decoration-none text-dark">
-                                    Explorar Catálogo
+                                    Explorar Catalogo
                                 </a>
                             </div>
                         </div>
 
-                        <!-- Slide 2: Literatura Latinoamericana -->
                         <div class="carousel-item">
                             <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1600&q=80"
-                                alt="Literatura Latinoamericana">
+                                alt="Literatura latinoamericana">
                             <div class="carousel-img-overlay"></div>
                             <div class="carousel-caption">
                                 <span class="badge bg-warning text-dark fw-bold px-3 py-2 mb-3">
-                                    Literatura Latinoamericana
+                                    Literatura latinoamericana
                                 </span>
                                 <h2 class="display-4 fw-bold text-white mb-3">
-                                    Historias que Reflejan Nuestra Cultura
+                                    Historias que reflejan nuestra cultura
                                 </h2>
                                 <p class="lead text-white-50 mb-4 max-w-lg">
                                     Explora obras de autores latinoamericanos que han dejado huella en la literatura
@@ -103,28 +99,26 @@
                             </div>
                         </div>
 
-                        <!-- Slide 3: Fantasía, Ciencia Ficción y Literatura Juvenil -->
                         <div class="carousel-item">
                             <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1600&q=80"
-                                alt="Literatura Juvenil y Fantasía">
+                                alt="Literatura juvenil y fantasia">
                             <div class="carousel-img-overlay"></div>
                             <div class="carousel-caption">
                                 <span class="badge bg-warning text-dark fw-bold px-3 py-2 mb-3">
-                                    Fantasía y Ciencia Ficción
+                                    Fantasia y ciencia ficcion
                                 </span>
                                 <h2 class="display-4 fw-bold text-white mb-3">
-                                    Viaja a Mundos Extraordinarios
+                                    Viaja a mundos extraordinarios
                                 </h2>
                                 <p class="lead text-white-50 mb-4 max-w-lg">
-                                    Descubre literatura juvenil, fantasía épica y ciencia ficción para todos los gustos.
+                                    Descubre literatura juvenil, fantasia epica y ciencia ficcion para todos los gustos.
                                 </p>
                                 <a th:href="${usuarioActual == null} ? @{/login} : (${session.usuarioRol == 'PRESTATARIO'} ? @{/inicio} : @{/pedidos})"
                                     class="btn btn-warning btn-hover-lift fw-bold px-5 py-3 rounded-pill shadow-lg text-decoration-none text-dark">
-                                    Conocer Más
+                                    Conocer Mas
                                 </a>
                             </div>
                         </div>
-
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel"
                         data-bs-slide="prev">
@@ -137,41 +131,54 @@
                 </div>
             </div>
 
-            <!-- LIBROS DE MARIO VARGAS LLOSA -->
             <div class="container py-5">
                 <div class="mb-5">
-                    <h3 class="fw-bold m-0 text-dark">Libros de Mario Vargas Llosa</h3>
-                    <p class="text-muted mt-1">Descubre las obras más emblemáticas de nuestro Nobel peruano.</p>
+                    <h3 class="fw-bold m-0 text-dark">Catalogo de Libros</h3>
+                    <p class="text-muted mt-1">Explora algunos libros disponibles en Luz del Saber.</p>
+                </div>
+
+                <div class="empty-featured-card text-center" th:if="${#lists.isEmpty(librosDestacados)}">
+                    <i class="fa-solid fa-book-open empty-featured-icon"></i>
+                    <h5 class="empty-featured-title">No hay libros disponibles</h5>
+                    <p class="empty-featured-text m-0">Cuando existan libros disponibles apareceran en esta seccion.</p>
                 </div>
 
                 <div class="row g-4">
-                    <!-- Book loop -->
-                    <div class="col-12 col-md-6 col-lg-4" th:each="libro : ${librosMario}">
-                        <div class="card book-card h-100 border-0 shadow-sm rounded-4 p-4">
+                    <div class="col-12 col-md-6 col-lg-4" th:each="libro : ${librosDestacados}">
+                        <a th:href="${usuarioActual == null} ? @{/login} : @{/inicio}"
+                            class="featured-book-link card book-card h-100 border-0 shadow-sm p-4">
                             <div class="book-cover-wrapper">
-                                <img th:src="@{/image/{id}.jpg(id=${libro.id})}" alt="Portada" class="book-cover-img">
+                                <img src="/img/Logo_LuzdelSaber.png"
+                                    th:src="${libro.urlImagen != null and !#strings.isEmpty(libro.urlImagen)} ? ${libro.urlImagen} : @{/img/Logo_LuzdelSaber.png}"
+                                    onerror="this.onerror=null; this.src='/img/Logo_LuzdelSaber.png';" alt="Portada"
+                                    class="book-cover-img">
                             </div>
                             <span class="text-warning text-uppercase fw-bold small mb-2"
-                                th:text="${libro.categoria != null ? libro.categoria.nombre : 'General'}">Categoría</span>
-                            <h4 class="h5 fw-bold text-dark mb-2" th:text="${libro.titulo}">Título del Libro</h4>
-                            <p class="text-muted small flex-grow-1 mb-4"
-                                th:text="${libro.autor.nombre + ' ' + libro.autor.apellido}">Mario Vargas Llosa</p>
-                            <a th:href="${usuarioActual == null} ? @{/login} : (${session.usuarioRol == 'PRESTATARIO'} ? @{/inicio} : @{/pedidos})"
-                                class="btn btn-warning btn-hover-lift text-dark fw-bold w-100 rounded-3 text-decoration-none">Reservar
-                                Libro</a>
-                        </div>
+                                th:text="${libro.categoria != null ? libro.categoria.nombre : 'General'}">Categoria</span>
+                            <h4 class="h5 fw-bold text-dark mb-2" th:text="${libro.titulo}">Titulo del Libro</h4>
+                            <p class="text-muted small flex-grow-1 mb-4">
+                                <span th:if="${libro.autores == null or libro.autores.isEmpty()}">Autor desconocido</span>
+                                <span th:each="autor, iter : ${libro.autores}">
+                                    <span th:text="${autor.nombre + ' ' + autor.apellido}">Autor</span><span
+                                        th:if="${!iter.last}">, </span>
+                                </span>
+                            </p>
+                            <span class="btn btn-warning btn-hover-lift text-dark fw-bold w-100 rounded-3">
+                                Reservar Libro
+                            </span>
+                        </a>
                     </div>
                 </div>
 
                 <div class="text-center mt-5">
-                    <a th:href="${usuarioActual == null} ? @{/login} : (${session.usuarioRol == 'PRESTATARIO'} ? @{/inicio} : @{/pedidos})"
-                        class="btn btn-outline-dark btn-hover-lift rounded-pill px-5 py-2 fw-bold text-decoration-none">Ver
-                        todos los libros</a>
+                    <a th:href="${usuarioActual == null} ? @{/login} : @{/inicio}"
+                        class="btn btn-outline-dark btn-hover-lift rounded-pill px-5 py-2 fw-bold text-decoration-none">
+                        Ver todos los libros
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- FOOTER -->
         <footer class="footer-custom bg-dark text-light mt-5">
             <div class="container py-5">
                 <div class="row g-4">
@@ -245,7 +252,7 @@
                                 privacidad</a>
                             <a href="#" class="link-light link-opacity-75-hover text-decoration-none small">Terminos y
                                 condiciones</a>
-                            <a th:href="${usuarioActual == null} ? @{/login} : (${session.usuarioRol == 'PRESTATARIO'} ? @{/inicio} : @{/pedidos})"
+                            <a th:href="${usuarioActual == null} ? @{/login} : @{/inicio}"
                                 class="link-light link-opacity-75-hover text-decoration-none small">Catalogo de
                                 libros</a>
                         </div>

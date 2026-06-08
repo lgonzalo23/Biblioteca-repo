@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,11 @@ import com.luzdelsaber.biblioteca.repository.LibroRepository;
 
 @Service
 public class BibliografiaService {
+
+    private static final int STOCK_MAXIMO = 9999;
+    private static final Pattern TEXTO_SOLO_LETRAS = Pattern.compile("^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s.'-]+$");
+    private static final Pattern ISBN_VALIDO = Pattern.compile("^[A-Za-z0-9-]+$");
+    private static final Pattern URL_IMAGEN_VALIDA = Pattern.compile("^https?://.+");
 
     private static final Set<String> ESTADOS_LIBRO = Set.of(
             Libro.ESTADO_DISPONIBLE,
@@ -47,18 +53,44 @@ public class BibliografiaService {
         if (StringUtils.hasText(termino)) {
             return libroRepository.buscar(termino.trim());
         }
-        return libroRepository.findAll()
-                .stream()
-                .sorted((a, b) -> b.getIdLibro().compareTo(a.getIdLibro()))
-                .toList();
+        return libroRepository.listarOrdenado();
+    }
+
+    public List<Libro> listarLibrosCatalogo() {
+        return listarLibrosCatalogo(null, null);
+    }
+
+    public List<Libro> listarLibrosCatalogo(String termino) {
+        return listarLibrosCatalogo(termino, null);
+    }
+
+    public List<Libro> listarLibrosCatalogo(String termino, Integer categoriaId) {
+        if (StringUtils.hasText(termino)) {
+            return libroRepository.buscarCatalogo(termino.trim(), categoriaId);
+        }
+        return libroRepository.listarCatalogo(categoriaId);
     }
 
     public List<Categoria> listarCategorias() {
         return categoriaRepository.findAllByOrderByNombreAsc();
     }
 
+    public List<Categoria> listarCategoriasActivas() {
+        return listarCategorias()
+                .stream()
+                .filter(categoria -> Categoria.ESTADO_ACTIVO.equals(categoria.getEstado()))
+                .toList();
+    }
+
     public List<Autor> listarAutores() {
         return autorRepository.findAllByOrderByApellidoAscNombreAsc();
+    }
+
+    public List<Autor> listarAutoresActivos() {
+        return listarAutores()
+                .stream()
+                .filter(autor -> Autor.ESTADO_ACTIVO.equals(autor.getEstado()))
+                .toList();
     }
 
     public Optional<Libro> buscarLibroPorId(Integer idLibro) {
@@ -72,7 +104,20 @@ public class BibliografiaService {
 
         Libro libro = new Libro();
         aplicarDatosLibro(libro, form);
-        return libroRepository.save(libro);
+        libroRepository.insertarLibro(
+                libro.getIdCategoria(),
+                libro.getTitulo(),
+                libro.getIsbn(),
+                libro.getFechaPublicacion(),
+                libro.getEstado(),
+                libro.getStock(),
+                libro.getUbicacion(),
+                libro.getUrlImagen());
+
+        Libro libroRegistrado = libroRepository.findByIsbnIgnoreCase(libro.getIsbn())
+                .orElseThrow(() -> new BibliografiaValidationException(List.of("No se pudo recuperar el libro registrado.")));
+        guardarAutoresLibro(libroRegistrado.getIdLibro(), libro.getAutores());
+        return libroRegistrado;
     }
 
     @Transactional
@@ -80,9 +125,22 @@ public class BibliografiaService {
         normalizarLibro(form);
         Libro libro = libroRepository.findById(idLibro)
                 .orElseThrow(() -> new BibliografiaValidationException(List.of("El libro seleccionado no existe.")));
+        form.setIsbn(libro.getIsbn());
         validarLibro(form, idLibro);
-        aplicarDatosLibro(libro, form);
-        return libroRepository.save(libro);
+
+        Categoria categoria = obtenerCategoria(form.getCategoriaId());
+        List<Autor> autores = obtenerAutores(form.getAutorIds());
+        libroRepository.actualizarLibro(
+                idLibro,
+                categoria.getIdCategoria(),
+                form.getTitulo(),
+                form.getFechaPublicacion(),
+                form.getEstado(),
+                form.getStock(),
+                form.getUbicacion(),
+                form.getUrlImagen());
+        guardarAutoresLibro(idLibro, autores);
+        return libro;
     }
 
     @Transactional
@@ -90,15 +148,16 @@ public class BibliografiaService {
         if (!libroRepository.existsById(idLibro)) {
             throw new BibliografiaValidationException(List.of("El libro seleccionado no existe."));
         }
-        libroRepository.deleteById(idLibro);
+        libroRepository.eliminarAutoresDelLibro(idLibro);
+        libroRepository.eliminarFisico(idLibro);
     }
 
     @Transactional
     public void eliminarLibroLogico(Integer idLibro) {
-        Libro libro = libroRepository.findById(idLibro)
-                .orElseThrow(() -> new BibliografiaValidationException(List.of("El libro seleccionado no existe.")));
-        libro.actualizarEstado(Libro.ESTADO_NO_DISPONIBLE);
-        libroRepository.save(libro);
+        if (!libroRepository.existsById(idLibro)) {
+            throw new BibliografiaValidationException(List.of("El libro seleccionado no existe."));
+        }
+        libroRepository.actualizarEstado(idLibro, Libro.ESTADO_NO_DISPONIBLE);
     }
 
     @Transactional
@@ -186,9 +245,8 @@ public class BibliografiaService {
     }
 
     private void aplicarDatosLibro(Libro libro, LibroForm form) {
-        Categoria categoria = categoriaRepository.findById(form.getCategoriaId())
-                .orElseThrow(() -> new BibliografiaValidationException(List.of("La categoria seleccionada no existe.")));
-        List<Autor> autores = autorRepository.findAllById(form.getAutorIds());
+        Categoria categoria = obtenerCategoria(form.getCategoriaId());
+        List<Autor> autores = obtenerAutores(form.getAutorIds());
 
         libro.setCategoria(categoria);
         libro.setTitulo(form.getTitulo());
@@ -201,6 +259,22 @@ public class BibliografiaService {
         libro.setAutores(autores);
     }
 
+    private Categoria obtenerCategoria(Integer categoriaId) {
+        return categoriaRepository.findById(categoriaId)
+                .orElseThrow(() -> new BibliografiaValidationException(List.of("La categoria seleccionada no existe.")));
+    }
+
+    private List<Autor> obtenerAutores(List<Integer> autorIds) {
+        return autorRepository.findAllById(autorIds);
+    }
+
+    private void guardarAutoresLibro(Integer idLibro, List<Autor> autores) {
+        libroRepository.eliminarAutoresDelLibro(idLibro);
+        for (Autor autor : autores) {
+            libroRepository.insertarAutorDelLibro(idLibro, autor.getIdAutor());
+        }
+    }
+
     private void validarLibro(LibroForm form, Integer idActual) {
         List<String> errores = new ArrayList<>();
 
@@ -208,20 +282,34 @@ public class BibliografiaService {
         validarTextoObligatorio(form.getIsbn(), "El ISBN", 20, errores);
         validarTextoObligatorio(form.getUbicacion(), "La ubicacion", 50, errores);
         validarTextoOpcional(form.getUrlImagen(), "El enlace de imagen", 255, errores);
+        validarIsbnFormato(form.getIsbn(), errores);
+        validarUrlImagen(form.getUrlImagen(), errores);
 
         if (form.getStock() == null || form.getStock() < 0) {
             errores.add("El stock debe ser un numero entero mayor o igual a 0.");
+        } else if (form.getStock() > STOCK_MAXIMO) {
+            errores.add("El stock no puede superar " + STOCK_MAXIMO + " unidades.");
+        }
+
+        if (form.getFechaPublicacion() != null && form.getFechaPublicacion().isAfter(java.time.LocalDate.now())) {
+            errores.add("La fecha de publicacion no puede ser futura.");
         }
 
         if (!ESTADOS_LIBRO.contains(form.getEstado())) {
-            errores.add("El estado debe ser Disponible, Prestado, Reservado o No disponible.");
+            errores.add("El estado debe ser DISPONIBLE, PRESTADO, RESERVADO o NO_DISPONIBLE.");
         }
 
         if (form.getCategoriaId() == null || !categoriaRepository.existsById(form.getCategoriaId())) {
             errores.add("Debe seleccionar una categoria valida.");
+        } else if (idActual == null) {
+            categoriaRepository.findById(form.getCategoriaId()).ifPresent(categoria -> {
+                if (!Categoria.ESTADO_ACTIVO.equals(categoria.getEstado())) {
+                    errores.add("Debe seleccionar una categoria activa.");
+                }
+            });
         }
 
-        validarAutores(form.getAutorIds(), errores);
+        validarAutores(form.getAutorIds(), idActual == null, errores);
         validarIsbnUnico(form.getIsbn(), idActual, errores);
 
         if (!errores.isEmpty()) {
@@ -229,7 +317,7 @@ public class BibliografiaService {
         }
     }
 
-    private void validarAutores(List<Integer> autorIds, List<String> errores) {
+    private void validarAutores(List<Integer> autorIds, boolean soloActivos, List<String> errores) {
         if (autorIds == null || autorIds.isEmpty()) {
             errores.add("Debe seleccionar al menos un autor.");
             return;
@@ -239,6 +327,9 @@ public class BibliografiaService {
         List<Autor> autores = autorRepository.findAllById(idsUnicos);
         if (autores.size() != idsUnicos.size()) {
             errores.add("Uno o mas autores seleccionados no existen.");
+        }
+        if (soloActivos && autores.stream().anyMatch(autor -> !Autor.ESTADO_ACTIVO.equals(autor.getEstado()))) {
+            errores.add("Debe seleccionar solo autores activos.");
         }
     }
 
@@ -256,6 +347,7 @@ public class BibliografiaService {
     private void validarCategoria(CategoriaForm form) {
         List<String> errores = new ArrayList<>();
         validarTextoObligatorio(form.getNombre(), "El nombre de la categoria", 50, errores);
+        validarSoloLetras(form.getNombre(), "El nombre de la categoria", errores);
         validarTextoOpcional(form.getDescripcion(), "La descripcion de la categoria", 150, errores);
         validarEstadoRegistro(form.getEstado(), "El estado de la categoria", errores);
         if (!errores.isEmpty()) {
@@ -268,6 +360,9 @@ public class BibliografiaService {
         validarTextoObligatorio(form.getNombre(), "El nombre del autor", 50, errores);
         validarTextoObligatorio(form.getApellido(), "El apellido del autor", 50, errores);
         validarTextoOpcional(form.getNacionalidad(), "La nacionalidad", 30, errores);
+        validarSoloLetras(form.getNombre(), "El nombre del autor", errores);
+        validarSoloLetras(form.getApellido(), "El apellido del autor", errores);
+        validarSoloLetrasOpcional(form.getNacionalidad(), "La nacionalidad", errores);
         validarEstadoRegistro(form.getEstado(), "El estado del autor", errores);
         if (!errores.isEmpty()) {
             throw new BibliografiaValidationException(errores);
@@ -296,14 +391,39 @@ public class BibliografiaService {
         }
     }
 
+    private void validarSoloLetras(String valor, String campo, List<String> errores) {
+        if (StringUtils.hasText(valor) && !TEXTO_SOLO_LETRAS.matcher(valor).matches()) {
+            errores.add(campo + " solo puede contener letras.");
+        }
+    }
+
+    private void validarSoloLetrasOpcional(String valor, String campo, List<String> errores) {
+        if (StringUtils.hasText(valor) && !TEXTO_SOLO_LETRAS.matcher(valor).matches()) {
+            errores.add(campo + " solo puede contener letras.");
+        }
+    }
+
+    private void validarIsbnFormato(String isbn, List<String> errores) {
+        if (StringUtils.hasText(isbn) && !ISBN_VALIDO.matcher(isbn).matches()) {
+            errores.add("El ISBN solo puede contener letras, numeros y guiones.");
+        }
+    }
+
+    private void validarUrlImagen(String urlImagen, List<String> errores) {
+        if (StringUtils.hasText(urlImagen) && !URL_IMAGEN_VALIDA.matcher(urlImagen).matches()) {
+            errores.add("El enlace de imagen debe iniciar con http:// o https://.");
+        }
+    }
+
     private void normalizarLibro(LibroForm form) {
         form.setTitulo(limpiar(form.getTitulo()));
         form.setIsbn(limpiar(form.getIsbn()));
         form.setUbicacion(limpiar(form.getUbicacion()));
         form.setUrlImagen(limpiar(form.getUrlImagen()));
-        form.setEstado(StringUtils.hasText(form.getEstado())
-                ? form.getEstado().trim().toUpperCase()
-                : Libro.ESTADO_DISPONIBLE);
+        String estado = StringUtils.hasText(form.getEstado())
+                ? form.getEstado().trim().toUpperCase().replace(' ', '_')
+                : Libro.ESTADO_DISPONIBLE;
+        form.setEstado(estado);
         form.setAutorIds(form.getAutorIds() == null ? List.of() : new ArrayList<>(new LinkedHashSet<>(form.getAutorIds())));
     }
 

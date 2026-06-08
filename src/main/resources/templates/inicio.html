@@ -38,12 +38,15 @@
 
             <p class="nav-section-title">Categorías</p>
             <nav class="nav flex-column">
-                <a href="#" class="nav-link">Novelas clásicas</a>
-                <a href="#" class="nav-link">Literatura latinoamericana</a>
-                <a href="#" class="nav-link">Teatro</a>
-                <a href="#" class="nav-link">Poesía</a>
-                <a href="#" class="nav-link">Literatura juvenil y moderna</a>
-                <a href="#" class="nav-link">Ciencia ficción y fantasía</a>
+                <a th:href="@{/inicio(q=${q})}" class="nav-link"
+                    th:classappend="${categoriaSeleccionada == null} ? ' active'">
+                    Todas
+                </a>
+                <a th:href="@{/inicio(categoria=${categoria.idCategoria}, q=${q})}" class="nav-link"
+                    th:each="categoria : ${categorias}"
+                    th:classappend="${categoriaSeleccionada == categoria.idCategoria} ? ' active'"
+                    th:text="${categoria.nombre}">Categoria</a>
+                <span class="nav-link text-muted" th:if="${#lists.isEmpty(categorias)}">Sin categorias</span>
             </nav>
         </aside>
         <!-- MAIN CONTENT -->
@@ -59,12 +62,13 @@
                                 <h5 class="m-0 fw-bold text-dark d-none d-md-block">Luz del Saber</h5>
                             </a>
 
-                            <form class="d-flex flex-grow-1" role="search">
+                            <form class="d-flex flex-grow-1" th:action="@{/inicio}" method="get" role="search">
                                 <div class="position-relative w-100">
                                     <i
                                         class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
                                     <input class="form-control bg-light border-0 rounded-pill ps-5" type="search"
-                                        placeholder="Buscar libros a tu elección..." aria-label="Search">
+                                        name="q" th:value="${q}" placeholder="Buscar libros a tu elección..."
+                                        aria-label="Buscar libros">
                                 </div>
                             </form>
                         </div>
@@ -72,25 +76,81 @@
                         <div th:replace="~{fragments/perfil-menu :: perfilMenu}"></div>
                     </div>
                 </nav>
-                <!-- SECCIÃ“N DE CATÃLOGO -->
+                <!-- SECCION DE CATALOGO -->
                 <section class="catalog-content">
                     <div class="catalog-header mb-4">
                         <h2 class="fw-bold m-0">Catálogo de Libros</h2>
                     </div>
 
+                    <div class="empty-catalog-card text-center" th:if="${#lists.isEmpty(libros)}">
+                        <i class="fa-solid fa-book-open empty-catalog-icon"></i>
+                        <h5 class="empty-catalog-title">No hay libros disponibles</h5>
+                        <p class="empty-catalog-text m-0">Cuando existan libros disponibles apareceran en este catalogo.</p>
+                    </div>
+
                     <div class="row g-4">
                         <div class="col-12 col-md-6 col-lg-4" th:each="libro : ${libros}">
                             <div class="book-card">
-                                <img src="/img/Logo_LuzdelSaber.png" th:src="@{/img/{id}.jpg(id=${libro.id})}"
+                                <img src="/img/Logo_LuzdelSaber.png"
+                                    th:src="${libro.urlImagen != null and !#strings.isEmpty(libro.urlImagen)} ? ${libro.urlImagen} : @{/img/Logo_LuzdelSaber.png}"
                                     onerror="this.onerror=null; this.src='/img/Logo_LuzdelSaber.png';" alt="Portada"
                                     class="book-cover">
                                 <span class="book-tag"
                                     th:text="${libro.categoria != null ? libro.categoria.nombre : 'Sin categoría'}">Categoria</span>
                                 <h4 class="book-title" th:text="${libro.titulo}">Título del Libro</h4>
-                                <p class="book-author"
-                                    th:text="${libro.autor != null ? libro.autor.nombre + ' ' + libro.autor.apellido : 'Autor desconocido'}">
-                                    Autor del Libro</p>
-                                <button class="btn btn-reserve">Reservar Libro</button>
+                                <p class="book-author">
+                                    <span th:if="${libro.autores == null or libro.autores.isEmpty()}">Autor desconocido</span>
+                                    <span th:each="autor, iter : ${libro.autores}">
+                                        <span th:text="${autor.nombre + ' ' + autor.apellido}">Autor</span><span
+                                            th:if="${!iter.last}">, </span>
+                                    </span>
+                                </p>
+                                <button class="btn btn-reserve" type="button" data-bs-toggle="modal"
+                                    th:data-bs-target="'#reservarLibro' + ${libro.idLibro}">
+                                    Reservar Libro
+                                </button>
+                            </div>
+
+                            <div class="modal fade reservation-modal" th:id="'reservarLibro' + ${libro.idLibro}"
+                                tabindex="-1" th:attr="aria-labelledby='modalReservaTitulo' + ${libro.idLibro}"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title fw-bold"
+                                                th:id="'modalReservaTitulo' + ${libro.idLibro}">Confirmar Reserva</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Cerrar"></button>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                            <img src="/img/Logo_LuzdelSaber.png"
+                                                th:src="${libro.urlImagen != null and !#strings.isEmpty(libro.urlImagen)} ? ${libro.urlImagen} : @{/img/Logo_LuzdelSaber.png}"
+                                                onerror="this.onerror=null; this.src='/img/Logo_LuzdelSaber.png';"
+                                                alt="Portada del libro" class="reservation-cover mb-3">
+                                            <h5 class="fw-bold mb-1" th:text="${libro.titulo}">Titulo del libro</h5>
+                                            <p class="text-muted small mb-4">
+                                                <span th:if="${libro.autores == null or libro.autores.isEmpty()}">Autor desconocido</span>
+                                                <span th:each="autor, iter : ${libro.autores}">
+                                                    <span th:text="${autor.nombre + ' ' + autor.apellido}">Autor</span><span
+                                                        th:if="${!iter.last}">, </span>
+                                                </span>
+                                            </p>
+
+                                            <div class="text-start">
+                                                <label class="form-label fw-bold"
+                                                    th:for="'fechaReserva' + ${libro.idLibro}">Elegir fecha de reserva</label>
+                                                <input type="datetime-local" class="form-control"
+                                                    th:id="'fechaReserva' + ${libro.idLibro}">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="button" class="btn btn-warning text-white fw-bold"
+                                                data-bs-dismiss="modal">Confirmar Reserva</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -8,5 +8,5 @@ ALTER TABLE autor
     ADD COLUMN estado_autor VARCHAR(20) NOT NULL DEFAULT 'ACTIVO';
 
 UPDATE libro
-SET estado_libro = 'NO DISPONIBLE'
+SET estado_libro = 'NO_DISPONIBLE'
 WHERE estado_libro = 'INACTIVO';
