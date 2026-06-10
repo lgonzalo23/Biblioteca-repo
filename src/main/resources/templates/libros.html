@@ -39,6 +39,9 @@
                 <a th:href="@{/dashboard}" class="nav-link">
                     <i class="fa-solid fa-chart-line"></i> Dashboard
                 </a>
+                <a th:href="@{/admin/reportes}" class="nav-link" th:if="${session.usuarioRol == 'ADMINISTRADOR'}">
+                    <i class="fa-solid fa-file-invoice"></i> Reportes
+                </a>
             </nav>
         </aside>
 
