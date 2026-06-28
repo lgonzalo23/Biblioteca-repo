@@ -27,6 +27,11 @@
             Portal De Conocimiento
         </p>
 
+        <div th:if="${loginError}" class="alert alert-danger" role="alert">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span th:text="${loginError}">Tu cuenta esta suspendida.</span>
+        </div>
+
         <div th:if="${param.error}" class="alert alert-danger" role="alert">
 
             <i class="fa-solid fa-circle-exclamation"></i>

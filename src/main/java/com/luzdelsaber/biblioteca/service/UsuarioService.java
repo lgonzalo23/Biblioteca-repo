@@ -3,7 +3,6 @@ package com.luzdelsaber.biblioteca.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,22 +12,33 @@ import com.luzdelsaber.biblioteca.dto.UsuarioForm;
 import com.luzdelsaber.biblioteca.dto.PerfilForm;
 import com.luzdelsaber.biblioteca.exception.UsuarioValidationException;
 import com.luzdelsaber.biblioteca.model.Rol;
+import com.luzdelsaber.biblioteca.model.Sancion;
 import com.luzdelsaber.biblioteca.model.Usuario;
+import com.luzdelsaber.biblioteca.repository.IncidenciaRepository;
 import com.luzdelsaber.biblioteca.repository.RolRepository;
+import com.luzdelsaber.biblioteca.repository.SancionRepository;
 import com.luzdelsaber.biblioteca.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
 
-    private static final Pattern PASSWORD_PATTERN = Pattern.compile(
-            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*@)[A-Za-z\\d@]{8,50}$");
+    private static final int RETRASOS_PARA_SANCION = 3;
+    private static final int DIAS_SANCION_RETRASO = 15;
 
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
+    private final SancionRepository sancionRepository;
+    private final IncidenciaRepository incidenciaRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, RolRepository rolRepository) {
+    public UsuarioService(
+            UsuarioRepository usuarioRepository,
+            RolRepository rolRepository,
+            SancionRepository sancionRepository,
+            IncidenciaRepository incidenciaRepository) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
+        this.sancionRepository = sancionRepository;
+        this.incidenciaRepository = incidenciaRepository;
     }
 
     public List<Usuario> listar(String termino) {
@@ -37,7 +47,7 @@ public class UsuarioService {
         }
         return usuarioRepository.findAll()
                 .stream()
-                .sorted((a, b) -> b.getIdUsuario().compareTo(a.getIdUsuario()))
+                .sorted((a, b) -> a.getIdUsuario().compareTo(b.getIdUsuario()))
                 .toList();
     }
 
@@ -55,6 +65,55 @@ public class UsuarioService {
         }
         return usuarioRepository.findByCorreoIgnoreCase(correo.trim())
                 .filter(usuario -> usuario.iniciarSesion(correo.trim(), contrasena));
+    }
+
+    public Optional<Usuario> buscarPorCredenciales(String correo, String contrasena) {
+        if (!StringUtils.hasText(correo) || !StringUtils.hasText(contrasena)) {
+            return Optional.empty();
+        }
+        return usuarioRepository.findByCorreoIgnoreCase(correo.trim())
+                .filter(usuario -> usuario.getContrasena() != null && usuario.getContrasena().equals(contrasena));
+    }
+
+    public Optional<String> obtenerMensajeBloqueoLogin(Usuario usuario) {
+        if (usuario == null) {
+            return Optional.empty();
+        }
+        Optional<Sancion> sancionActiva = sancionRepository.buscarActivasPorUsuario(usuario.getIdUsuario())
+                .stream()
+                .findFirst();
+        if (sancionActiva.isPresent()) {
+            Sancion sancion = sancionActiva.get();
+            if (Sancion.TIPO_SUSPENSION_TOTAL.equals(sancion.getTipo())) {
+                return Optional.of("Tu cuenta tiene una suspension total. No puedes iniciar sesion.");
+            }
+            if (Sancion.TIPO_SUSPENSION_TEMPORAL.equals(sancion.getTipo())) {
+                Integer dias = sancion.getDiasSuspension();
+                return Optional.of("Tu cuenta esta suspendida temporalmente por "
+                        + (dias == null ? 0 : dias)
+                        + " dia(s).");
+            }
+        }
+        if (!Usuario.ESTADO_ACTIVO.equals(usuario.getEstado())) {
+            return Optional.of("Tu cuenta esta inactiva. Comunicate con la biblioteca.");
+        }
+        return Optional.empty();
+    }
+
+    public Optional<String> obtenerAdvertenciaRetrasos(Integer idUsuario) {
+        if (idUsuario == null) {
+            return Optional.empty();
+        }
+        long retrasos = incidenciaRepository.contarRetrasosDelMesPorUsuario(idUsuario);
+        if (retrasos <= 0 || retrasos >= RETRASOS_PARA_SANCION) {
+            return Optional.empty();
+        }
+        long restantes = RETRASOS_PARA_SANCION - retrasos;
+        String veces = restantes == 1 ? "una vez mas" : restantes + " veces mas";
+        String entrega = retrasos == 1 ? "entrega tardia" : "entregas tardias";
+        return Optional.of("Este mes tienes " + retrasos + " " + entrega
+                + ". Si ocurre " + veces
+                + ", se suspendera tu cuenta por " + DIAS_SANCION_RETRASO + " dias.");
     }
 
     @Transactional
@@ -233,8 +292,26 @@ public class UsuarioService {
             errores.add("La contrasena es obligatoria.");
             return;
         }
-        if (tieneContrasena && !PASSWORD_PATTERN.matcher(form.getContrasena()).matches()) {
-            errores.add("La contrasena debe tener minimo 8 caracteres, mayuscula, minuscula, numero y solo @ como caracter especial.");
+        if (tieneContrasena) {
+            String contrasena = form.getContrasena();
+            if (contrasena.length() < 8) {
+                errores.add("La contrasena debe tener al menos 8 caracteres.");
+            }
+            if (contrasena.length() > 50) {
+                errores.add("La contrasena no puede superar 50 caracteres.");
+            }
+            if (!contrasena.matches(".*[A-Z].*")) {
+                errores.add("La contrasena debe incluir al menos una letra mayuscula.");
+            }
+            if (!contrasena.matches(".*[a-z].*")) {
+                errores.add("La contrasena debe incluir al menos una letra minuscula.");
+            }
+            if (!contrasena.matches(".*\\d.*")) {
+                errores.add("La contrasena debe incluir al menos un numero.");
+            }
+            if (!contrasena.matches(".*[^A-Za-z0-9].*")) {
+                errores.add("La contrasena debe incluir al menos un caracter especial.");
+            }
         }
         if (tieneContrasena && !form.getContrasena().equals(form.getConfirmContrasena())) {
             errores.add("La confirmacion de contrasena no coincide.");

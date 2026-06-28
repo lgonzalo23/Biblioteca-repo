@@ -30,6 +30,9 @@
                 <a th:href="@{/pedidos}" class="nav-link active">
                     <i class="fa-solid fa-box-open"></i> Pedidos
                 </a>
+                <a th:href="@{/incidencias}" class="nav-link">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Incidencias
+                </a>
                 <a th:href="@{/libros}" class="nav-link">
                     <i class="fa-solid fa-book"></i> Libros
                 </a>
@@ -41,15 +44,6 @@
                 </a>
             </nav>
 
-            <p class="nav-section-title">Categorías</p>
-            <nav class="nav flex-column">
-                <a href="#" class="nav-link">Novelas clásicas</a>
-                <a href="#" class="nav-link">Literatura latinoamericana</a>
-                <a href="#" class="nav-link">Teatro</a>
-                <a href="#" class="nav-link">Poesía</a>
-                <a href="#" class="nav-link">Literatura juvenil y moderna</a>
-                <a href="#" class="nav-link">Ciencia ficción y fantasía</a>
-            </nav>
         </aside>
 
         <main class="main-content flex-grow-1 min-vh-100">
@@ -63,12 +57,12 @@
                                 <h5 class="m-0 fw-bold text-dark d-none d-md-block">Luz del Saber</h5>
                             </a>
 
-                            <form class="d-flex flex-grow-1" role="search">
+                            <form class="d-flex flex-grow-1" th:action="@{/pedidos}" method="get" role="search">
                                 <div class="position-relative w-100">
                                     <i
                                         class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
                                     <input class="form-control bg-light border-0 rounded-pill ps-5" type="search"
-                                        placeholder="Buscar libros a tu eleccion..." aria-label="Search">
+                                        name="q" th:value="${q}" placeholder="Buscar reservas..." aria-label="Buscar reservas">
                                 </div>
                             </form>
                         </div>
@@ -82,10 +76,265 @@
                         <h2 class="fw-bold m-0">Pedidos</h2>
                     </div>
 
-                    <div class="empty-orders-card text-center">
+                    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}">
+                        Reserva convertida en prestamo correctamente.
+                    </div>
+                    <div th:if="${errorMessages}" class="alert alert-danger" role="alert">
+                        <div class="fw-bold mb-1">No se pudo completar la accion:</div>
+                        <div th:each="error : ${errorMessages}" th:text="${error}">Error</div>
+                    </div>
+
+                    <div class="empty-orders-card text-center" th:if="${#lists.isEmpty(reservas)}">
                         <i class="fa-solid fa-box-open empty-orders-icon"></i>
                         <h5 class="empty-orders-title">No se encontraron pedidos</h5>
                         <p class="empty-orders-text m-0">Actualmente no hay pedidos registrados en el sistema.</p>
+                    </div>
+
+                    <div class="table-responsive table-scroll-10 table-scroll-orders bg-white border rounded-3"
+                        th:if="${!#lists.isEmpty(reservas)}">
+                        <table class="table align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Libros</th>
+                                    <th>Usuario</th>
+                                    <th>Fecha reserva</th>
+                                    <th>Hora reserva</th>
+                                    <th>Tiempo solicitado</th>
+                                    <th>Tiempo restante</th>
+                                    <th>Hora devolución</th>
+                                    <th>Hora real devolución</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="reserva : ${reservas}">
+                                    <td>
+                                        <div class="reservation-table-books">
+                                            <div class="d-flex align-items-center gap-3"
+                                                th:each="detalle : ${reserva.detalles}">
+                                                <img src="/img/Logo_LuzdelSaber.png"
+                                                    th:src="${detalle.libro != null and detalle.libro.urlImagen != null and !#strings.isEmpty(detalle.libro.urlImagen)} ? ${detalle.libro.urlImagen} : @{/img/Logo_LuzdelSaber.png}"
+                                                    onerror="this.onerror=null; this.src='/img/Logo_LuzdelSaber.png';"
+                                                    alt="Portada" class="book-table-cover">
+                                                <div>
+                                                    <strong th:text="${detalle.libro != null ? detalle.libro.titulo : 'Libro no disponible'}">Titulo</strong>
+                                                    <span class="d-block text-muted small"
+                                                        th:text="${detalle.libro != null ? detalle.libro.isbn : ''}">ISBN</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong th:text="${reserva.usuario.nombreCompleto}">Usuario</strong>
+                                        <span class="d-block text-muted small" th:text="${reserva.usuario.correo}">correo</span>
+                                    </td>
+                                    <td th:text="${#temporals.format(reserva.fechaReserva, 'dd/MM/yyyy')}">16/06/2026</td>
+                                    <td th:text="${#temporals.format(reserva.horaReserva, 'HH:mm')}">10:00</td>
+                                    <td th:text="${reserva.horasPrestamo + ' h'}">1 h</td>
+                                    <td th:text="${reserva.tiempoRestantePrestamo}">-</td>
+                                    <td th:text="${reserva.horaDevolucionPrestamo != null ? #temporals.format(reserva.horaDevolucionPrestamo, 'HH:mm') : (reserva.horaRecojoLimite != null ? #temporals.format(reserva.horaRecojoLimite, 'HH:mm') : 'Pendiente')}">13:00</td>
+                                    <td th:text="${reserva.horaDevolucionRealPrestamo != null ? #temporals.format(reserva.horaDevolucionRealPrestamo, 'HH:mm') : '-'}">-</td>
+                                    <td>
+                                        <span class="badge"
+                                            th:classappend="${reserva.estadoGestion == 'LISTA PARA PRESTAR' or reserva.estadoGestion == 'PRESTAMO ACTIVO'} ? ' text-bg-success' : (${reserva.estadoGestion == 'RESERVA PROGRAMADA'} ? ' text-bg-warning' : (${reserva.estadoGestion == 'VENCIDA'} ? ' text-bg-dark' : (${reserva.estadoGestion == 'DEVUELTO TARDIO'} ? ' text-bg-danger' : ' text-bg-secondary')))"
+                                            th:text="${reserva.estadoGestion}">RESERVA PROGRAMADA</span>
+                                    </td>
+                                    <td>
+                                        <div class="table-actions" th:if="${reserva.estado == 'ACTIVA'}">
+                                        <form th:if="${reserva.disponibleParaPrestar}"
+                                            th:action="@{/pedidos/{id}/prestar(id=${reserva.idReserva})}" method="post"
+                                            onsubmit="return confirm('Deseas prestar los libros de esta reserva?');">
+                                            <button type="submit" class="btn btn-warning btn-sm text-white fw-bold">
+                                                Prestar libro
+                                            </button>
+                                        </form>
+                                            <button type="button" class="btn btn-outline-warning btn-sm fw-bold"
+                                                data-bs-toggle="modal"
+                                                th:data-bs-target="'#postergarReserva' + ${reserva.idReserva}">
+                                                Postergar
+                                            </button>
+                                            <form th:action="@{/pedidos/{id}/cancelar(id=${reserva.idReserva})}" method="post"
+                                                onsubmit="return confirm('Deseas cancelar esta reserva?');">
+                                                <button type="submit" class="btn btn-outline-secondary btn-sm fw-bold">
+                                                    Cancelar
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div class="table-actions" th:if="${reserva.estado == 'PRESTADA'}">
+                                            <form th:action="@{/pedidos/{id}/devolucion(id=${reserva.idReserva})}"
+                                                method="post"
+                                                onsubmit="return confirm('Deseas registrar la devolucion de este prestamo?');">
+                                                <button type="submit" class="btn btn-outline-success btn-sm fw-bold">
+                                                    Devolucion
+                                                </button>
+                                            </form>
+                                            <button type="button" class="btn btn-outline-warning btn-sm fw-bold"
+                                                data-bs-toggle="modal"
+                                                th:data-bs-target="'#ampliarPrestamo' + ${reserva.idReserva}">
+                                                Ampliar
+                                            </button>
+                                        </div>
+                                        <div class="table-actions" th:if="${reserva.estado == 'DEVUELTA' and reserva.tienePrestamosDevueltosSinIncidencia}">
+                                            <button type="button" class="btn btn-outline-danger btn-sm fw-bold"
+                                                data-bs-toggle="modal"
+                                                th:data-bs-target="'#registrarIncidencia' + ${reserva.idReserva}">
+                                                Incidencia
+                                            </button>
+                                        </div>
+                                        <div class="table-actions mt-1" th:if="${#lists.isEmpty(reserva.prestamos)}">
+                                            <form th:action="@{/pedidos/{id}/eliminar(id=${reserva.idReserva})}" method="post"
+                                                onsubmit="return confirm('Esta accion eliminara la reserva definitivamente. Continuar?');">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm fw-bold">
+                                                    Eliminar
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <span class="text-muted small"
+                                            th:if="${reserva.estado != 'ACTIVA' and reserva.estado != 'PRESTADA' and reserva.estado != 'DEVUELTA' and !#lists.isEmpty(reserva.prestamos)}">
+                                            Sin accion
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div th:each="reserva : ${reservas}" class="modal fade reservation-modal"
+                        th:id="'postergarReserva' + ${reserva.idReserva}" tabindex="-1"
+                        th:attr="aria-labelledby='postergarReservaTitulo' + ${reserva.idReserva}"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable reservation-postpone-dialog">
+                            <form class="modal-content"
+                                th:action="@{/pedidos/{id}/postergar-reserva(id=${reserva.idReserva})}" method="post">
+                                <div class="modal-header">
+                                    <h5 class="modal-title fw-bold"
+                                        th:id="'postergarReservaTitulo' + ${reserva.idReserva}">
+                                        Postergar reserva</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Cerrar"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="reservation-edit-grid">
+                                        <div>
+                                            <label class="form-label fw-bold">Fecha</label>
+                                            <input type="date" class="form-control reservation-date-input" name="fechaReserva"
+                                                th:value="${reserva.fechaReserva}" required>
+                                        </div>
+                                        <div>
+                                            <label class="form-label fw-bold">Hora</label>
+                                            <select class="form-select reservation-time-input" name="horaReserva" required>
+                                                <option value="">Horario</option>
+                                                <option th:each="horario : ${horariosReserva}"
+                                                    th:value="${#temporals.format(horario, 'HH:mm')}"
+                                                    th:selected="${reserva.horaReserva != null and reserva.horaReserva == horario}"
+                                                    th:text="${#temporals.format(horario, 'HH:mm')}">08:00</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="form-label fw-bold">Tiempo</label>
+                                            <select class="form-select reservation-duration-input" name="horasPrestamo" required>
+                                                <option value="1" th:selected="${reserva.horasPrestamo == 1}">1 hora</option>
+                                                <option value="2" th:selected="${reserva.horasPrestamo == 2}">2 horas</option>
+                                                <option value="3" th:selected="${reserva.horasPrestamo == 3}">3 horas</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cerrar</button>
+                                    <button type="submit" class="btn btn-warning text-white fw-bold">
+                                        Guardar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div th:each="reserva : ${reservas}" class="modal fade reservation-modal"
+                        th:id="'ampliarPrestamo' + ${reserva.idReserva}" tabindex="-1"
+                        th:attr="aria-labelledby='ampliarPrestamoTitulo' + ${reserva.idReserva}"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <form class="modal-content"
+                                th:action="@{/pedidos/{id}/ampliar(id=${reserva.idReserva})}" method="post">
+                                <div class="modal-header">
+                                    <h5 class="modal-title fw-bold"
+                                        th:id="'ampliarPrestamoTitulo' + ${reserva.idReserva}">
+                                        Ampliar prestamo</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Cerrar"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <label class="form-label fw-bold">Horas extra</label>
+                                    <select class="form-select" name="horasPrestamo" required>
+                                        <option value="1">Agregar 1 hora</option>
+                                        <option value="2">Agregar 2 horas</option>
+                                        <option value="3">Agregar 3 horas</option>
+                                    </select>
+                                    <p class="text-muted small mt-2 mb-0">
+                                        Se sumara al horario actual de devolucion.
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cerrar</button>
+                                    <button type="submit" class="btn btn-warning text-white fw-bold">
+                                        Guardar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div th:each="reserva : ${reservas}" class="modal fade reservation-modal"
+                        th:id="'registrarIncidencia' + ${reserva.idReserva}" tabindex="-1"
+                        th:attr="aria-labelledby='registrarIncidenciaTitulo' + ${reserva.idReserva}"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <form class="modal-content" th:action="@{/pedidos/incidencias}" method="post">
+                                <div class="modal-header">
+                                    <h5 class="modal-title fw-bold"
+                                        th:id="'registrarIncidenciaTitulo' + ${reserva.idReserva}">
+                                        Registrar incidencia</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Cerrar"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Libro</label>
+                                        <select class="form-select" name="idPrestamo" required>
+                                            <option th:each="prestamo : ${reserva.prestamos}"
+                                                th:if="${(prestamo.estado == 'DEVUELTO' or prestamo.estado == 'DEVUELTO_TARDIO') and !prestamo.incidenciaRegistrada}"
+                                                th:value="${prestamo.idPrestamo}"
+                                                th:text="${prestamo.libro != null ? prestamo.libro.titulo : 'Libro'}">
+                                                Libro
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Tipo</label>
+                                        <select class="form-select" name="tipoIncidencia" required>
+                                            <option value="DAÑO">Daño</option>
+                                            <option value="PERDIDA">Perdida</option>
+                                            <option value="RETRASO">Retraso</option>
+                                            <option value="OTRO">Otro</option>
+                                        </select>
+                                    </div>
+                                    <label class="form-label fw-bold">Descripcion</label>
+                                    <textarea class="form-control" name="descripcionIncidencia" rows="3"
+                                        maxlength="200" required></textarea>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cerrar</button>
+                                    <button type="submit" class="btn btn-warning text-white fw-bold">
+                                        Registrar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -186,6 +435,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/libreria.js}"></script>
 </body>
 
 </html>

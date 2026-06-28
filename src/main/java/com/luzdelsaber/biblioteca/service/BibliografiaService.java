@@ -75,6 +75,13 @@ public class BibliografiaService {
         return categoriaRepository.findAllByOrderByNombreAsc();
     }
 
+    public List<Categoria> listarCategorias(String termino) {
+        if (StringUtils.hasText(termino)) {
+            return categoriaRepository.buscarEnUnaTabla(termino.trim());
+        }
+        return listarCategorias();
+    }
+
     public List<Categoria> listarCategoriasActivas() {
         return listarCategorias()
                 .stream()
@@ -84,6 +91,13 @@ public class BibliografiaService {
 
     public List<Autor> listarAutores() {
         return autorRepository.findAllByOrderByApellidoAscNombreAsc();
+    }
+
+    public List<Autor> listarAutores(String termino) {
+        if (StringUtils.hasText(termino)) {
+            return autorRepository.buscarEnUnaTabla(termino.trim());
+        }
+        return listarAutores();
     }
 
     public List<Autor> listarAutoresActivos() {

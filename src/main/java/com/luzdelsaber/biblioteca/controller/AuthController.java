@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.luzdelsaber.biblioteca.model.Usuario;
 import com.luzdelsaber.biblioteca.service.UsuarioService;
@@ -33,9 +34,15 @@ public class AuthController {
     public String iniciarSesion(
             @RequestParam("username") String correo,
             @RequestParam("password") String contrasena,
-            HttpSession session) {
-        return usuarioService.autenticar(correo, contrasena)
-                .map(usuario -> abrirSesion(usuario, session))
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        return usuarioService.buscarPorCredenciales(correo, contrasena)
+                .map(usuario -> usuarioService.obtenerMensajeBloqueoLogin(usuario)
+                        .map(mensaje -> {
+                            redirectAttributes.addFlashAttribute("loginError", mensaje);
+                            return "redirect:/login";
+                        })
+                        .orElseGet(() -> abrirSesion(usuario, session)))
                 .orElse("redirect:/login?error");
     }
 

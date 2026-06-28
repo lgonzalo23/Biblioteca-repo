@@ -144,7 +144,9 @@
                 </div>
 
                 <div class="row g-4">
-                    <div class="col-12 col-md-6 col-lg-4" th:each="libro : ${librosDestacados}">
+                    <div class="col-12 col-md-6 col-lg-4 featured-book-item"
+                        th:each="libro, iter : ${librosDestacados}"
+                        th:classappend="${iter.index >= 3} ? ' d-none more-book-item' : ''">
                         <a th:href="${usuarioActual == null} ? @{/login} : @{/inicio}"
                             class="featured-book-link card book-card h-100 border-0 shadow-sm p-4">
                             <div class="book-cover-wrapper">
@@ -170,11 +172,11 @@
                     </div>
                 </div>
 
-                <div class="text-center mt-5">
-                    <a th:href="${usuarioActual == null} ? @{/login} : @{/inicio}"
-                        class="btn btn-outline-dark btn-hover-lift rounded-pill px-5 py-2 fw-bold text-decoration-none">
-                        Ver todos los libros
-                    </a>
+                <div class="text-center mt-5" th:if="${#lists.size(librosDestacados) > 3}">
+                    <button type="button" id="showMoreBooks"
+                        class="btn btn-outline-dark btn-hover-lift rounded-pill px-5 py-2 fw-bold">
+                        Ver mas libros
+                    </button>
                 </div>
             </div>
         </div>
@@ -270,6 +272,7 @@
         </footer>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/libreria.js}"></script>
 </body>
 
 </html>

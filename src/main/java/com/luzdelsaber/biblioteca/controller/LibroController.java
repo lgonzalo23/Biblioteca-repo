@@ -30,8 +30,20 @@ public class LibroController {
     }
 
     @GetMapping("/libros")
-    public String libros(@RequestParam(name = "q", required = false) String termino, Model model) {
-        cargarModelo(model, termino, new LibroForm(), new CategoriaForm(), new AutorForm(), List.of());
+    public String libros(
+            @RequestParam(name = "q", required = false) String termino,
+            @RequestParam(name = "categoriaQ", required = false) String categoriaTermino,
+            @RequestParam(name = "autorQ", required = false) String autorTermino,
+            Model model) {
+        cargarModelo(
+                model,
+                termino,
+                categoriaTermino,
+                autorTermino,
+                new LibroForm(),
+                new CategoriaForm(),
+                new AutorForm(),
+                List.of());
         return "libros";
     }
 
@@ -219,10 +231,22 @@ public class LibroController {
             CategoriaForm categoriaForm,
             AutorForm autorForm,
             List<String> errores) {
+        cargarModelo(model, termino, null, null, libroForm, categoriaForm, autorForm, errores);
+    }
+
+    private void cargarModelo(
+            Model model,
+            String termino,
+            String categoriaTermino,
+            String autorTermino,
+            LibroForm libroForm,
+            CategoriaForm categoriaForm,
+            AutorForm autorForm,
+            List<String> errores) {
         model.addAttribute("libros", bibliografiaService.listarLibros(termino));
-        model.addAttribute("categorias", bibliografiaService.listarCategorias());
+        model.addAttribute("categorias", bibliografiaService.listarCategorias(categoriaTermino));
         model.addAttribute("categoriasActivas", bibliografiaService.listarCategoriasActivas());
-        model.addAttribute("autores", bibliografiaService.listarAutores());
+        model.addAttribute("autores", bibliografiaService.listarAutores(autorTermino));
         model.addAttribute("autoresActivos", bibliografiaService.listarAutoresActivos());
         model.addAttribute("estadosLibro", List.of("DISPONIBLE", "PRESTADO", "RESERVADO", "NO_DISPONIBLE"));
         model.addAttribute("estadosRegistro", List.of("ACTIVO", "INACTIVO"));
@@ -230,6 +254,8 @@ public class LibroController {
         model.addAttribute("categoriaForm", categoriaForm);
         model.addAttribute("autorForm", autorForm);
         model.addAttribute("q", termino);
+        model.addAttribute("categoriaQ", categoriaTermino);
+        model.addAttribute("autorQ", autorTermino);
         if (!errores.isEmpty()) {
             model.addAttribute("errorMessages", errores);
         }

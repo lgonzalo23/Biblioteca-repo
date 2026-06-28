@@ -66,6 +66,30 @@ public interface LibroRepository extends JpaRepository<Libro, Integer> {
 
     @Modifying
     @Query(value = """
+            UPDATE libro
+            SET stock = stock - 1,
+                estado_libro = CASE
+                    WHEN stock - 1 <= 0 THEN 'RESERVADO'
+                    ELSE 'DISPONIBLE'
+                END
+            WHERE id_libro = :idLibro
+              AND estado_libro = 'DISPONIBLE'
+              AND stock > 0
+            """, nativeQuery = true)
+    int reservarEjemplar(@Param("idLibro") Integer idLibro);
+
+    @Modifying
+    @Query(value = """
+            UPDATE libro
+            SET stock = stock + 1,
+                estado_libro = 'DISPONIBLE'
+            WHERE id_libro = :idLibro
+              AND estado_libro IN ('DISPONIBLE', 'RESERVADO')
+            """, nativeQuery = true)
+    int liberarEjemplarReservado(@Param("idLibro") Integer idLibro);
+
+    @Modifying
+    @Query(value = """
             DELETE FROM libro_autor
             WHERE id_libro = :idLibro
             """, nativeQuery = true)

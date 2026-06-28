@@ -97,8 +97,7 @@
                                     Nueva contrasena
                                 </label>
                                 <input type="password" name="contrasena" class="form-control" minlength="8"
-                                    maxlength="50" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*@)[A-Za-z\d@]{8,50}"
-                                    title="Debe incluir mayuscula, minuscula, numero y solo @ como caracter especial.">
+                                    maxlength="50">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label d-flex align-items-center gap-2">
@@ -125,21 +124,4 @@
         </div>
     </div>
 
-    <script>
-        (function () {
-            function moveProfileModalToBody() {
-                var modal = document.getElementById('perfilModal');
-
-                if (modal && modal.parentElement !== document.body) {
-                    document.body.appendChild(modal);
-                }
-            }
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', moveProfileModalToBody);
-            } else {
-                moveProfileModalToBody();
-            }
-        })();
-    </script>
 </div>

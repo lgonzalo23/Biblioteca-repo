@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpSession;
 @Component
 public class AccesoInterceptor implements HandlerInterceptor {
 
-    private static final Set<String> RUTAS_PUBLICAS = Set.of("/", "/login", "/registro", "/register", "/auth/login");
+    private static final Set<String> RUTAS_PUBLICAS = Set.of("/", "/login", "/registro", "/register", "/auth/login", "/error");
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -54,6 +54,7 @@ public class AccesoInterceptor implements HandlerInterceptor {
         }
         if (esEncargado(rol)) {
             return ruta.startsWith("/pedidos")
+                    || ruta.startsWith("/incidencias")
                     || ruta.startsWith("/libros")
                     || ruta.startsWith("/dashboard")
                     || ruta.startsWith("/perfil")

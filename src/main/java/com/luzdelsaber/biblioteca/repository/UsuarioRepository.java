@@ -23,9 +23,17 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     @Modifying
     @Query(value = """
             INSERT INTO usuario
-                (id_rol, nombre_usuario, apellido_usuario, dni_usuario, email_usuario, contrase\u00f1a_usuario, estado_usuario)
-            VALUES
-                (:rolId, :nombre, :apellido, :dni, :correo, :contrasena, :estado)
+                (id_usuario, id_rol, nombre_usuario, apellido_usuario, dni_usuario, email_usuario, contrase\u00f1a_usuario, estado_usuario)
+            SELECT
+                COALESCE(MAX(id_usuario), 0) + 1,
+                :rolId,
+                :nombre,
+                :apellido,
+                :dni,
+                :correo,
+                :contrasena,
+                :estado
+            FROM usuario
             """, nativeQuery = true)
     void insertarUsuario(
             @Param("rolId") Integer rolId,
@@ -91,7 +99,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
                OR lower(u.email_usuario) LIKE lower(concat('%', :termino, '%'))
                OR lower(u.estado_usuario) LIKE lower(concat('%', :termino, '%'))
                OR lower(r.nombre_rol) LIKE lower(concat('%', :termino, '%'))
-            ORDER BY u.id_usuario DESC
+            ORDER BY u.id_usuario ASC
             """, nativeQuery = true)
     List<Usuario> buscar(@Param("termino") String termino);
 }

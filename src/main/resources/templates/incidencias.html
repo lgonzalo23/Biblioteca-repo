@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Luz del Saber | Incidencias</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-shell d-lg-flex align-items-start">
+        <aside class="sidebar d-none d-lg-block flex-shrink-0">
+            <a th:href="@{/}" class="brand-container text-decoration-none">
+                <img src="/img/Logo_LuzdelSaber.png" th:src="@{/img/Logo_LuzdelSaber.png}" alt="Luz del Saber"
+                    class="logo-img">
+                <div>
+                    <h5 class="m-0 fw-bold text-dark">Luz del Saber</h5>
+                    <p class="m-0 text-warning fw-bold uppercase" style="font-size: 10px;">Gestion de Biblioteca</p>
+                </div>
+            </a>
+
+            <p class="nav-section-title">Menu</p>
+            <nav class="nav flex-column">
+                <a th:href="@{/pedidos}" class="nav-link">
+                    <i class="fa-solid fa-box-open"></i> Pedidos
+                </a>
+                <a th:href="@{/incidencias}" class="nav-link active">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Incidencias
+                </a>
+                <a th:href="@{/libros}" class="nav-link">
+                    <i class="fa-solid fa-book"></i> Libros
+                </a>
+                <a th:href="@{/usuarios}" class="nav-link" th:if="${session.usuarioRol == 'ADMINISTRADOR'}">
+                    <i class="fa-solid fa-users"></i> Usuarios
+                </a>
+                <a th:href="@{/dashboard}" class="nav-link">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content flex-grow-1 min-vh-100">
+            <div class="content-wrap">
+                <nav class="navbar navbar-expand-lg navbar-custom sticky-top bg-white">
+                    <div class="container-fluid d-flex align-items-center gap-3 gap-lg-4">
+                        <div class="d-flex align-items-center gap-3 gap-lg-4 flex-grow-1">
+                            <a th:href="@{/}" class="text-decoration-none d-flex align-items-center gap-2">
+                                <img src="/img/Logo_LuzdelSaber.png" th:src="@{/img/Logo_LuzdelSaber.png}" alt="Logo"
+                                    class="logo-img d-none d-md-block">
+                                <h5 class="m-0 fw-bold text-dark d-none d-md-block">Luz del Saber</h5>
+                            </a>
+
+                            <form class="d-flex flex-grow-1" th:action="@{/incidencias}" method="get" role="search">
+                                <div class="position-relative w-100">
+                                    <i
+                                        class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                                    <input class="form-control bg-light border-0 rounded-pill ps-5" type="search"
+                                        name="q" th:value="${q}" placeholder="Buscar por usuario o tipo de incidencia..."
+                                        aria-label="Buscar incidencias">
+                                </div>
+                            </form>
+                        </div>
+
+                        <div th:replace="~{fragments/perfil-menu :: perfilMenu}"></div>
+                    </div>
+                </nav>
+
+                <section class="orders-content">
+                    <div class="catalog-header mb-4">
+                        <h2 class="fw-bold m-0">Incidencias</h2>
+                    </div>
+
+                    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}">
+                        Sancion aplicada correctamente.
+                    </div>
+                    <div th:if="${errorMessages}" class="alert alert-danger" role="alert">
+                        <div class="fw-bold mb-1">No se pudo completar la accion:</div>
+                        <div th:each="error : ${errorMessages}" th:text="${error}">Error</div>
+                    </div>
+
+                    <div class="empty-orders-card text-center" th:if="${#lists.isEmpty(incidencias)}">
+                        <i class="fa-solid fa-triangle-exclamation empty-orders-icon"></i>
+                        <h5 class="empty-orders-title">No hay incidencias registradas</h5>
+                        <p class="empty-orders-text m-0">Las incidencias apareceran cuando se registren desde pedidos.</p>
+                    </div>
+
+                    <div class="table-responsive bg-white border rounded-3" th:if="${!#lists.isEmpty(incidencias)}">
+                        <table class="table align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Libro</th>
+                                    <th>Incidencia</th>
+                                    <th>Prestamo</th>
+                                    <th>Sancion</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="incidencia : ${incidencias}">
+                                    <td>
+                                        <strong
+                                            th:text="${incidencia.prestamo.usuario.nombreCompleto}">Usuario</strong>
+                                        <span class="d-block text-muted small"
+                                            th:text="${incidencia.prestamo.usuario.correo}">correo</span>
+                                    </td>
+                                    <td>
+                                        <strong
+                                            th:text="${incidencia.prestamo.libro != null ? incidencia.prestamo.libro.titulo : 'Libro'}">Libro</strong>
+                                        <span class="d-block text-muted small"
+                                            th:text="${incidencia.prestamo.libro != null ? incidencia.prestamo.libro.isbn : ''}">ISBN</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge text-bg-danger mb-1" th:text="${incidencia.tipo}">RETRASO</span>
+                                        <p class="mb-0 small" th:text="${incidencia.descripcion}">Descripcion</p>
+                                        <span class="d-block text-muted small"
+                                            th:text="${#temporals.format(incidencia.fechaIncidencia, 'dd/MM/yyyy')}">16/06/2026</span>
+                                    </td>
+                                    <td>
+                                        <span class="d-block small"
+                                            th:text="${#temporals.format(incidencia.prestamo.fechaPrestamo, 'dd/MM/yyyy')}">16/06/2026</span>
+                                        <span class="d-block text-muted small"
+                                            th:text="${#temporals.format(incidencia.prestamo.horaInicio, 'HH:mm') + ' - ' + #temporals.format(incidencia.prestamo.horaFin, 'HH:mm')}">10:00 - 12:00</span>
+                                        <span class="badge text-bg-secondary"
+                                            th:text="${incidencia.prestamo.estado}">ACTIVO</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge"
+                                            th:classappend="${incidencia.sancion != null} ? ' text-bg-warning' : ' text-bg-secondary'"
+                                            th:text="${incidencia.sancion != null ? incidencia.sancion.estado : 'SIN SANCION'}">SIN SANCION</span>
+                                        <span class="d-block small mt-1" th:if="${incidencia.sancion != null}"
+                                            th:text="${incidencia.sancion.tipo == 'SUSPENSION_TEMPORAL' ? 'Suspension temporal - ' + incidencia.sancion.diasSuspension + ' dias' : 'Suspension total'}">Suspension - 3 dias</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-outline-warning btn-sm fw-bold"
+                                            th:if="${incidencia.sancion == null and incidencia.sancionable}"
+                                            data-bs-toggle="modal"
+                                            th:data-bs-target="'#sancionarIncidencia' + ${incidencia.idIncidencia}">
+                                            Aplicar sancion
+                                        </button>
+                                        <span class="text-muted small"
+                                            th:if="${incidencia.sancion == null and !incidencia.sancionable}">
+                                            Disponible al tercer retraso
+                                        </span>
+                                        <span class="text-muted small" th:if="${incidencia.sancion != null}">
+                                            Sancion registrada
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div th:each="incidencia : ${incidencias}" th:if="${incidencia.sancionable}" class="modal fade"
+                        th:id="'sancionarIncidencia' + ${incidencia.idIncidencia}" tabindex="-1"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <form class="modal-content"
+                                th:action="@{/incidencias/{id}/sancionar(id=${incidencia.idIncidencia})}"
+                                method="post">
+                                <div class="modal-header">
+                                    <h5 class="modal-title fw-bold">Aplicar sancion</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Cerrar"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3" th:if="${incidencia.tipo != 'RETRASO'}">
+                                        <label class="form-label fw-bold">Tipo</label>
+                                        <select class="form-select sanction-type-input" name="tipoSancion" required>
+                                            <option value="SUSPENSION_TEMPORAL">Suspension temporal</option>
+                                            <option value="SUSPENSION_TOTAL">Suspension total</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3" th:if="${incidencia.tipo == 'RETRASO'}">
+                                        <label class="form-label fw-bold">Tipo</label>
+                                        <input type="text" class="form-control" value="Suspension temporal por retrasos"
+                                            readonly>
+                                        <input type="hidden" name="tipoSancion" value="SUSPENSION_TEMPORAL">
+                                    </div>
+                                    <div class="sanction-days-group">
+                                        <label class="form-label fw-bold">Dias de suspension</label>
+                                        <input type="number" class="form-control sanction-days-input" name="diasSuspension" min="1"
+                                            max="365" th:value="${incidencia.tipo == 'RETRASO'} ? 15 : 3"
+                                            th:readonly="${incidencia.tipo == 'RETRASO'}" required>
+                                    </div>
+                                    <p class="text-muted small mt-2 mb-0">
+                                        Al aplicar la sancion, el usuario quedara INACTIVO.
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cerrar</button>
+                                    <button type="submit" class="btn btn-warning text-white fw-bold">
+                                        Aplicar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/libreria.js}"></script>
+</body>
+
+</html>

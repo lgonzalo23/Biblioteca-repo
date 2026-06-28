@@ -25,4 +25,13 @@ public class GlobalModelController {
         }
         return null;
     }
+
+    @ModelAttribute("advertenciaRetrasoPerfil")
+    public String advertenciaRetrasoPerfil(HttpSession session) {
+        Object usuarioId = session.getAttribute("usuarioId");
+        if (usuarioId instanceof Integer idUsuario) {
+            return usuarioService.obtenerAdvertenciaRetrasos(idUsuario).orElse(null);
+        }
+        return null;
+    }
 }

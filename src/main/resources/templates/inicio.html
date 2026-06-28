@@ -82,78 +82,95 @@
                         <h2 class="fw-bold m-0">Catálogo de Libros</h2>
                     </div>
 
+                    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}">
+                        Reserva registrada correctamente.
+                    </div>
+                    <div th:if="${errorMessages}" class="alert alert-danger" role="alert">
+                        <div class="fw-bold mb-1">No se pudo completar la reserva:</div>
+                        <div th:each="error : ${errorMessages}" th:text="${error}">Error</div>
+                    </div>
+
+                    <div th:if="${advertenciaRetrasoPerfil}" class="alert alert-warning d-flex gap-2 align-items-start"
+                        role="alert">
+                        <i class="fa-solid fa-triangle-exclamation mt-1"></i>
+                        <span th:text="${advertenciaRetrasoPerfil}">
+                            Tienes entregas tardias registradas.
+                        </span>
+                    </div>
+
                     <div class="empty-catalog-card text-center" th:if="${#lists.isEmpty(libros)}">
                         <i class="fa-solid fa-book-open empty-catalog-icon"></i>
                         <h5 class="empty-catalog-title">No hay libros disponibles</h5>
                         <p class="empty-catalog-text m-0">Cuando existan libros disponibles apareceran en este catalogo.</p>
                     </div>
 
-                    <div class="row g-4">
-                        <div class="col-12 col-md-6 col-lg-4" th:each="libro : ${libros}">
-                            <div class="book-card">
-                                <img src="/img/Logo_LuzdelSaber.png"
-                                    th:src="${libro.urlImagen != null and !#strings.isEmpty(libro.urlImagen)} ? ${libro.urlImagen} : @{/img/Logo_LuzdelSaber.png}"
-                                    onerror="this.onerror=null; this.src='/img/Logo_LuzdelSaber.png';" alt="Portada"
-                                    class="book-cover">
-                                <span class="book-tag"
-                                    th:text="${libro.categoria != null ? libro.categoria.nombre : 'Sin categoría'}">Categoria</span>
-                                <h4 class="book-title" th:text="${libro.titulo}">Título del Libro</h4>
-                                <p class="book-author">
-                                    <span th:if="${libro.autores == null or libro.autores.isEmpty()}">Autor desconocido</span>
-                                    <span th:each="autor, iter : ${libro.autores}">
-                                        <span th:text="${autor.nombre + ' ' + autor.apellido}">Autor</span><span
-                                            th:if="${!iter.last}">, </span>
-                                    </span>
-                                </p>
-                                <button class="btn btn-reserve" type="button" data-bs-toggle="modal"
-                                    th:data-bs-target="'#reservarLibro' + ${libro.idLibro}">
-                                    Reservar Libro
+                    <form class="reservation-selection-form" th:if="${!#lists.isEmpty(libros)}"
+                        th:action="@{/reservas/crear}" method="post">
+                        <div class="reservation-toolbar mb-4">
+                            <div>
+                                <span class="reservation-label">Libros seleccionados</span>
+                                <strong><span class="selected-books-count">0</span> libro(s)</strong>
+                                <span class="d-block text-muted small">Maximo 3 libros por reserva</span>
+                            </div>
+                            <div class="reservation-toolbar-fields">
+                                <div>
+                                    <label class="form-label fw-bold" for="fechaReservaSeleccion">Fecha</label>
+                                    <input type="date" class="form-control reservation-date-input"
+                                        id="fechaReservaSeleccion" name="fechaReserva" required>
+                                </div>
+                                <div>
+                                    <label class="form-label fw-bold" for="horaReservaSeleccion">Horario</label>
+                                    <select class="form-select reservation-time-input" id="horaReservaSeleccion"
+                                        name="horaReserva" required>
+                                        <option value="">Selecciona</option>
+                                        <option th:each="horario : ${horariosReserva}"
+                                            th:value="${#temporals.format(horario, 'HH:mm')}"
+                                            th:text="${#temporals.format(horario, 'HH:mm')}">08:00</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label fw-bold" for="horasPrestamoSeleccion">Tiempo</label>
+                                    <select class="form-select reservation-duration-input"
+                                        id="horasPrestamoSeleccion" name="horasPrestamo" required>
+                                        <option value="1">1 hora</option>
+                                        <option value="2">2 horas</option>
+                                        <option value="3">3 horas</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-warning text-white fw-bold reserve-selected-button"
+                                    disabled>
+                                    Confirmar Reserva
                                 </button>
                             </div>
+                        </div>
 
-                            <div class="modal fade reservation-modal" th:id="'reservarLibro' + ${libro.idLibro}"
-                                tabindex="-1" th:attr="aria-labelledby='modalReservaTitulo' + ${libro.idLibro}"
-                                aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title fw-bold"
-                                                th:id="'modalReservaTitulo' + ${libro.idLibro}">Confirmar Reserva</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Cerrar"></button>
-                                        </div>
-                                        <div class="modal-body text-center">
-                                            <img src="/img/Logo_LuzdelSaber.png"
-                                                th:src="${libro.urlImagen != null and !#strings.isEmpty(libro.urlImagen)} ? ${libro.urlImagen} : @{/img/Logo_LuzdelSaber.png}"
-                                                onerror="this.onerror=null; this.src='/img/Logo_LuzdelSaber.png';"
-                                                alt="Portada del libro" class="reservation-cover mb-3">
-                                            <h5 class="fw-bold mb-1" th:text="${libro.titulo}">Titulo del libro</h5>
-                                            <p class="text-muted small mb-4">
-                                                <span th:if="${libro.autores == null or libro.autores.isEmpty()}">Autor desconocido</span>
-                                                <span th:each="autor, iter : ${libro.autores}">
-                                                    <span th:text="${autor.nombre + ' ' + autor.apellido}">Autor</span><span
-                                                        th:if="${!iter.last}">, </span>
-                                                </span>
-                                            </p>
-
-                                            <div class="text-start">
-                                                <label class="form-label fw-bold"
-                                                    th:for="'fechaReserva' + ${libro.idLibro}">Elegir fecha de reserva</label>
-                                                <input type="datetime-local" class="form-control"
-                                                    th:id="'fechaReserva' + ${libro.idLibro}">
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="button" class="btn btn-warning text-white fw-bold"
-                                                data-bs-dismiss="modal">Confirmar Reserva</button>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="row g-4">
+                            <div class="col-12 col-md-6 col-lg-4" th:each="libro : ${libros}">
+                                <label class="book-card book-select-card">
+                                    <input class="book-select-input" type="checkbox" name="idLibro"
+                                        th:value="${libro.idLibro}">
+                                    <span class="book-select-indicator">
+                                        <i class="fa-solid fa-check"></i>
+                                    </span>
+                                    <img src="/img/Logo_LuzdelSaber.png"
+                                        th:src="${libro.urlImagen != null and !#strings.isEmpty(libro.urlImagen)} ? ${libro.urlImagen} : @{/img/Logo_LuzdelSaber.png}"
+                                        onerror="this.onerror=null; this.src='/img/Logo_LuzdelSaber.png';" alt="Portada"
+                                        class="book-cover">
+                                    <span class="book-tag"
+                                        th:text="${libro.categoria != null ? libro.categoria.nombre : 'Sin categoria'}">Categoria</span>
+                                    <h4 class="book-title" th:text="${libro.titulo}">Titulo del Libro</h4>
+                                    <p class="book-author">
+                                        <span th:if="${libro.autores == null or libro.autores.isEmpty()}">Autor desconocido</span>
+                                        <span th:each="autor, iter : ${libro.autores}">
+                                            <span th:text="${autor.nombre + ' ' + autor.apellido}">Autor</span><span
+                                                th:if="${!iter.last}">, </span>
+                                        </span>
+                                    </p>
+                                    <span class="btn btn-reserve mt-auto">Seleccionar libro</span>
+                                </label>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </section>
             </div>
         </main>
@@ -250,6 +267,7 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/libreria.js}"></script>
 </body>
 
 </html>

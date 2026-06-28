@@ -30,6 +30,9 @@
                 <a th:href="@{/pedidos}" class="nav-link">
                     <i class="fa-solid fa-box-open"></i> Pedidos
                 </a>
+                <a th:href="@{/incidencias}" class="nav-link">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Incidencias
+                </a>
                 <a th:href="@{/libros}" class="nav-link active">
                     <i class="fa-solid fa-book"></i> Libros
                 </a>
@@ -158,7 +161,8 @@
                             </div>
                             <div class="col-12">
                                 <label for="autorIds" class="form-label">Autores</label>
-                                <select id="autorIds" th:field="*{autorIds}" class="form-select" multiple size="4"
+                                <select id="autorIds" th:field="*{autorIds}" class="form-select select-scroll-10"
+                                    multiple size="10"
                                     required>
                                     <option th:each="autor : ${autoresActivos}" th:value="${autor.idAutor}"
                                         th:text="${autor.nombreCompleto + ' - ' + (autor.nacionalidad != null ? autor.nacionalidad : 'Sin nacionalidad')}">
@@ -174,7 +178,7 @@
                     </div>
 
                     <div class="bg-white rounded-3 shadow-sm border overflow-hidden mb-4">
-                        <div class="table-responsive">
+                        <div class="table-responsive table-scroll-10 table-scroll-books">
                             <table class="table align-middle mb-0">
                                 <thead class="table-light">
                                     <tr>
@@ -269,6 +273,17 @@
                                     <i class="fa-solid fa-tags text-warning"></i>
                                     <h5 class="fw-bold mb-0">Categorias</h5>
                                 </div>
+                                <form class="library-search-form mb-4" action="/libros" method="get"
+                                    role="search">
+                                    <input type="hidden" name="q" th:value="${q}">
+                                    <input type="hidden" name="autorQ" th:value="${autorQ}">
+                                    <div class="library-search-control">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                        <input type="search" name="categoriaQ" th:value="${categoriaQ}"
+                                            placeholder="Buscar categoria por nombre, descripcion o estado"
+                                            aria-label="Buscar categoria">
+                                    </div>
+                                </form>
                                 <form th:action="@{/libros/categorias}" th:object="${categoriaForm}" method="post"
                                     class="row g-3 mb-4">
                                     <div class="col-md-5">
@@ -290,7 +305,7 @@
                                     </div>
                                 </form>
 
-                                <div class="table-responsive">
+                                <div class="table-responsive table-scroll-10 table-scroll-compact">
                                     <table class="table align-middle">
                                         <thead class="table-light">
                                             <tr>
@@ -350,6 +365,17 @@
                                     <i class="fa-solid fa-feather-pointed text-warning"></i>
                                     <h5 class="fw-bold mb-0">Autores</h5>
                                 </div>
+                                <form class="library-search-form mb-4" action="/libros" method="get"
+                                    role="search">
+                                    <input type="hidden" name="q" th:value="${q}">
+                                    <input type="hidden" name="categoriaQ" th:value="${categoriaQ}">
+                                    <div class="library-search-control">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                        <input type="search" name="autorQ" th:value="${autorQ}"
+                                            placeholder="Buscar autor por nombre, apellido, nacionalidad o estado"
+                                            aria-label="Buscar autor">
+                                    </div>
+                                </form>
                                 <form th:action="@{/libros/autores}" th:object="${autorForm}" method="post"
                                     class="row g-3 mb-4">
                                     <div class="col-md-4">
@@ -379,7 +405,7 @@
                                     </div>
                                 </form>
 
-                                <div class="table-responsive">
+                                <div class="table-responsive table-scroll-10 table-scroll-compact">
                                     <table class="table align-middle">
                                         <thead class="table-light">
                                             <tr>
@@ -500,7 +526,8 @@
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label">Autores</label>
-                                                <select name="autorIds" class="form-select" multiple size="5" required>
+                                                <select name="autorIds" class="form-select select-scroll-10" multiple
+                                                    size="10" required>
                                                     <option th:each="autor : ${autores}" th:value="${autor.idAutor}"
                                                         th:selected="${#lists.contains(libro.autores.![idAutor], autor.idAutor)}"
                                                         th:text="${autor.nombreCompleto + ' - ' + (autor.nacionalidad != null ? autor.nacionalidad : 'Sin nacionalidad')}">
@@ -670,6 +697,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/libreria.js}"></script>
 </body>
 
 </html>

@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <form th:action="@{/register}" th:object="${usuarioForm}" method="post">
+        <form th:action="@{/register}" th:object="${usuarioForm}" method="post" novalidate>
             <div class="row">
                 <div class="col-md-6 mb-4 text-start">
                     <label for="nombre" class="form-label">Nombre</label>
@@ -91,8 +91,7 @@
                         </span>
                         <input type="password" id="contrasena" th:field="*{contrasena}"
                             class="form-control border-start-0" placeholder="Ingrese una contrasena" minlength="8"
-                            maxlength="50" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*@)[A-Za-z\d@]{8,50}"
-                            title="Debe incluir mayuscula, minuscula, numero y solo @ como caracter especial." required>
+                            maxlength="50" required>
                     </div>
                 </div>
 
@@ -105,6 +104,12 @@
                         <input type="password" id="confirmContrasena" th:field="*{confirmContrasena}"
                             class="form-control border-start-0" placeholder="Repita la contrasena" minlength="8"
                             maxlength="50" required>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="password-rules">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>La contrasena debe tener minimo 8 caracteres, una mayuscula, una minuscula, un numero y un caracter especial.</span>
                     </div>
                 </div>
             </div>
