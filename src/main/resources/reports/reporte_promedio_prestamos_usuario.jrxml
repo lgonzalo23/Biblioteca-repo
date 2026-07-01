@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+    name="reporte_promedio_prestamos_usuario" pageWidth="595" pageHeight="842" columnWidth="515"
+    leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40"
+    whenNoDataType="AllSectionsNoDetail" uuid="5f599383-7a98-47d3-a1fb-cc950cab3d27">
+
+    <parameter name="periodo" class="java.lang.String"/>
+    <parameter name="fechaEmision" class="java.lang.String"/>
+    <parameter name="logoPath" class="java.net.URL"/>
+    <parameter name="valorPrincipal" class="java.lang.String"/>
+    <parameter name="detalle1Valor" class="java.lang.String"/>
+    <parameter name="detalle2Valor" class="java.lang.String"/>
+
+    <title>
+        <band height="308" splitType="Stretch">
+            <image onErrorType="Blank"><reportElement x="0" y="0" width="110" height="90" uuid="561d8d4f-8c4c-46f1-a7a3-bae220035b90"/><imageExpression><![CDATA[$P{logoPath}]]></imageExpression></image>
+            <rectangle><reportElement x="140" y="0" width="375" height="90" backcolor="#FFFFFF" uuid="d4d9e59d-e63f-4d50-b844-114b875e2df7"/><graphicElement><pen lineWidth="1.0" lineColor="#000000"/></graphicElement></rectangle>
+            <staticText><reportElement x="140" y="5" width="375" height="20" uuid="02f95195-9e08-418a-9d76-0a666c5d85c9"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="13" isBold="true"/></textElement><text><![CDATA[Biblioteca Luz del Saber]]></text></staticText>
+            <staticText><reportElement x="140" y="25" width="375" height="18" uuid="8b89e349-6c68-4135-9330-40e2b0bc8851"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[https://LuzdelSaber.com]]></text></staticText>
+            <staticText><reportElement x="140" y="43" width="375" height="18" uuid="c94a563e-7d7f-4a32-9718-a87812191272"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Av. Recavarren 1153 - Surquillo]]></text></staticText>
+            <staticText><reportElement x="145" y="63" width="365" height="22" uuid="1bb5f94e-5394-48c2-9ee4-7553420cd903"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><text><![CDATA[Promedio de Préstamos por Usuario]]></text></staticText>
+
+            <staticText><reportElement x="0" y="110" width="100" height="20" uuid="35d823f9-d972-4671-9254-697a2a44cc99"/><textElement><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Periodo:]]></text></staticText>
+            <textField><reportElement x="100" y="110" width="220" height="20" uuid="9c7208f6-cfe8-4fe4-8362-6f61ea465358"/><textElement><font fontName="SansSerif" size="11"/></textElement><textFieldExpression><![CDATA[$P{periodo}]]></textFieldExpression></textField>
+            <staticText><reportElement x="0" y="132" width="100" height="20" uuid="6c1bb9bb-ad5b-41e6-b60b-070d8f270f6e"/><textElement><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Fecha de Emisión:]]></text></staticText>
+            <textField><reportElement x="100" y="132" width="220" height="20" uuid="03da0863-7e99-416b-8271-5db57b5419b5"/><textElement><font fontName="SansSerif" size="11"/></textElement><textFieldExpression><![CDATA[$P{fechaEmision}]]></textFieldExpression></textField>
+
+            <rectangle><reportElement x="0" y="175" width="515" height="22" backcolor="#EAEAEA" uuid="e542f9e5-05b5-4c2a-8f52-bbf5f17e2b96"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+            <staticText><reportElement x="8" y="175" width="360" height="22" uuid="3cf9e33d-dc9e-4617-b84b-82c659ee6e72"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Promedio entre todos los prestatarios activos]]></text></staticText>
+            <textField textAdjust="ScaleFont"><reportElement x="370" y="175" width="137" height="22" uuid="59ec5bbc-bcba-4c8d-9137-fbf3b076ce8f"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{valorPrincipal}]]></textFieldExpression></textField>
+
+            <staticText><reportElement x="0" y="225" width="200" height="20" uuid="cdf2579f-a37b-40dc-999a-0585800f8335"/><textElement><font fontName="SansSerif" size="12" isBold="true"/></textElement><text><![CDATA[Detalle del cálculo]]></text></staticText>
+            <rectangle><reportElement x="0" y="250" width="515" height="22" backcolor="#EAEAEA" uuid="8adac039-f394-4bca-897d-95e5aa67078b"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+            <staticText><reportElement x="8" y="250" width="330" height="22" uuid="fc94776a-b6f6-477b-a690-50a46bb7ead2"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><text><![CDATA[Préstamos realizados]]></text></staticText>
+            <textField><reportElement x="345" y="250" width="162" height="22" uuid="45e13e6e-20e5-46ba-b9b0-7dc8b6dfb6ff"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><textFieldExpression><![CDATA[$P{detalle1Valor}]]></textFieldExpression></textField>
+            <staticText><reportElement x="8" y="272" width="330" height="22" uuid="e01561fe-b5d6-4d17-a40c-d3af988429f3"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><text><![CDATA[Prestatarios activos]]></text></staticText>
+            <textField><reportElement x="345" y="272" width="162" height="22" uuid="81c1d19f-12f6-4d9a-ac19-2244d70a4d42"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><textFieldExpression><![CDATA[$P{detalle2Valor}]]></textFieldExpression></textField>
+        </band>
+    </title>
+
+    <pageFooter><band height="30"><textField><reportElement x="415" y="5" width="100" height="20" uuid="f9c386a1-9243-4163-a2d7-5955a99179d6"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isItalic="true"/></textElement><textFieldExpression><![CDATA["Pág. " + $V{PAGE_NUMBER}]]></textFieldExpression></textField></band></pageFooter>
+    <summary><band height="70"><staticText><reportElement x="0" y="5" width="130" height="20" uuid="31f8d5db-ec3c-45ba-bf2d-dbc57df62479"/><textElement><font fontName="SansSerif" size="11" isBold="true"/></textElement><text><![CDATA[Interpretación:]]></text></staticText><staticText><reportElement x="0" y="28" width="515" height="35" uuid="df5d71f5-1026-4df6-8900-4d89356f46b0"/><textElement><font fontName="SansSerif" size="10"/></textElement><text><![CDATA[Fórmula: préstamos realizados / total de prestatarios activos.]]></text></staticText></band></summary>
+</jasperReport>

@@ -29,26 +29,37 @@ public class UsuarioService {
     private final RolRepository rolRepository;
     private final SancionRepository sancionRepository;
     private final IncidenciaRepository incidenciaRepository;
+    private final AuditoriaEliminacionService auditoriaEliminacionService;
 
     public UsuarioService(
             UsuarioRepository usuarioRepository,
             RolRepository rolRepository,
             SancionRepository sancionRepository,
-            IncidenciaRepository incidenciaRepository) {
+            IncidenciaRepository incidenciaRepository,
+            AuditoriaEliminacionService auditoriaEliminacionService) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
         this.sancionRepository = sancionRepository;
         this.incidenciaRepository = incidenciaRepository;
+        this.auditoriaEliminacionService = auditoriaEliminacionService;
     }
 
+    @Transactional
     public List<Usuario> listar(String termino) {
+        List<Usuario> usuarios;
         if (StringUtils.hasText(termino)) {
-            return usuarioRepository.buscar(termino.trim());
+            usuarios = usuarioRepository.buscar(termino.trim());
+        } else {
+            usuarios = usuarioRepository.findAll()
+                    .stream()
+                    .sorted((a, b) -> a.getIdUsuario().compareTo(b.getIdUsuario()))
+                    .toList();
         }
-        return usuarioRepository.findAll()
-                .stream()
-                .sorted((a, b) -> a.getIdUsuario().compareTo(b.getIdUsuario()))
-                .toList();
+        usuarios.forEach(usuario -> {
+            reactivarSuspensionTemporalVencida(usuario);
+            usuario.setReactivable(Usuario.ESTADO_INACTIVO.equals(usuario.getEstado()));
+        });
+        return usuarios;
     }
 
     public List<Rol> listarRoles() {
@@ -75,10 +86,12 @@ public class UsuarioService {
                 .filter(usuario -> usuario.getContrasena() != null && usuario.getContrasena().equals(contrasena));
     }
 
+    @Transactional
     public Optional<String> obtenerMensajeBloqueoLogin(Usuario usuario) {
         if (usuario == null) {
             return Optional.empty();
         }
+        reactivarSuspensionTemporalVencida(usuario);
         Optional<Sancion> sancionActiva = sancionRepository.buscarActivasPorUsuario(usuario.getIdUsuario())
                 .stream()
                 .findFirst();
@@ -98,6 +111,17 @@ public class UsuarioService {
             return Optional.of("Tu cuenta esta inactiva. Comunicate con la biblioteca.");
         }
         return Optional.empty();
+    }
+
+    private void reactivarSuspensionTemporalVencida(Usuario usuario) {
+        int sancionesVencidas = sancionRepository
+                .desactivarTemporalesVencidasPorUsuario(usuario.getIdUsuario());
+        if (sancionesVencidas > 0
+                && Usuario.ESTADO_INACTIVO.equals(usuario.getEstado())
+                && sancionRepository.buscarActivasPorUsuario(usuario.getIdUsuario()).isEmpty()) {
+            usuarioRepository.actualizarEstado(usuario.getIdUsuario(), Usuario.ESTADO_ACTIVO);
+            usuario.setEstado(Usuario.ESTADO_ACTIVO);
+        }
     }
 
     public Optional<String> obtenerAdvertenciaRetrasos(Integer idUsuario) {
@@ -127,6 +151,7 @@ public class UsuarioService {
 
     @Transactional
     public Usuario crear(UsuarioForm form) {
+        form.setEstado(Usuario.ESTADO_ACTIVO);
         normalizar(form);
         validarFormulario(form, true, null);
 
@@ -149,6 +174,10 @@ public class UsuarioService {
         normalizar(form);
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new UsuarioValidationException(List.of("El usuario seleccionado no existe.")));
+        if (!usuario.getEstado().equals(form.getEstado())) {
+            throw new UsuarioValidationException(List.of(
+                    "El estado no se cambia desde Modificar. Utiliza Dar de baja o Reactivar."));
+        }
         form.setDni(usuario.getDni());
         validarFormulario(form, false, idUsuario);
         validarRol(form.getRolId());
@@ -211,11 +240,43 @@ public class UsuarioService {
     }
 
     @Transactional
-    public void eliminarLogico(Integer idUsuario) {
-        if (!usuarioRepository.existsById(idUsuario)) {
-            throw new UsuarioValidationException(List.of("El usuario seleccionado no existe."));
+    public void eliminarLogico(Integer idUsuario, Integer idResponsable, String nombreResponsable) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new UsuarioValidationException(List.of("El usuario seleccionado no existe.")));
+        if (Usuario.ESTADO_INACTIVO.equals(usuario.getEstado())) {
+            return;
         }
         usuarioRepository.actualizarEstado(idUsuario, Usuario.ESTADO_INACTIVO);
+        auditoriaEliminacionService.registrarBaja(
+                "USUARIO",
+                idUsuario,
+                usuario.getNombreCompleto() + " - DNI " + usuario.getDni(),
+                usuario.getEstado(),
+                Usuario.ESTADO_INACTIVO,
+                idResponsable,
+                nombreResponsable,
+                "Usuario marcado como inactivo desde el módulo de usuarios.");
+    }
+
+    @Transactional
+    public void reactivar(Integer idUsuario, Integer idResponsable, String nombreResponsable) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new UsuarioValidationException(List.of("El usuario seleccionado no existe.")));
+        if (!Usuario.ESTADO_INACTIVO.equals(usuario.getEstado())) {
+            throw new UsuarioValidationException(List.of(
+                    "Solo se pueden reactivar usuarios eliminados lógicamente."));
+        }
+        sancionRepository.actualizarActivasPorUsuario(idUsuario, Sancion.ESTADO_INACTIVA);
+        usuarioRepository.actualizarEstado(idUsuario, Usuario.ESTADO_ACTIVO);
+        auditoriaEliminacionService.registrarReactivacion(
+                "USUARIO",
+                idUsuario,
+                usuario.getNombreCompleto() + " - DNI " + usuario.getDni(),
+                Usuario.ESTADO_INACTIVO,
+                Usuario.ESTADO_ACTIVO,
+                idResponsable,
+                nombreResponsable,
+                "Usuario reactivado desde el módulo de usuarios.");
     }
 
     private void aplicarDatos(Usuario usuario, UsuarioForm form, boolean actualizarContrasena) {

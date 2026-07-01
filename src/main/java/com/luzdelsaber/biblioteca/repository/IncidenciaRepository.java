@@ -34,8 +34,8 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia, Integer>
             INNER JOIN prestamo p ON p.id_prestamo = i.id_prestamo
             WHERE p.id_usuario = :idUsuario
               AND i.tipo_incidencia = 'RETRASO'
-              AND i.fecha_incidencia >= DATE_FORMAT(CURRENT_DATE(), '%Y-%m-01')
-              AND i.fecha_incidencia < DATE_ADD(DATE_FORMAT(CURRENT_DATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
+              AND p.fecha_prestamo >= DATE_FORMAT(CURRENT_DATE(), '%Y-%m-01')
+              AND p.fecha_prestamo < DATE_ADD(DATE_FORMAT(CURRENT_DATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
             """, nativeQuery = true)
     long contarRetrasosDelMesPorUsuario(@Param("idUsuario") Integer idUsuario);
 

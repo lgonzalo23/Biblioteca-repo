@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "usuario")
@@ -43,6 +44,9 @@ public class Usuario {
 
     @Column(name = "estado_usuario", nullable = false, length = 20)
     private String estado;
+
+    @Transient
+    private boolean reactivable;
 
     public boolean iniciarSesion(String correo, String contrasena) {
         return ESTADO_ACTIVO.equals(estado)
@@ -124,6 +128,14 @@ public class Usuario {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public boolean isReactivable() {
+        return reactivable;
+    }
+
+    public void setReactivable(boolean reactivable) {
+        this.reactivable = reactivable;
     }
 
     public String getNombreCompleto() {

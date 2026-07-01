@@ -17,6 +17,7 @@ import com.luzdelsaber.biblioteca.exception.UsuarioValidationException;
 import com.luzdelsaber.biblioteca.service.UsuarioService;
 
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UsuarioController {
@@ -73,14 +74,41 @@ public class UsuarioController {
     }
 
     @PostMapping("/usuarios/{idUsuario}/baja")
-    public String bajaLogica(@PathVariable Integer idUsuario, RedirectAttributes redirectAttributes) {
+    public String bajaLogica(
+            @PathVariable Integer idUsuario,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         try {
-            usuarioService.eliminarLogico(idUsuario);
+            usuarioService.eliminarLogico(idUsuario, idResponsable(session), nombreResponsable(session));
             redirectAttributes.addFlashAttribute("successMessage", "Usuario marcado como INACTIVO.");
         } catch (UsuarioValidationException ex) {
             redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
         }
         return "redirect:/usuarios";
+    }
+
+    @PostMapping("/usuarios/{idUsuario}/reactivar")
+    public String reactivar(
+            @PathVariable Integer idUsuario,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        try {
+            usuarioService.reactivar(idUsuario, idResponsable(session), nombreResponsable(session));
+            redirectAttributes.addFlashAttribute("successMessage", "Usuario reactivado correctamente.");
+        } catch (UsuarioValidationException ex) {
+            redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
+        }
+        return "redirect:/usuarios";
+    }
+
+    private Integer idResponsable(HttpSession session) {
+        Object id = session.getAttribute("usuarioId");
+        return id instanceof Number numero ? numero.intValue() : null;
+    }
+
+    private String nombreResponsable(HttpSession session) {
+        Object nombre = session.getAttribute("usuarioNombre");
+        return nombre == null ? "No disponible" : String.valueOf(nombre);
     }
 
     @PostMapping("/usuarios/{idUsuario}/eliminar")

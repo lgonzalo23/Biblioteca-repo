@@ -42,6 +42,9 @@
                 <a th:href="@{/dashboard}" class="nav-link">
                     <i class="fa-solid fa-chart-line"></i> Dashboard
                 </a>
+                <a th:href="@{/admin/reportes}" class="nav-link" th:if="${session.usuarioRol == 'ADMINISTRADOR'}">
+                    <i class="fa-solid fa-file-invoice"></i> Reportes
+                </a>
             </nav>
 
         </aside>
@@ -76,8 +79,15 @@
                         <h2 class="fw-bold m-0">Pedidos</h2>
                     </div>
 
-                    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}">
-                        Reserva convertida en prestamo correctamente.
+                    <div th:if="${successMessage}"
+                        class="alert alert-success d-flex flex-wrap align-items-center justify-content-between gap-2"
+                        role="alert">
+                        <span th:text="${successMessage}">Reserva convertida en prestamo correctamente.</span>
+                        <a th:if="${idReservaPrestada}"
+                            th:href="@{/pedidos/{id}/comprobante(id=${idReservaPrestada})}"
+                            class="btn btn-success btn-sm fw-bold">
+                            <i class="fa-solid fa-file-pdf me-1"></i> Generar comprobante
+                        </a>
                     </div>
                     <div th:if="${errorMessages}" class="alert alert-danger" role="alert">
                         <div class="fw-bold mb-1">No se pudo completar la accion:</div>
@@ -175,12 +185,29 @@
                                                 Ampliar
                                             </button>
                                         </div>
+                                        <div class="table-actions mt-1" th:if="${!#lists.isEmpty(reserva.prestamos)}">
+                                            <a th:href="@{/pedidos/{id}/comprobante(id=${reserva.idReserva})}"
+                                                class="btn btn-outline-primary btn-sm fw-bold">
+                                                <i class="fa-solid fa-file-pdf me-1"></i> Comprobante
+                                            </a>
+                                        </div>
                                         <div class="table-actions" th:if="${reserva.estado == 'DEVUELTA' and reserva.tienePrestamosDevueltosSinIncidencia}">
                                             <button type="button" class="btn btn-outline-danger btn-sm fw-bold"
                                                 data-bs-toggle="modal"
                                                 th:data-bs-target="'#registrarIncidencia' + ${reserva.idReserva}">
                                                 Incidencia
                                             </button>
+                                        </div>
+                                        <div class="table-actions mt-1"
+                                            th:if="${reserva.estado == 'CANCELADA' and #lists.isEmpty(reserva.prestamos)}">
+                                            <form th:action="@{/pedidos/{id}/reactivar(id=${reserva.idReserva})}"
+                                                method="post"
+                                                onsubmit="return confirm('Deseas reactivar esta reserva? Se volvera a descontar el stock.');">
+                                                <button type="submit" class="btn btn-outline-success btn-sm fw-bold"
+                                                    title="Reactivar reserva">
+                                                    <i class="fa-solid fa-rotate-left"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                         <div class="table-actions mt-1" th:if="${#lists.isEmpty(reserva.prestamos)}">
                                             <form th:action="@{/pedidos/{id}/eliminar(id=${reserva.idReserva})}" method="post"
@@ -315,7 +342,8 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label fw-bold">Tipo</label>
-                                        <select class="form-select" name="tipoIncidencia" required>
+                                        <select class="form-select incidence-type-input" name="tipoIncidencia" required>
+                                            <option value="NINGUNA">Ninguna</option>
                                             <option value="DAÑO">Daño</option>
                                             <option value="PERDIDA">Perdida</option>
                                             <option value="RETRASO">Retraso</option>
@@ -323,7 +351,7 @@
                                         </select>
                                     </div>
                                     <label class="form-label fw-bold">Descripcion</label>
-                                    <textarea class="form-control" name="descripcionIncidencia" rows="3"
+                                    <textarea class="form-control incidence-description-input" name="descripcionIncidencia" rows="3"
                                         maxlength="200" required></textarea>
                                 </div>
                                 <div class="modal-footer">

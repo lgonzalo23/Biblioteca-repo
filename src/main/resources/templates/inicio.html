@@ -119,14 +119,26 @@
                                         id="fechaReservaSeleccion" name="fechaReserva" required>
                                 </div>
                                 <div>
-                                    <label class="form-label fw-bold" for="horaReservaSeleccion">Horario</label>
-                                    <select class="form-select reservation-time-input" id="horaReservaSeleccion"
-                                        name="horaReserva" required>
-                                        <option value="">Selecciona</option>
-                                        <option th:each="horario : ${horariosReserva}"
-                                            th:value="${#temporals.format(horario, 'HH:mm')}"
-                                            th:text="${#temporals.format(horario, 'HH:mm')}">08:00</option>
-                                    </select>
+                                    <label class="form-label fw-bold" for="horaReservaHoraSeleccion">Horario</label>
+                                    <div class="reservation-time-picker">
+                                        <select class="form-select reservation-hour-input"
+                                            id="horaReservaHoraSeleccion" aria-label="Hora de reserva" required>
+                                            <option value="">Hora</option>
+                                            <option th:each="hora : ${#numbers.sequence(8, 18)}"
+                                                th:value="${#numbers.formatInteger(hora, 2)}"
+                                                th:text="${#numbers.formatInteger(hora, 2)}">08</option>
+                                        </select>
+                                        <strong aria-hidden="true">:</strong>
+                                        <select class="form-select reservation-minute-input"
+                                            id="horaReservaMinutoSeleccion" aria-label="Minuto de reserva" required>
+                                            <option value="">Min</option>
+                                            <option th:each="minuto : ${#numbers.sequence(0, 59)}"
+                                                th:value="${#numbers.formatInteger(minuto, 2)}"
+                                                th:text="${#numbers.formatInteger(minuto, 2)}">00</option>
+                                        </select>
+                                        <input type="hidden" class="reservation-time-input"
+                                            id="horaReservaSeleccion" name="horaReserva">
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="form-label fw-bold" for="horasPrestamoSeleccion">Tiempo</label>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.0.final using JasperReports Library version 6.21.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte_tiempo_promedio" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40" uuid="e2467fd8-7b96-419b-a621-c4d6df1b3152">
+	<parameter name="periodo" class="java.lang.String"/>
+	<parameter name="fechaEmision" class="java.lang.String"/>
+	<parameter name="logoPath" class="java.net.URL"/>
+	<parameter name="totalPrestamos" class="java.lang.Integer"/>
+	<parameter name="sumatoriaMinutos" class="java.lang.Long"/>
+	<parameter name="tiempoPromedio" class="java.lang.Double"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<title>
+		<band height="350" splitType="Stretch">
+			<!-- Logo -->
+			<image onErrorType="Blank">
+				<reportElement x="0" y="0" width="110" height="90" uuid="a7f805a5-926c-487b-8910-bc2d5c2e171b"/>
+				<imageExpression><![CDATA[$P{logoPath}]]></imageExpression>
+			</image>
+			
+			<!-- Header Title Block with Border -->
+			<rectangle>
+				<reportElement x="140" y="0" width="375" height="90" backcolor="#FFFFFF" uuid="d69103e9-74e9-4e76-a0bf-87c2fb2cb160"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="140" y="5" width="375" height="20" uuid="8be4ee0b-bf38-4e89-9a2c-f6089d714b14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Biblioteca Luz del Saber]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="25" width="375" height="18" uuid="9be4ee0b-bf38-4e89-9a2c-f6089d714b15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[https://LuzdelSaber.com]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="43" width="375" height="18" uuid="a6e4ee0b-bf38-4e89-9a2c-f6089d714b16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Av.Recavarren 1153 – Surquillo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="65" width="375" height="20" uuid="bde4ee0b-bf38-4e89-9a2c-f6089d714b17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reporte de Tiempo Promedio de Préstamo]]></text>
+			</staticText>
+			
+			<!-- Metadata -->
+			<staticText>
+				<reportElement x="0" y="120" width="100" height="20" uuid="4c1c911d-6b58-45eb-92c1-7d13c7bb61cb"/>
+				<textElement>
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<text><![CDATA[Periodo:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="100" y="120" width="200" height="20" uuid="4c1c911d-6b58-45eb-92c1-7d13c7bb61cc"/>
+				<textElement>
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{periodo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="140" width="100" height="20" uuid="4c1c911d-6b58-45eb-92c1-7d13c7bb61cd"/>
+				<textElement>
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<text><![CDATA[Fecha de Emisión:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="100" y="140" width="200" height="20" uuid="4c1c911d-6b58-45eb-92c1-7d13c7bb61ce"/>
+				<textElement>
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fechaEmision}]]></textFieldExpression>
+			</textField>
+			
+			<!-- Table Header -->
+			<staticText>
+				<reportElement x="0" y="180" width="300" height="20" uuid="92600204-ccf5-4f40-84c1-2f3b9d038234"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Métrica]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="415" y="180" width="100" height="20" uuid="92600204-ccf5-4f40-84c1-2f3b9d038235"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dato/Valor]]></text>
+			</staticText>
+			
+			<!-- Row 1: Nº de Prestamos (Alternating Gray) -->
+			<rectangle>
+				<reportElement x="0" y="200" width="515" height="18" backcolor="#EAEAEA" uuid="a65f90bc-28fb-4c12-9c1a-281b379b3cb1"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="200" width="295" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef33b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nº de devoluciones]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="415" y="200" width="95" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef33c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{totalPrestamos}]]></textFieldExpression>
+			</textField>
+			
+			<!-- Row 2: Sumatoria de minutos de prestamo (White) -->
+			<staticText>
+				<reportElement x="5" y="218" width="295" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef33d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sumatoria de minutos reales de uso]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="415" y="218" width="95" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef33e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{sumatoriaMinutos}]]></textFieldExpression>
+			</textField>
+			
+			<!-- Row 3: Tiempo promedio de Prestamo (Alternating Gray) -->
+			<rectangle>
+				<reportElement x="0" y="236" width="515" height="18" backcolor="#EAEAEA" uuid="a65f90bc-28fb-4c12-9c1a-281b379b3cb2"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="236" width="295" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef33f"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tiempo promedio de Préstamo]]></text>
+			</staticText>
+			<textField pattern="###0.0">
+				<reportElement x="415" y="236" width="95" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef340"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{tiempoPromedio}]]></textFieldExpression>
+			</textField>
+			
+			<!-- Resumen del Periodo -->
+			<staticText>
+				<reportElement x="0" y="280" width="200" height="20" uuid="7cfcb9ab-7815-4fa2-bc48-d3c2fa6212b1"/>
+				<textElement>
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Resumen del Periodo:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="300" width="515" height="20" uuid="7cfcb9ab-7815-4fa2-bc48-d3c2fa6212b2"/>
+				<textElement>
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Número de devoluciones registradas: " + $P{totalPrestamos}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0">
+				<reportElement x="0" y="320" width="515" height="20" uuid="7cfcb9ab-7815-4fa2-bc48-d3c2fa6212b3"/>
+				<textElement>
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Tiempo promedio real del usuario con el libro: " + $P{tiempoPromedio} + " minutos"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>

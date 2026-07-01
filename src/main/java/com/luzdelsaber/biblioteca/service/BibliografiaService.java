@@ -39,14 +39,17 @@ public class BibliografiaService {
     private final LibroRepository libroRepository;
     private final CategoriaRepository categoriaRepository;
     private final AutorRepository autorRepository;
+    private final AuditoriaEliminacionService auditoriaEliminacionService;
 
     public BibliografiaService(
             LibroRepository libroRepository,
             CategoriaRepository categoriaRepository,
-            AutorRepository autorRepository) {
+            AutorRepository autorRepository,
+            AuditoriaEliminacionService auditoriaEliminacionService) {
         this.libroRepository = libroRepository;
         this.categoriaRepository = categoriaRepository;
         this.autorRepository = autorRepository;
+        this.auditoriaEliminacionService = auditoriaEliminacionService;
     }
 
     public List<Libro> listarLibros(String termino) {
@@ -113,6 +116,7 @@ public class BibliografiaService {
 
     @Transactional
     public Libro crearLibro(LibroForm form) {
+        form.setEstado(Libro.ESTADO_DISPONIBLE);
         normalizarLibro(form);
         validarLibro(form, null);
 
@@ -139,6 +143,12 @@ public class BibliografiaService {
         normalizarLibro(form);
         Libro libro = libroRepository.findById(idLibro)
                 .orElseThrow(() -> new BibliografiaValidationException(List.of("El libro seleccionado no existe.")));
+        boolean estabaEliminadoLogicamente = Libro.ESTADO_NO_DISPONIBLE.equals(libro.getEstado());
+        boolean quedariaEliminadoLogicamente = Libro.ESTADO_NO_DISPONIBLE.equals(form.getEstado());
+        if (estabaEliminadoLogicamente != quedariaEliminadoLogicamente) {
+            throw new BibliografiaValidationException(List.of(
+                    "Utiliza las acciones Dar de baja o Reactivar para cambiar la eliminación lógica del libro."));
+        }
         form.setIsbn(libro.getIsbn());
         validarLibro(form, idLibro);
 
@@ -167,11 +177,47 @@ public class BibliografiaService {
     }
 
     @Transactional
-    public void eliminarLibroLogico(Integer idLibro) {
-        if (!libroRepository.existsById(idLibro)) {
-            throw new BibliografiaValidationException(List.of("El libro seleccionado no existe."));
+    public void eliminarLibroLogico(Integer idLibro, Integer idResponsable, String nombreResponsable) {
+        Libro libro = libroRepository.findById(idLibro)
+                .orElseThrow(() -> new BibliografiaValidationException(List.of("El libro seleccionado no existe.")));
+        if (Libro.ESTADO_NO_DISPONIBLE.equals(libro.getEstado())) {
+            return;
         }
         libroRepository.actualizarEstado(idLibro, Libro.ESTADO_NO_DISPONIBLE);
+        auditoriaEliminacionService.registrarBaja(
+                "LIBRO",
+                idLibro,
+                libro.getTitulo() + " - ISBN " + libro.getIsbn(),
+                libro.getEstado(),
+                Libro.ESTADO_NO_DISPONIBLE,
+                idResponsable,
+                nombreResponsable,
+                "Libro marcado como no disponible desde el módulo de libros.");
+    }
+
+    @Transactional
+    public void reactivarLibro(Integer idLibro, Integer idResponsable, String nombreResponsable) {
+        Libro libro = libroRepository.findById(idLibro)
+                .orElseThrow(() -> new BibliografiaValidationException(List.of("El libro seleccionado no existe.")));
+        if (!Libro.ESTADO_NO_DISPONIBLE.equals(libro.getEstado())) {
+            throw new BibliografiaValidationException(List.of(
+                    "Solo se pueden reactivar libros eliminados lógicamente."));
+        }
+        if (libro.getStock() == null || libro.getStock() <= 0) {
+            throw new BibliografiaValidationException(List.of(
+                    "Actualiza el stock a una cantidad mayor que cero antes de reactivar el libro."));
+        }
+
+        libroRepository.actualizarEstado(idLibro, Libro.ESTADO_DISPONIBLE);
+        auditoriaEliminacionService.registrarReactivacion(
+                "LIBRO",
+                idLibro,
+                libro.getTitulo() + " - ISBN " + libro.getIsbn(),
+                Libro.ESTADO_NO_DISPONIBLE,
+                Libro.ESTADO_DISPONIBLE,
+                idResponsable,
+                nombreResponsable,
+                "Libro reactivado desde el módulo de libros.");
     }
 
     @Transactional
@@ -193,6 +239,10 @@ public class BibliografiaService {
 
         Categoria categoria = categoriaRepository.findById(idCategoria)
                 .orElseThrow(() -> new BibliografiaValidationException(List.of("La categoria seleccionada no existe.")));
+        if (!categoria.getEstado().equals(form.getEstado())) {
+            throw new BibliografiaValidationException(List.of(
+                    "El estado no se cambia desde Modificar. Utiliza Dar de baja o Reactivar."));
+        }
         categoria.actualizarCategoria(form.getNombre());
         categoria.setDescripcion(form.getDescripcion());
         categoria.setEstado(form.getEstado());
@@ -200,11 +250,45 @@ public class BibliografiaService {
     }
 
     @Transactional
-    public void eliminarCategoriaLogico(Integer idCategoria) {
+    public void eliminarCategoriaLogico(Integer idCategoria, Integer idResponsable, String nombreResponsable) {
         Categoria categoria = categoriaRepository.findById(idCategoria)
                 .orElseThrow(() -> new BibliografiaValidationException(List.of("La categoria seleccionada no existe.")));
+        if (Categoria.ESTADO_INACTIVO.equals(categoria.getEstado())) {
+            return;
+        }
+        String estadoAnterior = categoria.getEstado();
         categoria.setEstado(Categoria.ESTADO_INACTIVO);
         categoriaRepository.save(categoria);
+        auditoriaEliminacionService.registrarBaja(
+                "CATEGORIA",
+                idCategoria,
+                categoria.getNombre(),
+                estadoAnterior,
+                Categoria.ESTADO_INACTIVO,
+                idResponsable,
+                nombreResponsable,
+                "Categoría marcada como inactiva desde el módulo de libros.");
+    }
+
+    @Transactional
+    public void reactivarCategoria(Integer idCategoria, Integer idResponsable, String nombreResponsable) {
+        Categoria categoria = categoriaRepository.findById(idCategoria)
+                .orElseThrow(() -> new BibliografiaValidationException(List.of("La categoria seleccionada no existe.")));
+        if (!Categoria.ESTADO_INACTIVO.equals(categoria.getEstado())) {
+            throw new BibliografiaValidationException(List.of(
+                    "Solo se pueden reactivar categorías eliminadas lógicamente."));
+        }
+        categoria.setEstado(Categoria.ESTADO_ACTIVO);
+        categoriaRepository.save(categoria);
+        auditoriaEliminacionService.registrarReactivacion(
+                "CATEGORIA",
+                idCategoria,
+                categoria.getNombre(),
+                Categoria.ESTADO_INACTIVO,
+                Categoria.ESTADO_ACTIVO,
+                idResponsable,
+                nombreResponsable,
+                "Categoría reactivada desde el módulo de libros.");
     }
 
     @Transactional
@@ -235,6 +319,10 @@ public class BibliografiaService {
 
         Autor autor = autorRepository.findById(idAutor)
                 .orElseThrow(() -> new BibliografiaValidationException(List.of("El autor seleccionado no existe.")));
+        if (!autor.getEstado().equals(form.getEstado())) {
+            throw new BibliografiaValidationException(List.of(
+                    "El estado no se cambia desde Modificar. Utiliza Dar de baja o Reactivar."));
+        }
         autor.actualizarAutor(form.getNombre());
         autor.setApellido(form.getApellido());
         autor.setNacionalidad(form.getNacionalidad());
@@ -243,11 +331,45 @@ public class BibliografiaService {
     }
 
     @Transactional
-    public void eliminarAutorLogico(Integer idAutor) {
+    public void eliminarAutorLogico(Integer idAutor, Integer idResponsable, String nombreResponsable) {
         Autor autor = autorRepository.findById(idAutor)
                 .orElseThrow(() -> new BibliografiaValidationException(List.of("El autor seleccionado no existe.")));
+        if (Autor.ESTADO_INACTIVO.equals(autor.getEstado())) {
+            return;
+        }
+        String estadoAnterior = autor.getEstado();
         autor.setEstado(Autor.ESTADO_INACTIVO);
         autorRepository.save(autor);
+        auditoriaEliminacionService.registrarBaja(
+                "AUTOR",
+                idAutor,
+                autor.getNombreCompleto(),
+                estadoAnterior,
+                Autor.ESTADO_INACTIVO,
+                idResponsable,
+                nombreResponsable,
+                "Autor marcado como inactivo desde el módulo de libros.");
+    }
+
+    @Transactional
+    public void reactivarAutor(Integer idAutor, Integer idResponsable, String nombreResponsable) {
+        Autor autor = autorRepository.findById(idAutor)
+                .orElseThrow(() -> new BibliografiaValidationException(List.of("El autor seleccionado no existe.")));
+        if (!Autor.ESTADO_INACTIVO.equals(autor.getEstado())) {
+            throw new BibliografiaValidationException(List.of(
+                    "Solo se pueden reactivar autores eliminados lógicamente."));
+        }
+        autor.setEstado(Autor.ESTADO_ACTIVO);
+        autorRepository.save(autor);
+        auditoriaEliminacionService.registrarReactivacion(
+                "AUTOR",
+                idAutor,
+                autor.getNombreCompleto(),
+                Autor.ESTADO_INACTIVO,
+                Autor.ESTADO_ACTIVO,
+                idResponsable,
+                nombreResponsable,
+                "Autor reactivado desde el módulo de libros.");
     }
 
     @Transactional

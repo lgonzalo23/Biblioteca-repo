@@ -18,15 +18,23 @@ public class BibliografiaSchemaInitializer implements CommandLineRunner {
         crearTablaPrestamoSiNoExiste();
         crearTablaIncidenciaSiNoExiste();
         crearTablaSancionSiNoExiste();
+        crearTablaAuditoriaEliminacionSiNoExiste();
         adaptarTablaSancion();
         migrarTiposDeIncidenciaYSancion();
         agregarColumnaSiNoExiste("prestamo", "fecha_devolucion_real", "DATE NULL");
         agregarColumnaSiNoExiste("prestamo", "hora_devolucion_real", "TIME NULL");
+        agregarColumnaSiNoExiste("prestamo", "incidencia_revisada", "TINYINT(1) NOT NULL DEFAULT 0");
+        agregarColumnaSiNoExiste("incidencia", "fecha_registro", "DATE NULL");
+        sincronizarFechasDeIncidenciasConPrestamos();
         migrarDevolucionesRegistradas();
         marcarPrestamosDevueltosTardios();
         agregarColumnaSiNoExiste("libro", "url_imagen", "VARCHAR(255) NULL");
         agregarColumnaSiNoExiste("categoria", "estado_categoria", "VARCHAR(20) NOT NULL DEFAULT 'ACTIVO'");
         agregarColumnaSiNoExiste("autor", "estado_autor", "VARCHAR(20) NOT NULL DEFAULT 'ACTIVO'");
+        agregarColumnaSiNoExiste(
+                "auditoria_eliminacion_logica",
+                "tipo_movimiento",
+                "VARCHAR(20) NOT NULL DEFAULT 'BAJA'");
         agregarColumnaSiNoExiste("reserva_detalle", "hora_reserva", "TIME NOT NULL DEFAULT '08:00:00'");
         agregarColumnaSiNoExiste("reserva_detalle", "horas_prestamo", "INT NOT NULL DEFAULT 1");
         agregarColumnaSiNoExiste("reserva_detalle", "hora_recojo_limite", "TIME NOT NULL DEFAULT '09:00:00'");
@@ -69,6 +77,7 @@ public class BibliografiaSchemaInitializer implements CommandLineRunner {
                     hora_fin TIME NOT NULL,
                     fecha_devolucion_real DATE NULL,
                     hora_devolucion_real TIME NULL,
+                    incidencia_revisada TINYINT(1) NOT NULL DEFAULT 0,
                     estado_prestamo VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
                     CONSTRAINT fk_prestamo_reserva
                         FOREIGN KEY (id_reserva) REFERENCES reserva(id_reserva),
@@ -81,6 +90,24 @@ public class BibliografiaSchemaInitializer implements CommandLineRunner {
         agregarColumnaSiNoExiste("prestamo", "id_reserva", "INT NULL");
     }
 
+    private void crearTablaAuditoriaEliminacionSiNoExiste() {
+        jdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS auditoria_eliminacion_logica (
+                    id_auditoria BIGINT AUTO_INCREMENT PRIMARY KEY,
+                    entidad VARCHAR(30) NOT NULL,
+                    id_registro INT NOT NULL,
+                    descripcion_registro VARCHAR(255) NOT NULL,
+                    estado_anterior VARCHAR(30) NULL,
+                    estado_nuevo VARCHAR(30) NOT NULL,
+                    tipo_movimiento VARCHAR(20) NOT NULL DEFAULT 'BAJA',
+                    fecha_eliminacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    id_usuario_responsable INT NULL,
+                    nombre_responsable VARCHAR(120) NOT NULL,
+                    motivo VARCHAR(255) NOT NULL
+                )
+                """);
+    }
+
     private void crearTablaIncidenciaSiNoExiste() {
         jdbcTemplate.execute("""
                 CREATE TABLE IF NOT EXISTS incidencia (
@@ -89,6 +116,7 @@ public class BibliografiaSchemaInitializer implements CommandLineRunner {
                     tipo_incidencia VARCHAR(50) NOT NULL,
                     descripcion_incidencia VARCHAR(200) NOT NULL,
                     fecha_incidencia DATE NOT NULL,
+                    fecha_registro DATE NOT NULL,
                     CONSTRAINT fk_incidencia_prestamo
                         FOREIGN KEY (id_prestamo) REFERENCES prestamo(id_prestamo)
                 )
@@ -154,6 +182,33 @@ public class BibliografiaSchemaInitializer implements CommandLineRunner {
                 where estado_prestamo = 'DEVUELTO'
                   and hora_devolucion_real is null
                 """);
+    }
+
+    private void sincronizarFechasDeIncidenciasConPrestamos() {
+        if (!existeTabla("incidencia") || !existeTabla("prestamo")) {
+            return;
+        }
+        jdbcTemplate.update("""
+                update incidencia
+                set fecha_registro = fecha_incidencia
+                where fecha_registro is null
+                """);
+        jdbcTemplate.update("""
+                update incidencia i
+                inner join prestamo p on p.id_prestamo = i.id_prestamo
+                set i.fecha_incidencia = p.fecha_prestamo
+                where i.fecha_incidencia <> p.fecha_prestamo
+                """);
+        String admiteNulos = jdbcTemplate.queryForObject("""
+                select is_nullable
+                from information_schema.columns
+                where table_schema = database()
+                  and table_name = 'incidencia'
+                  and column_name = 'fecha_registro'
+                """, String.class);
+        if ("YES".equalsIgnoreCase(admiteNulos)) {
+            jdbcTemplate.execute("alter table incidencia modify column fecha_registro DATE NOT NULL");
+        }
     }
 
     private void marcarPrestamosDevueltosTardios() {

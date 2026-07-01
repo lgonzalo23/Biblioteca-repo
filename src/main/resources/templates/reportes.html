@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luz del Saber | Reportes</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-shell d-lg-flex align-items-start">
+        <aside class="sidebar d-none d-lg-block flex-shrink-0">
+            <a th:href="@{/}" class="brand-container text-decoration-none">
+                <img th:src="@{/img/Logo_LuzdelSaber.png}" alt="Luz del Saber" class="logo-img">
+                <div>
+                    <h5 class="m-0 fw-bold text-dark">Luz del Saber</h5>
+                    <p class="m-0 text-warning fw-bold uppercase" style="font-size: 10px;">Gestión de Biblioteca</p>
+                </div>
+            </a>
+
+            <p class="nav-section-title">Menú</p>
+            <nav class="nav flex-column">
+                <a th:href="@{/pedidos}" class="nav-link">
+                    <i class="fa-solid fa-box-open"></i> Pedidos
+                </a>
+                <a th:href="@{/incidencias}" class="nav-link">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Incidencias
+                </a>
+                <a th:href="@{/libros}" class="nav-link">
+                    <i class="fa-solid fa-book"></i> Libros
+                </a>
+                <a th:href="@{/usuarios}" class="nav-link" th:if="${session.usuarioRol == 'ADMINISTRADOR'}">
+                    <i class="fa-solid fa-users"></i> Usuarios
+                </a>
+                <a th:href="@{/dashboard}" class="nav-link">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a th:href="@{/admin/reportes}" class="nav-link active"
+                    th:if="${session.usuarioRol == 'ADMINISTRADOR'}">
+                    <i class="fa-solid fa-file-invoice"></i> Reportes
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content flex-grow-1 min-vh-100">
+            <div class="content-wrap">
+                <nav class="navbar navbar-expand-lg navbar-custom sticky-top bg-white">
+                    <div class="container-fluid d-flex align-items-center gap-3 gap-lg-4">
+                        <div class="d-flex align-items-center gap-3 gap-lg-4 flex-grow-1">
+                            <a th:href="@{/}" class="text-decoration-none d-flex align-items-center gap-2">
+                                <img th:src="@{/img/Logo_LuzdelSaber.png}" alt="Logo"
+                                    class="logo-img d-none d-md-block">
+                                <h5 class="m-0 fw-bold text-dark d-none d-md-block">Luz del Saber</h5>
+                            </a>
+                        </div>
+                        <div th:replace="~{fragments/perfil-menu :: perfilMenu}"></div>
+                    </div>
+                </nav>
+
+                <section class="orders-content">
+                    <div class="catalog-header mb-4">
+                        <h2 class="fw-bold m-0">Reportes Administrativos</h2>
+                        <p class="text-muted m-0">Selecciona el tipo de reporte y el periodo que deseas analizar.</p>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-12 col-xl-7">
+                            <div class="bg-white rounded-3 shadow-sm border p-4 h-100">
+                                <div class="d-flex align-items-start gap-3 mb-4">
+                                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning-subtle text-warning"
+                                        style="width: 48px; height: 48px;">
+                                        <i class="fa-solid fa-chart-pie fs-4"></i>
+                                    </span>
+                                    <div>
+                                        <h4 class="fw-bold mb-1">Reporte de Indicadores</h4>
+                                        <p class="text-secondary small mb-0">
+                                            Los siete indicadores se generan desde un único formulario mensual.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <form th:action="@{/admin/reporte/indicador/descargar}" method="get" class="row g-3">
+                                    <div class="col-12">
+                                        <label for="tipoIndicador" class="form-label fw-bold">Indicador</label>
+                                        <select id="tipoIndicador" name="tipo" class="form-select" required>
+                                            <option value="TIEMPO_PROMEDIO">Tiempo Promedio de Préstamo</option>
+                                            <option value="DEVOLUCIONES_TARDIAS">Porcentaje de Devoluciones Tardías</option>
+                                            <option value="TASA_INCIDENCIAS">Porcentaje de Incidencias Mensuales</option>
+                                            <option value="LIBRO_MAS_SOLICITADO">Libro Más Solicitado</option>
+                                            <option value="HORARIO_DEMANDA">Horario de Mayor Demanda de Préstamos</option>
+                                            <option value="PROMEDIO_USUARIO">Promedio de Préstamos por Usuario</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="mesIndicador" class="form-label fw-bold">Mes del Reporte</label>
+                                        <select id="mesIndicador" name="mes" class="form-select" required>
+                                            <option th:each="mesOpcion : ${meses}" th:value="${mesOpcion}"
+                                                th:text="${mesOpcion}" th:selected="${mesActual == mesOpcion}">Junio</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="anioIndicador" class="form-label fw-bold">Año del Reporte</label>
+                                        <select id="anioIndicador" name="anio" class="form-select" required>
+                                            <option th:each="anioOpcion : ${aniosDisponibles}" th:value="${anioOpcion}"
+                                                th:text="${anioOpcion}" th:selected="${anioActual == anioOpcion}">2026</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-end mt-4">
+                                        <button type="submit" class="btn btn-warning fw-bold px-4 py-2 text-white">
+                                            <i class="fa-solid fa-download me-2"></i> Generar reporte
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-xl-5">
+                            <div class="bg-white rounded-3 shadow-sm border p-4 h-100">
+                                <div class="d-flex align-items-start gap-3 mb-4">
+                                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success-subtle text-success"
+                                        style="width: 48px; height: 48px;">
+                                        <i class="fa-solid fa-chart-column fs-4"></i>
+                                    </span>
+                                    <div>
+                                        <h4 class="fw-bold mb-1">Estadísticas de Préstamos</h4>
+                                        <p class="text-secondary small mb-0">
+                                            Máximo, mínimo y promedio por día con actividad.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <form th:action="@{/admin/reporte/estadisticas-prestamos/descargar}" method="get"
+                                    class="row g-3">
+                                    <div class="col-md-6 col-xl-12">
+                                        <label for="mesEstadisticas" class="form-label fw-bold">Mes del Reporte</label>
+                                        <select id="mesEstadisticas" name="mes" class="form-select" required>
+                                            <option th:each="mesOpcion : ${meses}" th:value="${mesOpcion}"
+                                                th:text="${mesOpcion}" th:selected="${mesActual == mesOpcion}">Junio</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 col-xl-12">
+                                        <label for="anioEstadisticas" class="form-label fw-bold">Año del Reporte</label>
+                                        <select id="anioEstadisticas" name="anio" class="form-select" required>
+                                            <option th:each="anioOpcion : ${aniosDisponibles}" th:value="${anioOpcion}"
+                                                th:text="${anioOpcion}" th:selected="${anioActual == anioOpcion}">2026</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-end mt-4">
+                                        <button type="submit" class="btn btn-outline-success fw-bold px-4 py-2">
+                                            <i class="fa-solid fa-download me-2"></i> Generar reporte
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="bg-white rounded-3 shadow-sm border p-4">
+                                <div class="d-flex align-items-start gap-3 mb-4">
+                                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary"
+                                        style="width: 48px; height: 48px;">
+                                        <i class="fa-solid fa-calendar-days fs-4"></i>
+                                    </span>
+                                    <div>
+                                        <h4 class="fw-bold mb-1">Préstamos por rango de fechas</h4>
+                                        <p class="text-secondary small mb-0">
+                                            Detalle de préstamos, usuarios, libros y estados dentro del periodo seleccionado.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <form th:action="@{/admin/reporte/prestamos-rango/descargar}" method="get"
+                                    class="row g-3 align-items-end">
+                                    <div class="col-md-5">
+                                        <label for="fechaInicioRango" class="form-label fw-bold">Fecha inicial</label>
+                                        <input id="fechaInicioRango" name="fechaInicio" type="date" class="form-control"
+                                            th:value="${fechaInicioRango}" th:attr="max=${fechaActual}" required>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label for="fechaFinRango" class="form-label fw-bold">Fecha final</label>
+                                        <input id="fechaFinRango" name="fechaFin" type="date" class="form-control"
+                                            th:value="${fechaFinRango}" th:attr="max=${fechaActual}" required>
+                                    </div>
+                                    <div class="col-md-2 d-grid">
+                                        <button type="submit" class="btn btn-primary fw-bold py-2">
+                                            <i class="fa-solid fa-download me-2"></i> Generar reporte
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-xl-6">
+                            <div class="bg-white rounded-3 shadow-sm border p-4 h-100">
+                                <div class="d-flex align-items-start gap-3 mb-4">
+                                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger-subtle text-danger"
+                                        style="width: 48px; height: 48px;">
+                                        <i class="fa-solid fa-trash-can-arrow-up fs-4"></i>
+                                    </span>
+                                    <div>
+                                        <h4 class="fw-bold mb-1">Eliminaciones lógicas</h4>
+                                        <p class="text-secondary small mb-0">
+                                            Historial de usuarios, libros, categorías y autores dados de baja.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <form th:action="@{/admin/reporte/eliminaciones-logicas/descargar}" method="get"
+                                    class="row g-3">
+                                    <div class="col-12">
+                                        <label for="mesEliminaciones" class="form-label fw-bold">Mes del Reporte</label>
+                                        <select id="mesEliminaciones" name="mes" class="form-select" required>
+                                            <option th:each="mesOpcion : ${meses}" th:value="${mesOpcion}"
+                                                th:text="${mesOpcion}" th:selected="${mesActual == mesOpcion}">Junio</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="anioEliminaciones" class="form-label fw-bold">Año del Reporte</label>
+                                        <select id="anioEliminaciones" name="anio" class="form-select" required>
+                                            <option th:each="anioOpcion : ${aniosDisponibles}" th:value="${anioOpcion}"
+                                                th:text="${anioOpcion}" th:selected="${anioActual == anioOpcion}">2026</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-end mt-4">
+                                        <button type="submit" class="btn btn-outline-danger fw-bold py-2">
+                                            <i class="fa-solid fa-download me-2"></i> Generar reporte
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-xl-6">
+                            <div class="bg-white rounded-3 shadow-sm border p-4 h-100">
+                                <div class="d-flex align-items-start gap-3 mb-4">
+                                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-info-subtle text-info-emphasis"
+                                        style="width: 48px; height: 48px;">
+                                        <i class="fa-solid fa-boxes-stacked fs-4"></i>
+                                    </span>
+                                    <div>
+                                        <h4 class="fw-bold mb-1">Reporte de stock</h4>
+                                        <p class="text-secondary small mb-0">
+                                            Inventario actual, ejemplares comprometidos y movimiento mensual por libro.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <form th:action="@{/admin/reporte/stock/descargar}" method="get"
+                                    class="row g-3">
+                                    <div class="col-12">
+                                        <label for="mesStock" class="form-label fw-bold">Mes del Reporte</label>
+                                        <select id="mesStock" name="mes" class="form-select" required>
+                                            <option th:each="mesOpcion : ${meses}" th:value="${mesOpcion}"
+                                                th:text="${mesOpcion}" th:selected="${mesActual == mesOpcion}">Junio</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="anioStock" class="form-label fw-bold">Año del Reporte</label>
+                                        <select id="anioStock" name="anio" class="form-select" required>
+                                            <option th:each="anioOpcion : ${aniosDisponibles}" th:value="${anioOpcion}"
+                                                th:text="${anioOpcion}" th:selected="${anioActual == anioOpcion}">2026</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-end mt-4">
+                                        <button type="submit" class="btn btn-info fw-bold py-2 text-white">
+                                            <i class="fa-solid fa-download me-2"></i> Generar reporte
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer-custom bg-dark text-light mt-5">
+        <div class="container py-5">
+            <div class="row g-4">
+                <div class="col-12 col-lg-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img th:src="@{/img/Logo_LuzdelSaber.png}" alt="Logo Footer" class="footer-logo-img">
+                        <div>
+                            <h5 class="fw-bold text-white mb-1">Luz del Saber</h5>
+                            <span class="text-warning small fw-bold text-uppercase">Biblioteca comunitaria</span>
+                        </div>
+                    </div>
+                    <p class="text-secondary mb-4">
+                        Fomentando la cultura y el conocimiento académico con espacios cercanos para leer,
+                        aprender y compartir.
+                    </p>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <h6 class="fw-bold text-white text-uppercase mb-2">Contacto</h6>
+                    <div class="d-flex gap-2 text-secondary small mb-2">
+                        <i class="fa-solid fa-phone text-warning mt-1"></i>
+                        <span>Lima (01) 315 9600</span>
+                    </div>
+                    <div class="d-flex gap-2 text-secondary small">
+                        <i class="fa-solid fa-envelope text-warning mt-1"></i>
+                        <span>hola@luzdelsaber.pe</span>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <h6 class="fw-bold text-white text-uppercase mb-2">Horario</h6>
+                    <strong class="text-white small">Lunes a viernes, 8:00 a.m. - 7:00 p.m.</strong>
+                </div>
+                <div class="col-12">
+                    <div class="border-top border-secondary pt-4 mt-3 text-secondary small">
+                        <span>&copy; 2026 Luz del Saber. Todos los derechos reservados.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const fechaInicioRango = document.getElementById('fechaInicioRango');
+        const fechaFinRango = document.getElementById('fechaFinRango');
+
+        function sincronizarRango() {
+            fechaFinRango.min = fechaInicioRango.value;
+            if (fechaFinRango.value && fechaFinRango.value < fechaInicioRango.value) {
+                fechaFinRango.value = fechaInicioRango.value;
+            }
+        }
+
+        fechaInicioRango.addEventListener('change', sincronizarRango);
+        sincronizarRango();
+
+    </script>
+</body>
+
+</html>

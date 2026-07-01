@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+    name="reporte_incidencias_mensuales" pageWidth="595" pageHeight="842" columnWidth="515"
+    leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40"
+    whenNoDataType="AllSectionsNoDetail" uuid="d0679f7c-3fd6-49b0-aa3e-b100fbb477d4">
+
+    <parameter name="periodo" class="java.lang.String"/>
+    <parameter name="fechaEmision" class="java.lang.String"/>
+    <parameter name="logoPath" class="java.net.URL"/>
+    <parameter name="valorPrincipal" class="java.lang.String"/>
+    <parameter name="detalle1Valor" class="java.lang.String"/>
+    <parameter name="detalle2Valor" class="java.lang.String"/>
+    <parameter name="detalle3Valor" class="java.lang.String"/>
+
+    <title>
+        <band height="330" splitType="Stretch">
+            <image onErrorType="Blank"><reportElement x="0" y="0" width="110" height="90" uuid="5a0931b9-848e-4a79-988f-9fa886c65d33"/><imageExpression><![CDATA[$P{logoPath}]]></imageExpression></image>
+            <rectangle><reportElement x="140" y="0" width="375" height="90" backcolor="#FFFFFF" uuid="17a8130f-4efe-4680-b7c0-d92340c59acf"/><graphicElement><pen lineWidth="1.0" lineColor="#000000"/></graphicElement></rectangle>
+            <staticText><reportElement x="140" y="5" width="375" height="20" uuid="05282dc3-03fb-4c19-9da3-7cc5b278b326"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="13" isBold="true"/></textElement><text><![CDATA[Biblioteca Luz del Saber]]></text></staticText>
+            <staticText><reportElement x="140" y="25" width="375" height="18" uuid="01720e4f-094a-43f3-9669-a75c09b4f136"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[https://LuzdelSaber.com]]></text></staticText>
+            <staticText><reportElement x="140" y="43" width="375" height="18" uuid="1c175b9d-fd23-4e79-bf18-b58851177337"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Av. Recavarren 1153 - Surquillo]]></text></staticText>
+            <staticText><reportElement x="145" y="63" width="365" height="22" uuid="65adf6c2-e020-402a-b52e-5cbb31f55bd0"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><text><![CDATA[Porcentaje de Incidencias Mensuales]]></text></staticText>
+
+            <staticText><reportElement x="0" y="110" width="100" height="20" uuid="c62d31fe-e495-49fb-b0fb-11f51d2989d5"/><textElement><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Periodo:]]></text></staticText>
+            <textField><reportElement x="100" y="110" width="220" height="20" uuid="60b9ac91-6854-4a90-922f-802d6378b8d1"/><textElement><font fontName="SansSerif" size="11"/></textElement><textFieldExpression><![CDATA[$P{periodo}]]></textFieldExpression></textField>
+            <staticText><reportElement x="0" y="132" width="100" height="20" uuid="671cd38c-bfb4-4faf-8199-b244891ce82e"/><textElement><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Fecha de Emisión:]]></text></staticText>
+            <textField><reportElement x="100" y="132" width="220" height="20" uuid="7f0bd477-109e-4cc3-a0a3-eb3be38ee9ef"/><textElement><font fontName="SansSerif" size="11"/></textElement><textFieldExpression><![CDATA[$P{fechaEmision}]]></textFieldExpression></textField>
+
+            <rectangle><reportElement x="0" y="175" width="515" height="22" backcolor="#EAEAEA" uuid="19effabd-cbdb-450a-9e1d-94d5bd405c17"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+            <staticText><reportElement x="8" y="175" width="360" height="22" uuid="6bac1de5-fb67-4bf9-a75c-d8f95d06792d"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Incidencias mensuales]]></text></staticText>
+            <textField textAdjust="ScaleFont"><reportElement x="370" y="175" width="137" height="22" uuid="d898dd43-5e4c-4377-8a36-8b034f85fb35"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{valorPrincipal}]]></textFieldExpression></textField>
+
+            <staticText><reportElement x="0" y="225" width="200" height="20" uuid="d1c7a607-202e-43ec-b339-8aa5dba25dcb"/><textElement><font fontName="SansSerif" size="12" isBold="true"/></textElement><text><![CDATA[Detalle del cálculo]]></text></staticText>
+            <rectangle><reportElement x="0" y="250" width="515" height="22" backcolor="#EAEAEA" uuid="9740d376-28ac-4d0e-a9ac-107c29607886"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+            <rectangle><reportElement x="0" y="294" width="515" height="22" backcolor="#EAEAEA" uuid="f54c3f89-f65c-4811-8f56-52a8b5d36907"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+            <staticText><reportElement x="8" y="250" width="330" height="22" uuid="0a277adf-f4c1-4d98-994d-68aa7bc60f85"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><text><![CDATA[Número de préstamos mensuales]]></text></staticText>
+            <textField><reportElement x="345" y="250" width="162" height="22" uuid="5e582272-637f-4a15-98a3-f794b77f5d42"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><textFieldExpression><![CDATA[$P{detalle1Valor}]]></textFieldExpression></textField>
+            <staticText><reportElement x="8" y="272" width="330" height="22" uuid="898173ea-20ec-4f62-ad87-074c2202df19"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><text><![CDATA[Número de incidencias mensuales]]></text></staticText>
+            <textField><reportElement x="345" y="272" width="162" height="22" uuid="537ea6a0-7233-44e4-9dd4-66d9c1558270"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><textFieldExpression><![CDATA[$P{detalle2Valor}]]></textFieldExpression></textField>
+            <staticText><reportElement x="8" y="294" width="330" height="22" uuid="369f682a-e113-4b9d-8a07-c0d8568a2ec8"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><text><![CDATA[Préstamos con incidencias]]></text></staticText>
+            <textField><reportElement x="345" y="294" width="162" height="22" uuid="85581071-34f7-445f-82d9-6847a88b1863"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><textFieldExpression><![CDATA[$P{detalle3Valor}]]></textFieldExpression></textField>
+        </band>
+    </title>
+
+    <pageFooter><band height="30"><textField><reportElement x="415" y="5" width="100" height="20" uuid="599c3437-8dc1-4300-b52c-59f649191221"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isItalic="true"/></textElement><textFieldExpression><![CDATA["Pág. " + $V{PAGE_NUMBER}]]></textFieldExpression></textField></band></pageFooter>
+    <summary><band height="70"><staticText><reportElement x="0" y="5" width="130" height="20" uuid="465e455f-5ddb-47c4-98e4-e83f2f0df782"/><textElement><font fontName="SansSerif" size="11" isBold="true"/></textElement><text><![CDATA[Interpretación:]]></text></staticText><staticText><reportElement x="0" y="28" width="515" height="35" uuid="0ded42ec-ff36-478e-a39e-eb1ad2b3d91b"/><textElement><font fontName="SansSerif" size="10"/></textElement><text><![CDATA[Fórmula: número de incidencias mensuales / número de préstamos mensuales x 100.]]></text></staticText></band></summary>
+</jasperReport>

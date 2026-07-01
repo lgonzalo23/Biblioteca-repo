@@ -58,6 +58,9 @@ public class Prestamo {
     @Column(name = "estado_prestamo", nullable = false, length = 20)
     private String estado = ESTADO_ACTIVO;
 
+    @Column(name = "incidencia_revisada", nullable = false)
+    private boolean incidenciaRevisada;
+
     @Transient
     private boolean incidenciaRegistrada;
 
@@ -139,6 +142,14 @@ public class Prestamo {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public boolean isIncidenciaRevisada() {
+        return incidenciaRevisada;
+    }
+
+    public void setIncidenciaRevisada(boolean incidenciaRevisada) {
+        this.incidenciaRevisada = incidenciaRevisada;
     }
 
     public boolean isIncidenciaRegistrada() {

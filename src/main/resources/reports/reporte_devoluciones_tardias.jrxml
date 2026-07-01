@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+    name="reporte_devoluciones_tardias" pageWidth="595" pageHeight="842" columnWidth="515"
+    leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40"
+    whenNoDataType="AllSectionsNoDetail" uuid="e55de9eb-307c-4fd3-9218-c9c71cbd6309">
+
+    <parameter name="periodo" class="java.lang.String"/>
+    <parameter name="fechaEmision" class="java.lang.String"/>
+    <parameter name="logoPath" class="java.net.URL"/>
+    <parameter name="valorPrincipal" class="java.lang.String"/>
+    <parameter name="detalle1Valor" class="java.lang.String"/>
+    <parameter name="detalle2Valor" class="java.lang.String"/>
+    <parameter name="detalle3Valor" class="java.lang.String"/>
+
+    <title>
+        <band height="330" splitType="Stretch">
+            <image onErrorType="Blank">
+                <reportElement x="0" y="0" width="110" height="90" uuid="0330ddfe-ee1c-4d3d-a988-f18e774ea635"/>
+                <imageExpression><![CDATA[$P{logoPath}]]></imageExpression>
+            </image>
+            <rectangle>
+                <reportElement x="140" y="0" width="375" height="90" backcolor="#FFFFFF" uuid="834d2eda-b915-45d7-8c1c-680fa6a8991a"/>
+                <graphicElement><pen lineWidth="1.0" lineColor="#000000"/></graphicElement>
+            </rectangle>
+            <staticText><reportElement x="140" y="5" width="375" height="20" uuid="516f4462-ff1b-42c7-94d3-fad319b81c46"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="13" isBold="true"/></textElement><text><![CDATA[Biblioteca Luz del Saber]]></text></staticText>
+            <staticText><reportElement x="140" y="25" width="375" height="18" uuid="37c51d60-2f87-45b5-892e-cb64bef1b28e"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[https://LuzdelSaber.com]]></text></staticText>
+            <staticText><reportElement x="140" y="43" width="375" height="18" uuid="d0083b03-ce9b-4213-9867-d210b5e22e44"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Av. Recavarren 1153 - Surquillo]]></text></staticText>
+            <staticText><reportElement x="145" y="63" width="365" height="22" uuid="05e4392d-734f-4de9-a2ea-a57aab8d76bf"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><text><![CDATA[Porcentaje de Devoluciones Tardías]]></text></staticText>
+
+            <staticText><reportElement x="0" y="110" width="100" height="20" uuid="3bb47f4b-704c-46e9-9b13-84408ab4d70e"/><textElement><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Periodo:]]></text></staticText>
+            <textField><reportElement x="100" y="110" width="220" height="20" uuid="8ed67cf3-b8f6-4666-bba9-2f860b2ba719"/><textElement><font fontName="SansSerif" size="11"/></textElement><textFieldExpression><![CDATA[$P{periodo}]]></textFieldExpression></textField>
+            <staticText><reportElement x="0" y="132" width="100" height="20" uuid="f46d7476-df1b-40d0-af27-d9311f14b8ac"/><textElement><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Fecha de Emisión:]]></text></staticText>
+            <textField><reportElement x="100" y="132" width="220" height="20" uuid="c9b8edfe-66d6-4afe-9437-b4b675a1291e"/><textElement><font fontName="SansSerif" size="11"/></textElement><textFieldExpression><![CDATA[$P{fechaEmision}]]></textFieldExpression></textField>
+
+            <rectangle><reportElement x="0" y="175" width="515" height="22" backcolor="#EAEAEA" uuid="1e3cbb0f-1483-44ee-976b-d11ccd0fe950"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+            <staticText><reportElement x="8" y="175" width="360" height="22" uuid="df36ddd9-88c2-4c73-a766-b466381b4720"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Devoluciones tardías mensuales]]></text></staticText>
+            <textField textAdjust="ScaleFont"><reportElement x="370" y="175" width="137" height="22" uuid="f51b2829-1dc6-4029-bc85-0f02057e75dc"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{valorPrincipal}]]></textFieldExpression></textField>
+
+            <staticText><reportElement x="0" y="225" width="200" height="20" uuid="29018184-7f18-4ea9-b343-0b1a47a3ce12"/><textElement><font fontName="SansSerif" size="12" isBold="true"/></textElement><text><![CDATA[Detalle del cálculo]]></text></staticText>
+            <rectangle><reportElement x="0" y="250" width="515" height="22" backcolor="#EAEAEA" uuid="ddf591b7-341b-40d9-86b0-e33dfdfdfc34"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+            <rectangle><reportElement x="0" y="294" width="515" height="22" backcolor="#EAEAEA" uuid="82ff5507-c6b0-4370-91e8-3d46e96f85cc"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+            <staticText><reportElement x="8" y="250" width="330" height="22" uuid="d820d528-667d-4652-857e-77173b815019"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><text><![CDATA[Número de préstamos mensuales]]></text></staticText>
+            <textField><reportElement x="345" y="250" width="162" height="22" uuid="e1911688-c65a-4a17-b8f8-ee6fcb7e00f1"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><textFieldExpression><![CDATA[$P{detalle1Valor}]]></textFieldExpression></textField>
+            <staticText><reportElement x="8" y="272" width="330" height="22" uuid="9e22396f-e5b2-4939-a6cc-edf216f7a38e"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><text><![CDATA[Número de devoluciones tardías mensuales]]></text></staticText>
+            <textField><reportElement x="345" y="272" width="162" height="22" uuid="9d01672d-c7ba-4e2d-b7dc-b225a5e9bfc4"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><textFieldExpression><![CDATA[$P{detalle2Valor}]]></textFieldExpression></textField>
+            <staticText><reportElement x="8" y="294" width="330" height="22" uuid="63fa9a87-4afc-45ba-b356-546975cf8f25"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><text><![CDATA[Préstamos sin devolución tardía]]></text></staticText>
+            <textField><reportElement x="345" y="294" width="162" height="22" uuid="263879e5-683e-47e1-8d4d-713b621356c5"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="10"/></textElement><textFieldExpression><![CDATA[$P{detalle3Valor}]]></textFieldExpression></textField>
+        </band>
+    </title>
+
+    <pageFooter><band height="30"><textField><reportElement x="415" y="5" width="100" height="20" uuid="f5acbb03-38e4-46a2-be04-014cc549765e"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9" isItalic="true"/></textElement><textFieldExpression><![CDATA["Pág. " + $V{PAGE_NUMBER}]]></textFieldExpression></textField></band></pageFooter>
+    <summary><band height="70"><staticText><reportElement x="0" y="5" width="130" height="20" uuid="23ad9700-01d7-441c-96cb-15b75cba4f89"/><textElement><font fontName="SansSerif" size="11" isBold="true"/></textElement><text><![CDATA[Interpretación:]]></text></staticText><staticText><reportElement x="0" y="28" width="515" height="35" uuid="a5d73d34-497c-4aad-8e9e-5ee372bef57a"/><textElement><font fontName="SansSerif" size="10"/></textElement><text><![CDATA[Fórmula: número de devoluciones tardías mensuales / número de préstamos mensuales x 100.]]></text></staticText></band></summary>
+</jasperReport>

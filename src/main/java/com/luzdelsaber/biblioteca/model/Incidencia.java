@@ -35,6 +35,9 @@ public class Incidencia {
     @Column(name = "fecha_incidencia", nullable = false)
     private LocalDate fechaIncidencia;
 
+    @Column(name = "fecha_registro", nullable = false)
+    private LocalDate fechaRegistro;
+
     @Transient
     private Sancion sancion;
 
@@ -79,6 +82,14 @@ public class Incidencia {
 
     public void setFechaIncidencia(LocalDate fechaIncidencia) {
         this.fechaIncidencia = fechaIncidencia;
+    }
+
+    public LocalDate getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDate fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
     }
 
     public Sancion getSancion() {

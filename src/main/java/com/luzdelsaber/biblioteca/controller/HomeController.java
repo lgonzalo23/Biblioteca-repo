@@ -143,6 +143,7 @@ public class HomeController {
         try {
             reservaService.convertirReservaEnPrestamo(idReserva);
             redirectAttributes.addFlashAttribute("successMessage", "Reserva convertida en prestamo correctamente.");
+            redirectAttributes.addFlashAttribute("idReservaPrestada", idReserva);
         } catch (ReservaValidationException ex) {
             redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
         }
@@ -169,6 +170,19 @@ public class HomeController {
         try {
             reservaService.cancelarPedidoReserva(idReserva);
             redirectAttributes.addFlashAttribute("successMessage", "Reserva cancelada correctamente.");
+        } catch (ReservaValidationException ex) {
+            redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
+        }
+        return "redirect:/pedidos";
+    }
+
+    @PostMapping("/pedidos/{idReserva}/reactivar")
+    public String reactivarPedidoReserva(
+            @PathVariable Integer idReserva,
+            RedirectAttributes redirectAttributes) {
+        try {
+            reservaService.reactivarPedidoReserva(idReserva);
+            redirectAttributes.addFlashAttribute("successMessage", "Reserva reactivada correctamente.");
         } catch (ReservaValidationException ex) {
             redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
         }
@@ -249,11 +263,15 @@ public class HomeController {
     public String registrarIncidencia(
             @RequestParam("idPrestamo") Integer idPrestamo,
             @RequestParam("tipoIncidencia") String tipoIncidencia,
-            @RequestParam("descripcionIncidencia") String descripcionIncidencia,
+            @RequestParam(name = "descripcionIncidencia", required = false) String descripcionIncidencia,
             RedirectAttributes redirectAttributes) {
         try {
-            reservaService.registrarIncidencia(idPrestamo, tipoIncidencia, descripcionIncidencia);
-            redirectAttributes.addFlashAttribute("successMessage", "Incidencia registrada correctamente.");
+            boolean incidenciaRegistrada = reservaService.registrarIncidencia(idPrestamo, tipoIncidencia, descripcionIncidencia);
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    incidenciaRegistrada
+                            ? "Incidencia registrada correctamente."
+                            : "Prestamo revisado sin incidencia.");
         } catch (ReservaValidationException ex) {
             redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
         }

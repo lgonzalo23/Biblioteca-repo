@@ -853,6 +853,25 @@ body {
     grid-template-columns: minmax(0, 1fr);
 }
 
+.reservation-time-picker {
+    align-items: center;
+    display: grid;
+    gap: 0.4rem;
+    grid-template-columns: minmax(74px, 1fr) auto minmax(74px, 1fr);
+}
+
+.reservation-time-picker .form-select {
+    min-width: 0;
+    padding-left: 0.65rem;
+    padding-right: 2rem;
+}
+
+.reservation-time-help {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
 .reserve-selected-button {
     align-self: end;
     min-height: 38px;
@@ -1035,7 +1054,18 @@ body {
     }
 
     .reservation-toolbar-fields {
-        grid-template-columns: minmax(0, 1fr) 140px 130px auto;
+        grid-template-columns: minmax(0, 1fr) minmax(190px, 230px);
+    }
+}
+
+@media (min-width: 1400px) {
+    .reservation-toolbar-fields {
+        grid-template-columns: minmax(240px, 1fr) minmax(210px, 230px) 130px 176px;
+    }
+
+    .reserve-selected-button {
+        align-self: start;
+        margin-top: 2rem;
     }
 }
 

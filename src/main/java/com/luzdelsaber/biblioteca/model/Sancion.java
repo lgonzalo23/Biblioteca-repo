@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 public class Sancion {
 
     public static final String ESTADO_ACTIVA = "ACTIVA";
+    public static final String ESTADO_INACTIVA = "INACTIVA";
     public static final String TIPO_SUSPENSION_TEMPORAL = "SUSPENSION_TEMPORAL";
     public static final String TIPO_SUSPENSION_TOTAL = "SUSPENSION_TOTAL";
 

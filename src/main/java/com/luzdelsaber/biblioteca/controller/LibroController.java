@@ -19,6 +19,7 @@ import com.luzdelsaber.biblioteca.exception.BibliografiaValidationException;
 import com.luzdelsaber.biblioteca.service.BibliografiaService;
 
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class LibroController {
@@ -84,10 +85,27 @@ public class LibroController {
     }
 
     @PostMapping("/libros/{idLibro}/baja")
-    public String bajaLogicaLibro(@PathVariable Integer idLibro, RedirectAttributes redirectAttributes) {
+    public String bajaLogicaLibro(
+            @PathVariable Integer idLibro,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         try {
-            bibliografiaService.eliminarLibroLogico(idLibro);
+            bibliografiaService.eliminarLibroLogico(idLibro, idResponsable(session), nombreResponsable(session));
             redirectAttributes.addFlashAttribute("successMessage", "Libro marcado como NO_DISPONIBLE.");
+        } catch (BibliografiaValidationException ex) {
+            redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
+        }
+        return "redirect:/libros";
+    }
+
+    @PostMapping("/libros/{idLibro}/reactivar")
+    public String reactivarLibro(
+            @PathVariable Integer idLibro,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        try {
+            bibliografiaService.reactivarLibro(idLibro, idResponsable(session), nombreResponsable(session));
+            redirectAttributes.addFlashAttribute("successMessage", "Libro reactivado correctamente.");
         } catch (BibliografiaValidationException ex) {
             redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
         }
@@ -143,10 +161,29 @@ public class LibroController {
     }
 
     @PostMapping("/libros/categorias/{idCategoria}/baja")
-    public String bajaLogicaCategoria(@PathVariable Integer idCategoria, RedirectAttributes redirectAttributes) {
+    public String bajaLogicaCategoria(
+            @PathVariable Integer idCategoria,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         try {
-            bibliografiaService.eliminarCategoriaLogico(idCategoria);
+            bibliografiaService.eliminarCategoriaLogico(
+                    idCategoria, idResponsable(session), nombreResponsable(session));
             redirectAttributes.addFlashAttribute("successMessage", "Categoria marcada como INACTIVA.");
+        } catch (BibliografiaValidationException ex) {
+            redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
+        }
+        return "redirect:/libros#categorias";
+    }
+
+    @PostMapping("/libros/categorias/{idCategoria}/reactivar")
+    public String reactivarCategoria(
+            @PathVariable Integer idCategoria,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        try {
+            bibliografiaService.reactivarCategoria(
+                    idCategoria, idResponsable(session), nombreResponsable(session));
+            redirectAttributes.addFlashAttribute("successMessage", "Categoria reactivada correctamente.");
         } catch (BibliografiaValidationException ex) {
             redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
         }
@@ -202,10 +239,27 @@ public class LibroController {
     }
 
     @PostMapping("/libros/autores/{idAutor}/baja")
-    public String bajaLogicaAutor(@PathVariable Integer idAutor, RedirectAttributes redirectAttributes) {
+    public String bajaLogicaAutor(
+            @PathVariable Integer idAutor,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         try {
-            bibliografiaService.eliminarAutorLogico(idAutor);
+            bibliografiaService.eliminarAutorLogico(idAutor, idResponsable(session), nombreResponsable(session));
             redirectAttributes.addFlashAttribute("successMessage", "Autor marcado como INACTIVO.");
+        } catch (BibliografiaValidationException ex) {
+            redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
+        }
+        return "redirect:/libros#autores";
+    }
+
+    @PostMapping("/libros/autores/{idAutor}/reactivar")
+    public String reactivarAutor(
+            @PathVariable Integer idAutor,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        try {
+            bibliografiaService.reactivarAutor(idAutor, idResponsable(session), nombreResponsable(session));
+            redirectAttributes.addFlashAttribute("successMessage", "Autor reactivado correctamente.");
         } catch (BibliografiaValidationException ex) {
             redirectAttributes.addFlashAttribute("errorMessages", ex.getErrores());
         }
@@ -232,6 +286,16 @@ public class LibroController {
             AutorForm autorForm,
             List<String> errores) {
         cargarModelo(model, termino, null, null, libroForm, categoriaForm, autorForm, errores);
+    }
+
+    private Integer idResponsable(HttpSession session) {
+        Object id = session.getAttribute("usuarioId");
+        return id instanceof Number numero ? numero.intValue() : null;
+    }
+
+    private String nombreResponsable(HttpSession session) {
+        Object nombre = session.getAttribute("usuarioNombre");
+        return nombre == null ? "No disponible" : String.valueOf(nombre);
     }
 
     private void cargarModelo(

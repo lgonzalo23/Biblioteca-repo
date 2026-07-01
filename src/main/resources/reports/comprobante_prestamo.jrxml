@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+    name="comprobante_prestamo" pageWidth="420" pageHeight="595" columnWidth="370"
+    leftMargin="25" rightMargin="25" topMargin="20" bottomMargin="20"
+    whenNoDataType="AllSectionsNoDetail" uuid="a36f5d3f-2658-4a75-8660-15b2e63bc774">
+
+    <parameter name="logoPath" class="java.net.URL"/>
+    <parameter name="numeroComprobante" class="java.lang.String"/>
+    <parameter name="fechaEmision" class="java.lang.String"/>
+    <parameter name="usuario" class="java.lang.String"/>
+    <parameter name="dni" class="java.lang.String"/>
+    <parameter name="correo" class="java.lang.String"/>
+    <parameter name="cantidadLibros" class="java.lang.String"/>
+    <parameter name="estadoComprobante" class="java.lang.String"/>
+
+    <field name="numero" class="java.lang.String"/>
+    <field name="libro" class="java.lang.String"/>
+    <field name="isbn" class="java.lang.String"/>
+    <field name="inicio" class="java.lang.String"/>
+    <field name="limite" class="java.lang.String"/>
+
+    <title>
+        <band height="190" splitType="Stretch">
+            <image onErrorType="Blank">
+                <reportElement x="0" y="0" width="65" height="55" uuid="5bd15c65-4fa6-4481-a1bf-42e3f8752a16"/>
+                <imageExpression><![CDATA[$P{logoPath}]]></imageExpression>
+            </image>
+            <rectangle>
+                <reportElement x="75" y="0" width="295" height="55" backcolor="#FFFFFF" uuid="2ff0d4e7-5c8b-4428-b48d-2c01d3132972"/>
+                <graphicElement><pen lineWidth="1.0" lineColor="#222222"/></graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="75" y="4" width="295" height="18" uuid="f399dffd-d4bf-43d5-aa07-5a6020ae0755"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="11" isBold="true"/></textElement>
+                <text><![CDATA[Biblioteca Luz del Saber]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="75" y="22" width="295" height="13" uuid="da4c7fd9-6ac6-44e4-8965-ce63717363be"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement>
+                <text><![CDATA[Av. Recavarren 1153 - Surquillo]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="78" y="36" width="289" height="16" uuid="572bc677-bd26-466b-a4c8-997b059c363d"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="11" isBold="true"/></textElement>
+                <text><![CDATA[COMPROBANTE DE PRÉSTAMO]]></text>
+            </staticText>
+
+            <rectangle><reportElement x="0" y="68" width="370" height="112" backcolor="#FAFAFA" uuid="f13e15a3-31f9-4c29-a27e-a1bc20f9eb0c"/><graphicElement><pen lineWidth="0.7" lineColor="#BBBBBB"/></graphicElement></rectangle>
+            <staticText><reportElement x="10" y="76" width="90" height="16" uuid="f126defc-5a7a-4127-a9d4-8710e203d2d6"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><text><![CDATA[N.º comprobante:]]></text></staticText>
+            <textField><reportElement x="105" y="76" width="95" height="16" uuid="26795ea1-796d-4ae1-9ec2-4d34f8528756"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$P{numeroComprobante}]]></textFieldExpression></textField>
+            <staticText><reportElement x="205" y="76" width="60" height="16" uuid="c8220af3-5d77-4fda-8a09-704e22343422"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><text><![CDATA[Emisión:]]></text></staticText>
+            <textField><reportElement x="270" y="76" width="90" height="16" uuid="4148f55d-a2f5-4f3d-a3c7-78b93ecbeb21"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$P{fechaEmision}]]></textFieldExpression></textField>
+
+            <staticText><reportElement x="10" y="100" width="70" height="16" uuid="cd5cd7a5-c391-4d8c-b565-13503c9c8ad2"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><text><![CDATA[Prestatario:]]></text></staticText>
+            <textField textAdjust="ScaleFont"><reportElement x="80" y="100" width="280" height="16" uuid="4458a563-b328-4432-bbbf-50b299eaa18e"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$P{usuario}]]></textFieldExpression></textField>
+            <staticText><reportElement x="10" y="122" width="35" height="16" uuid="94030a6d-e52e-4797-a386-a26c3cd42382"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><text><![CDATA[DNI:]]></text></staticText>
+            <textField><reportElement x="45" y="122" width="85" height="16" uuid="579b1cc4-ed13-44aa-9734-39a00883c044"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$P{dni}]]></textFieldExpression></textField>
+            <staticText><reportElement x="140" y="122" width="45" height="16" uuid="44bda6cf-4ad2-4d72-a35d-a7f0f643ae99"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><text><![CDATA[Correo:]]></text></staticText>
+            <textField textAdjust="ScaleFont"><reportElement x="185" y="122" width="175" height="16" uuid="e110a726-e2cb-4c42-895f-097837d2fd40"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$P{correo}]]></textFieldExpression></textField>
+            <staticText><reportElement x="10" y="147" width="95" height="16" uuid="49559df8-a346-46f5-b094-670a0c8efff3"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><text><![CDATA[Libros entregados:]]></text></staticText>
+            <textField><reportElement x="105" y="147" width="35" height="16" uuid="5f678564-b06a-4c1e-acad-f4f33b7dc009"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$P{cantidadLibros}]]></textFieldExpression></textField>
+            <staticText><reportElement x="150" y="147" width="45" height="16" uuid="8a039071-a4a1-42b0-8d68-ce5e109b798e"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><text><![CDATA[Estado:]]></text></staticText>
+            <textField textAdjust="ScaleFont"><reportElement x="195" y="147" width="165" height="16" uuid="4dfccae3-4c2f-4bc5-91e8-1491f80515e3"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{estadoComprobante}]]></textFieldExpression></textField>
+        </band>
+    </title>
+
+    <columnHeader>
+        <band height="29">
+            <rectangle><reportElement x="0" y="2" width="370" height="25" backcolor="#CCCCCC" uuid="65dfb3b6-6769-48a8-90ba-2ee59a844aef"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+            <staticText><reportElement x="4" y="3" width="16" height="23" uuid="b8a8ba21-3af6-443e-a440-58104570b272"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[#]]></text></staticText>
+            <staticText><reportElement x="20" y="3" width="145" height="23" uuid="5fc40d62-d64d-471c-8d96-e9c988455994"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[Libro]]></text></staticText>
+            <staticText><reportElement x="165" y="3" width="70" height="23" uuid="742ed472-9af7-49ba-9678-7011d558cf98"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[ISBN]]></text></staticText>
+            <staticText><reportElement x="235" y="3" width="68" height="23" uuid="9b8a0df0-72b4-417c-8c9c-5d99847f81df"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[Inicio]]></text></staticText>
+            <staticText><reportElement x="303" y="3" width="67" height="23" uuid="e27df77b-f415-4cc0-a875-dc89ad535da6"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[Devolución]]></text></staticText>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="35">
+            <rectangle><reportElement x="0" y="0" width="370" height="35" backcolor="#F2F4F6" uuid="238170b5-60fa-4b72-a58c-51a257b1a412"><printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() % 2 == 0]]></printWhenExpression></reportElement><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+            <textField><reportElement x="4" y="1" width="16" height="33" uuid="5b8fe5e9-9894-409d-b319-db2a7c65965b"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression></textField>
+            <textField textAdjust="ScaleFont"><reportElement x="20" y="1" width="145" height="33" uuid="356001f8-afac-4ee0-85d5-d153d6ea19c8"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{libro}]]></textFieldExpression></textField>
+            <textField textAdjust="ScaleFont"><reportElement x="165" y="1" width="70" height="33" uuid="db507d13-da71-440d-b92c-0f285c931699"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA[$F{isbn}]]></textFieldExpression></textField>
+            <textField textAdjust="ScaleFont"><reportElement x="235" y="1" width="68" height="33" uuid="79add4b0-e050-4f79-a55f-3ba0cce8d969"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA[$F{inicio}]]></textFieldExpression></textField>
+            <textField textAdjust="ScaleFont"><reportElement x="303" y="1" width="67" height="33" uuid="1b8b12a1-3bda-40c3-badb-158d7754df75"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><textFieldExpression><![CDATA[$F{limite}]]></textFieldExpression></textField>
+        </band>
+    </detail>
+
+    <pageFooter>
+        <band height="22">
+            <staticText><reportElement x="0" y="3" width="250" height="16" uuid="47976717-b324-45b6-b049-723c796a77f8"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[Conserve este comprobante para cualquier consulta.]]></text></staticText>
+            <textField><reportElement x="300" y="3" width="70" height="16" uuid="a465ff23-c796-412f-91b7-7def556f6883"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="7" isItalic="true"/></textElement><textFieldExpression><![CDATA["Pág. " + $V{PAGE_NUMBER}]]></textFieldExpression></textField>
+        </band>
+    </pageFooter>
+
+    <summary>
+        <band height="105" splitType="Stretch">
+            <line><reportElement x="0" y="12" width="370" height="1" uuid="5aedf549-0a5d-42db-ac9c-74b2b1ef061f"/><graphicElement><pen lineWidth="0.5" lineColor="#999999"/></graphicElement></line>
+            <staticText><reportElement x="5" y="20" width="360" height="28" uuid="fa12459d-f4d2-42de-9e9d-d2d70ddf0404"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isItalic="true"/></textElement><text><![CDATA[El prestatario declara recibir los libros indicados y se compromete a devolverlos dentro del horario establecido y en buen estado.]]></text></staticText>
+            <line><reportElement x="20" y="79" width="135" height="1" uuid="33205064-7726-4304-9794-065f737d0084"/><graphicElement><pen lineWidth="0.7" lineColor="#333333"/></graphicElement></line>
+            <line><reportElement x="215" y="79" width="135" height="1" uuid="e66f3784-159c-4477-8fa8-2e481ac64b7e"/><graphicElement><pen lineWidth="0.7" lineColor="#333333"/></graphicElement></line>
+            <staticText><reportElement x="20" y="82" width="135" height="16" uuid="a681cbe6-bbf8-4f16-bf00-14accff43c4f"/><textElement textAlignment="Center"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[Firma del prestatario]]></text></staticText>
+            <staticText><reportElement x="215" y="82" width="135" height="16" uuid="d2a6d896-c3f0-422f-8506-f2ae9035bef7"/><textElement textAlignment="Center"><font fontName="SansSerif" size="7"/></textElement><text><![CDATA[Firma del encargado]]></text></staticText>
+        </band>
+    </summary>
+</jasperReport>

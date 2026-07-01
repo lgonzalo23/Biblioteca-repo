@@ -60,8 +60,8 @@ public class DashboardService {
                             inner join prestamo p2 on p2.id_prestamo = i2.id_prestamo
                             where p2.id_usuario = p.id_usuario
                               and i2.tipo_incidencia = 'RETRASO'
-                              and i2.fecha_incidencia >= date_format(current_date(), '%Y-%m-01')
-                              and i2.fecha_incidencia < date_add(date_format(current_date(), '%Y-%m-01'), interval 1 month)
+                              and p2.fecha_prestamo >= date_format(current_date(), '%Y-%m-01')
+                              and p2.fecha_prestamo < date_add(date_format(current_date(), '%Y-%m-01'), interval 1 month)
                         ) >= 3
                   )
                 """);

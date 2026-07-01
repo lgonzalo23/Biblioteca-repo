@@ -42,6 +42,9 @@
                 <a th:href="@{/dashboard}" class="nav-link">
                     <i class="fa-solid fa-chart-line"></i> Dashboard
                 </a>
+                <a th:href="@{/admin/reportes}" class="nav-link" th:if="${session.usuarioRol == 'ADMINISTRADOR'}">
+                    <i class="fa-solid fa-file-invoice"></i> Reportes
+                </a>
             </nav>
         </aside>
 
@@ -93,8 +96,12 @@
                     </div>
 
                     <div class="bg-white rounded-3 shadow-sm border p-4 mb-4">
-                        <h5 class="fw-bold mb-3">Registrar usuario</h5>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="fa-solid fa-user-plus text-warning"></i>
+                            <h5 class="fw-bold mb-0">Registrar usuario</h5>
+                        </div>
                         <form th:action="@{/usuarios}" th:object="${usuarioForm}" method="post" class="row g-3">
+                            <input type="hidden" th:field="*{estado}" value="ACTIVO">
                             <div class="col-md-3">
                                 <label for="nombre" class="form-label">Nombre</label>
                                 <input id="nombre" type="text" th:field="*{nombre}" class="form-control" minlength="2"
@@ -115,7 +122,7 @@
                                 <input id="correo" type="email" th:field="*{correo}" class="form-control"
                                     maxlength="50" required>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="rolId" class="form-label">Rol</label>
                                 <select id="rolId" th:field="*{rolId}" class="form-select" required>
                                     <option value="">Seleccione</option>
@@ -123,19 +130,12 @@
                                         th:text="${rol.nombreRol}">PRESTATARIO</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
-                                <label for="estado" class="form-label">Estado</label>
-                                <select id="estado" th:field="*{estado}" class="form-select" required>
-                                    <option value="ACTIVO">ACTIVO</option>
-                                    <option value="INACTIVO">INACTIVO</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="contrasena" class="form-label">Contrasena</label>
                                 <input id="contrasena" type="password" th:field="*{contrasena}" class="form-control"
                                     minlength="8" maxlength="50" required>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="confirmContrasena" class="form-label">Confirmar</label>
                                 <input id="confirmContrasena" type="password" th:field="*{confirmContrasena}"
                                     class="form-control" minlength="8" maxlength="50" required>
@@ -190,10 +190,18 @@
                                                 <i class="fa-solid fa-pen"></i>
                                             </button>
                                             <form th:action="@{/usuarios/{id}/baja(id=${usuario.idUsuario})}"
-                                                method="post" class="d-inline">
+                                                method="post" class="d-inline" th:if="${usuario.estado == 'ACTIVO'}">
                                                 <button type="submit" class="btn btn-sm btn-outline-secondary"
                                                     title="Marcar como inactivo">
                                                     <i class="fa-solid fa-user-slash"></i>
+                                                </button>
+                                            </form>
+                                            <form th:action="@{/usuarios/{id}/reactivar(id=${usuario.idUsuario})}"
+                                                method="post" class="d-inline" th:if="${usuario.reactivable}"
+                                                onsubmit="return confirm('Deseas reactivar este usuario?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-success"
+                                                    title="Reactivar usuario">
+                                                    <i class="fa-solid fa-user-check"></i>
                                                 </button>
                                             </form>
                                             <form th:action="@{/usuarios/{id}/eliminar(id=${usuario.idUsuario})}"
@@ -261,12 +269,11 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Estado</label>
-                                                <select name="estado" class="form-select" required>
-                                                    <option value="ACTIVO"
-                                                        th:selected="${usuario.estado == 'ACTIVO'}">ACTIVO</option>
-                                                    <option value="INACTIVO"
-                                                        th:selected="${usuario.estado == 'INACTIVO'}">INACTIVO</option>
-                                                </select>
+                                                <input type="hidden" name="estado" th:value="${usuario.estado}">
+                                                <input type="text" class="form-control" th:value="${usuario.estado}" readonly>
+                                                <div class="form-text" th:if="${usuario.estado == 'INACTIVO'}">
+                                                    Utiliza Reactivar para habilitar nuevamente la cuenta.
+                                                </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Nueva contrasena</label>

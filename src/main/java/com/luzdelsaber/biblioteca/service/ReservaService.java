@@ -165,6 +165,53 @@ public class ReservaService {
     }
 
     @Transactional
+    public void reactivarPedidoReserva(Integer idReserva) {
+        Reserva reserva = reservaRepository.findById(idReserva)
+                .orElseThrow(() -> new ReservaValidationException(List.of("La reserva seleccionada no existe.")));
+        if (!Reserva.ESTADO_CANCELADA.equals(reserva.getEstado())) {
+            throw new ReservaValidationException(List.of("Solo se pueden reactivar reservas canceladas."));
+        }
+        if (!prestamoRepository.findByReservaIdReservaOrderByIdPrestamoAsc(idReserva).isEmpty()) {
+            throw new ReservaValidationException(List.of(
+                    "No se puede reactivar una reserva que ya tiene préstamos registrados."));
+        }
+
+        Usuario usuario = reserva.getUsuario();
+        if (usuario == null || !Usuario.ESTADO_ACTIVO.equals(usuario.getEstado())) {
+            throw new ReservaValidationException(List.of(
+                    "El usuario de la reserva debe estar ACTIVO antes de reactivar el pedido."));
+        }
+        if (!sancionRepository.buscarActivasPorUsuario(usuario.getIdUsuario()).isEmpty()) {
+            throw new ReservaValidationException(List.of(
+                    "El usuario tiene una sanción activa y no puede recuperar la reserva."));
+        }
+        validarFechaHoraYDuracion(reserva.getFechaReserva(), reserva.getHoraReserva(), reserva.getHorasPrestamo());
+        if (reserva.getDetalles() == null || reserva.getDetalles().isEmpty()) {
+            throw new ReservaValidationException(List.of("La reserva no tiene libros para reactivar."));
+        }
+
+        for (ReservaDetalle detalle : reserva.getDetalles()) {
+            Libro libro = detalle.getLibro();
+            if (libro == null) {
+                throw new ReservaValidationException(List.of("Uno de los libros de la reserva ya no existe."));
+            }
+            if (reservaRepository.contarActivasPorUsuarioYLibro(
+                    usuario.getIdUsuario(), libro.getIdLibro()) > 0) {
+                throw new ReservaValidationException(List.of(
+                        "El usuario ya tiene una reserva activa para \"" + libro.getTitulo() + "\"."));
+            }
+            if (libroRepository.reservarEjemplar(libro.getIdLibro()) == 0) {
+                throw new ReservaValidationException(List.of(
+                        "No se puede reactivar la reserva porque \"" + libro.getTitulo()
+                                + "\" no tiene stock disponible."));
+            }
+        }
+
+        reservaRepository.actualizarEstado(idReserva, Reserva.ESTADO_ACTIVA);
+        reservaDetalleRepository.actualizarEstadoPorReserva(idReserva, ReservaDetalle.ESTADO_ACTIVA);
+    }
+
+    @Transactional
     public void eliminarPedidoReservaFisico(Integer idReserva) {
         Reserva reserva = reservaRepository.findById(idReserva)
                 .orElseThrow(() -> new ReservaValidationException(List.of("La reserva seleccionada no existe.")));
@@ -391,9 +438,9 @@ public class ReservaService {
     }
 
     @Transactional
-    public void registrarIncidencia(Integer idPrestamo, String tipo, String descripcion) {
-        if (!StringUtils.hasText(tipo) || !StringUtils.hasText(descripcion)) {
-            throw new ReservaValidationException(List.of("Debe completar el tipo y la descripcion de la incidencia."));
+    public boolean registrarIncidencia(Integer idPrestamo, String tipo, String descripcion) {
+        if (!StringUtils.hasText(tipo)) {
+            throw new ReservaValidationException(List.of("Debe seleccionar el tipo de incidencia."));
         }
         Prestamo prestamo = prestamoRepository.findById(idPrestamo)
                 .orElseThrow(() -> new ReservaValidationException(List.of("El prestamo seleccionado no existe.")));
@@ -402,6 +449,16 @@ public class ReservaService {
             throw new ReservaValidationException(List.of("Solo se pueden registrar incidencias despues de registrar la devolucion."));
         }
         String tipoNormalizado = tipo.trim().toUpperCase();
+        if ("NINGUNA".equals(tipoNormalizado)) {
+            if (incidenciaRepository.existsByPrestamoIdPrestamo(idPrestamo)) {
+                throw new ReservaValidationException(List.of("Este prestamo ya tiene una incidencia registrada."));
+            }
+            prestamoRepository.marcarIncidenciaRevisada(idPrestamo);
+            return false;
+        }
+        if (!StringUtils.hasText(descripcion)) {
+            throw new ReservaValidationException(List.of("Debe completar la descripcion de la incidencia."));
+        }
         if ("RETRASO".equals(tipoNormalizado) && existeRetrasoParaPrestamoGeneral(prestamo)) {
             throw new ReservaValidationException(List.of("Este prestamo general ya tiene una incidencia por retraso registrada."));
         }
@@ -413,11 +470,14 @@ public class ReservaService {
         incidencia.setPrestamo(prestamo);
         incidencia.setTipo(tipoNormalizado);
         incidencia.setDescripcion(descripcion.trim());
-        incidencia.setFechaIncidencia(LocalDate.now());
+        incidencia.setFechaIncidencia(prestamo.getFechaPrestamo());
+        incidencia.setFechaRegistro(LocalDate.now());
         Incidencia incidenciaRegistrada = incidenciaRepository.save(incidencia);
+        prestamoRepository.marcarIncidenciaRevisada(idPrestamo);
         if ("RETRASO".equals(tipoNormalizado)) {
             aplicarSancionPorRetrasosSiCorresponde(incidenciaRegistrada);
         }
+        return true;
     }
 
     private void registrarRetrasosAutomaticos(List<Prestamo> prestamos) {
@@ -432,7 +492,8 @@ public class ReservaService {
         incidencia.setPrestamo(prestamoPrincipal);
         incidencia.setTipo("RETRASO");
         incidencia.setDescripcion("Devolucion tardia del prestamo general asociado a la reserva.");
-        incidencia.setFechaIncidencia(LocalDate.now());
+        incidencia.setFechaIncidencia(prestamoPrincipal.getFechaPrestamo());
+        incidencia.setFechaRegistro(LocalDate.now());
         Incidencia incidenciaRegistrada = incidenciaRepository.save(incidencia);
         aplicarSancionPorRetrasosSiCorresponde(incidenciaRegistrada);
     }
@@ -568,7 +629,8 @@ public class ReservaService {
     private void agregarDatosPrestamo(Reserva reserva) {
         List<Prestamo> prestamos = prestamoRepository.findByReservaIdReservaOrderByIdPrestamoAsc(reserva.getIdReserva());
         prestamos.forEach(prestamo -> prestamo.setIncidenciaRegistrada(
-                incidenciaRepository.existsByPrestamoIdPrestamo(prestamo.getIdPrestamo())));
+                prestamo.isIncidenciaRevisada()
+                        || incidenciaRepository.existsByPrestamoIdPrestamo(prestamo.getIdPrestamo())));
         if (!prestamos.isEmpty() && incidenciaRepository.contarRetrasosPorReserva(reserva.getIdReserva()) > 0) {
             prestamos.forEach(prestamo -> prestamo.setIncidenciaRegistrada(true));
         }

@@ -45,6 +45,14 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, Integer> {
     @Modifying
     @Query(value = """
             UPDATE prestamo
+            SET incidencia_revisada = true
+            WHERE id_prestamo = :idPrestamo
+            """, nativeQuery = true)
+    int marcarIncidenciaRevisada(@Param("idPrestamo") Integer idPrestamo);
+
+    @Modifying
+    @Query(value = """
+            UPDATE prestamo
             SET hora_fin = :horaFin
             WHERE id_reserva = :idReserva
               AND estado_prestamo = 'ACTIVO'

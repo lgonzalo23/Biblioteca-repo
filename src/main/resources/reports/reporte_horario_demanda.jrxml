@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.0.final using JasperReports Library version 6.21.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte_horario_demanda" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40" whenNoDataType="AllSectionsNoDetail" uuid="f3467fd8-7b96-419b-a621-c4d6df1b3154">
+	<parameter name="periodo" class="java.lang.String"/>
+	<parameter name="fechaEmision" class="java.lang.String"/>
+	<parameter name="logoPath" class="java.net.URL"/>
+	<parameter name="totalPrestamos" class="java.lang.Integer"/>
+	<parameter name="horarioPico" class="java.lang.String"/>
+	<parameter name="cantidadPico" class="java.lang.Long"/>
+	
+	<field name="rango_hora" class="java.lang.String"/>
+	<field name="cantidad" class="java.lang.Long"/>
+	<field name="porcentaje" class="java.lang.Double"/>
+	
+	<title>
+		<band height="250" splitType="Stretch">
+			<!-- Logo -->
+			<image onErrorType="Blank">
+				<reportElement x="0" y="0" width="110" height="90" uuid="a7f805a5-926c-487b-8910-bc2d5c2e171d"/>
+				<imageExpression><![CDATA[$P{logoPath}]]></imageExpression>
+			</image>
+			
+			<!-- Header Title Block with Border -->
+			<rectangle>
+				<reportElement x="140" y="0" width="375" height="90" backcolor="#FFFFFF" uuid="d69103e9-74e9-4e76-a0bf-87c2fb2cb162"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="140" y="5" width="375" height="20" uuid="8be4ee0b-bf38-4e89-9a2c-f6089d714b1c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Biblioteca Luz del Saber]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="25" width="375" height="18" uuid="9be4ee0b-bf38-4e89-9a2c-f6089d714b1d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[https://LuzdelSaber.com]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="43" width="375" height="18" uuid="a6e4ee0b-bf38-4e89-9a2c-f6089d714b1d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Av.Recavarren 1153 – Surquillo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="65" width="375" height="20" uuid="bde4ee0b-bf38-4e89-9a2c-f6089d714b1d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reporte de Horario de Mayor Demanda de Préstamos]]></text>
+			</staticText>
+			
+			<!-- Metadata -->
+			<staticText>
+				<reportElement x="0" y="110" width="100" height="20" uuid="4c1c911d-6b58-45eb-92c1-7d13c7bb61d3"/>
+				<textElement>
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<text><![CDATA[Periodo:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="100" y="110" width="200" height="20" uuid="4c1c911d-6b58-45eb-92c1-7d13c7bb61d4"/>
+				<textElement>
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{periodo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="130" width="100" height="20" uuid="4c1c911d-6b58-45eb-92c1-7d13c7bb61d5"/>
+				<textElement>
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<text><![CDATA[Fecha de Emisión:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="100" y="130" width="200" height="20" uuid="4c1c911d-6b58-45eb-92c1-7d13c7bb61d6"/>
+				<textElement>
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fechaEmision}]]></textFieldExpression>
+			</textField>
+			
+			<!-- Indicators Header -->
+			<staticText>
+				<reportElement x="0" y="165" width="200" height="18" uuid="8be4ee0b-bf38-4e89-9a2c-f6089d714b1e"/>
+				<textElement>
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Resumen de Indicadores]]></text>
+			</staticText>
+			
+			<!-- Indicator 1: Total Prestamos (Gray Row) -->
+			<rectangle>
+				<reportElement x="0" y="185" width="515" height="18" backcolor="#EAEAEA" uuid="a65f90bc-28fb-4c12-9c1a-281b379b3cc5"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="185" width="295" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef349"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nº Total de Préstamos]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="415" y="185" width="95" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef350"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{totalPrestamos}]]></textFieldExpression>
+			</textField>
+			
+			<!-- Indicator 2: Horario Pico (White Row) -->
+			<staticText>
+				<reportElement x="5" y="203" width="295" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef351"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Horario de Mayor Demanda (Intervalo)]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="320" y="203" width="190" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef352"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{horarioPico}]]></textFieldExpression>
+			</textField>
+			
+			<!-- Indicator 3: Cantidad Pico (Gray Row) -->
+			<rectangle>
+				<reportElement x="0" y="221" width="515" height="18" backcolor="#EAEAEA" uuid="a65f90bc-28fb-4c12-9c1a-281b379b3cc6"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="221" width="295" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef353"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Préstamos Realizados en Horario de Mayor Demanda]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="415" y="221" width="95" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef354"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{cantidadPico}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<!-- Table Header Background Banner -->
+			<rectangle>
+				<reportElement x="0" y="5" width="515" height="22" backcolor="#CCCCCC" uuid="d69103e9-74e9-4e76-a0bf-87c2fb2cb163"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			
+			<staticText>
+				<reportElement x="5" y="6" width="200" height="20" uuid="92600204-ccf5-4f40-84c1-2f3b9d03823a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Intervalo de Hora]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="6" width="140" height="20" uuid="92600204-ccf5-4f40-84c1-2f3b9d0382b"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cantidad de Préstamos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="380" y="6" width="130" height="20" uuid="92600204-ccf5-4f40-84c1-2f3b9d0382c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Porcentaje (%) del Total]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	
+	<detail>
+		<band height="20" splitType="Stretch">
+			<!-- Alternating row background color -->
+			<rectangle>
+				<reportElement x="0" y="0" width="515" height="20" backcolor="#F5F5F5" uuid="a65f90bc-28fb-4c12-9c1a-281b379b3cc7">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			
+			<textField>
+				<reportElement x="5" y="0" width="200" height="20" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef355"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rango_hora}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="0" width="140" height="20" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef356"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0">
+				<reportElement x="380" y="0" width="130" height="20" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef357"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{porcentaje} + "%"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	
+	<pageFooter>
+		<band height="30" splitType="Stretch">
+			<textField>
+				<reportElement x="415" y="5" width="100" height="20" uuid="7cfcb9ab-7815-4fa2-bc48-d3c2fa6212b5"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pág. " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>
