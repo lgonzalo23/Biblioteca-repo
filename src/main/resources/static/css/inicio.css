@@ -400,12 +400,6 @@ body {
     padding: 1.5rem;
 }
 
-.dashboard-grid {
-    display: grid;
-    gap: 1.25rem;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-}
-
 .dashboard-card {
     background: #ffffff;
     border: 1px solid #e5e7eb;
@@ -415,15 +409,11 @@ body {
 }
 
 .dashboard-hero-card {
-    grid-column: span 4;
     min-height: 150px;
 }
 
 .dashboard-stat-strip {
     align-items: stretch;
-    display: grid;
-    grid-column: span 8;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
     padding: 0;
 }
 
@@ -444,23 +434,15 @@ body {
 
 .dashboard-small-card,
 .dashboard-action-card {
-    grid-column: span 2;
     min-height: 160px;
 }
 
 .dashboard-chart-card {
-    grid-column: span 8;
-    grid-row: span 2;
     min-height: 428px;
 }
 
 .dashboard-progress-card {
-    grid-column: span 4;
     min-height: 175px;
-}
-
-.dashboard-table-card {
-    grid-column: span 6;
 }
 
 .dashboard-hero-number {
@@ -585,12 +567,6 @@ body {
     margin: 1rem 0;
 }
 
-.dashboard-focus-grid {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
 .dashboard-focus-row {
     align-items: center;
     border: 1px solid #eef2f7;
@@ -660,40 +636,6 @@ body {
     display: block;
     height: 100%;
     width: 78%;
-}
-
-@media (max-width: 1199.98px) {
-    .dashboard-hero-card,
-    .dashboard-stat-strip,
-    .dashboard-chart-card,
-    .dashboard-progress-card,
-    .dashboard-table-card {
-        grid-column: span 12;
-    }
-
-    .dashboard-small-card,
-    .dashboard-action-card {
-        grid-column: span 6;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .dashboard-stat-strip {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .dashboard-focus-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-strip-item:nth-child(2) {
-        border-right: 0;
-    }
-
-    .dashboard-small-card,
-    .dashboard-action-card {
-        grid-column: span 12;
-    }
 }
 
 .book-card {
@@ -842,22 +784,7 @@ body {
     background-color: white;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    display: grid;
-    gap: 1rem;
     padding: 1rem;
-}
-
-.reservation-toolbar-fields {
-    display: grid;
-    gap: 0.75rem;
-    grid-template-columns: minmax(0, 1fr);
-}
-
-.reservation-time-picker {
-    align-items: center;
-    display: grid;
-    gap: 0.4rem;
-    grid-template-columns: minmax(74px, 1fr) auto minmax(74px, 1fr);
 }
 
 .reservation-time-picker .form-select {
@@ -969,12 +896,6 @@ body {
     flex-shrink: 0;
 }
 
-.reservation-details {
-    display: grid;
-    gap: 0.75rem;
-    margin-top: auto;
-}
-
 .reservation-details div {
     background-color: #f8fafc;
     border: 1px solid var(--border-color);
@@ -989,12 +910,6 @@ body {
     font-weight: 800;
     margin-bottom: 0.2rem;
     text-transform: uppercase;
-}
-
-.reservation-edit-grid {
-    display: grid;
-    gap: 0.6rem;
-    grid-template-columns: minmax(0, 1fr);
 }
 
 .reservation-book-list {
@@ -1016,57 +931,7 @@ body {
 }
 
 .reservation-table-books {
-    display: grid;
-    gap: 0.75rem;
     min-width: 260px;
-}
-
-.reservation-actions {
-    display: grid;
-    gap: 0.65rem;
-    grid-template-columns: minmax(0, 1fr);
-}
-
-.reservation-actions form,
-.reservation-actions button {
-    width: 100%;
-}
-
-.reservation-edit-form .reservation-edit-grid {
-    grid-template-columns: minmax(0, 1fr);
-}
-
-@media (min-width: 768px) {
-    .reservation-edit-grid {
-        grid-template-columns: minmax(0, 1fr) 110px 110px auto;
-    }
-
-    .reservation-actions {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    }
-
-    .reservation-edit-form .reservation-edit-grid {
-        grid-template-columns: minmax(0, 1fr) 140px 130px;
-    }
-
-    .reservation-toolbar {
-        grid-template-columns: 170px minmax(0, 1fr);
-    }
-
-    .reservation-toolbar-fields {
-        grid-template-columns: minmax(0, 1fr) minmax(190px, 230px);
-    }
-}
-
-@media (min-width: 1400px) {
-    .reservation-toolbar-fields {
-        grid-template-columns: minmax(240px, 1fr) minmax(210px, 230px) 130px 176px;
-    }
-
-    .reserve-selected-button {
-        align-self: start;
-        margin-top: 2rem;
-    }
 }
 
 .profile-avatar {
@@ -1085,12 +950,6 @@ body {
 .profile-avatar:hover {
     background-color: var(--bs-dark);
     color: var(--bs-primary) !important;
-}
-
-@media (max-width: 575.98px) {
-    .profile-summary-text {
-        display: none;
-    }
 }
 
 /* FOOTER */

@@ -1,6 +1,7 @@
 package com.luzdelsaber.biblioteca;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -201,6 +202,26 @@ class ReporteServiceIntegrationTests {
                         .sessionAttr("usuarioRol", "ADMINISTRADOR"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_PDF));
+    }
+
+    @Test
+    void reporteDeStockNoMuestraMetricasRetiradas() throws IOException {
+        byte[] pdf = reporteService.generarReporteStock("Junio", "2026");
+        verificarPdf(pdf, "reporte-stock-simplificado.pdf");
+
+        PdfReader lector = new PdfReader(pdf);
+        try {
+            String texto = new PdfTextExtractor(lector).getTextFromPage(1);
+            assertTrue(texto.contains("Reporte de Stock"));
+            assertTrue(texto.contains("Total de ejemplares"));
+            assertFalse(texto.contains("Ejemplares disponibles"));
+            assertFalse(texto.contains("Ejemplares comprometidos"));
+            assertFalse(texto.contains("Préstamos del mes"));
+            assertFalse(texto.contains("Títulos no disponibles"));
+            assertFalse(texto.contains("Estado"));
+        } finally {
+            lector.close();
+        }
     }
 
     private Integer obtenerIdReservaConPrestamo() {

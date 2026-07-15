@@ -329,7 +329,7 @@ class ReactivacionRegistrosIntegrationTests {
     private String ultimoMovimiento(String entidad, Integer idRegistro) {
         return jdbcTemplate.queryForObject("""
                 SELECT tipo_movimiento
-                FROM auditoria_eliminacion_logica
+                FROM historial_movimientos_logicos
                 WHERE entidad = ? AND id_registro = ?
                 ORDER BY id_auditoria DESC
                 LIMIT 1

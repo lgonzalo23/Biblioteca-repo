@@ -1,0 +1,67 @@
+<div xmlns:th="http://www.thymeleaf.org">
+    <div th:fragment="adminMenu(active)"
+        class="offcanvas offcanvas-start d-lg-none mobile-sidebar" tabindex="-1" id="mobileSidebar"
+        aria-labelledby="mobileSidebarTitle">
+        <div class="offcanvas-header border-bottom">
+            <a th:href="@{/}" class="brand-container text-decoration-none mb-0">
+                <img th:src="@{/img/Logo_LuzdelSaber.png}" alt="Luz del Saber" class="logo-img">
+                <div>
+                    <h5 id="mobileSidebarTitle" class="m-0 fw-bold text-dark">Luz del Saber</h5>
+                    <p class="m-0 text-warning fw-bold text-uppercase" style="font-size: 10px;">Gestión de Biblioteca</p>
+                </div>
+            </a>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar menú"></button>
+        </div>
+        <div class="offcanvas-body">
+            <p class="nav-section-title mt-0">Menú</p>
+            <nav class="nav flex-column">
+                <a th:href="@{/pedidos}" class="nav-link" th:classappend="${active == 'pedidos'} ? ' active'">
+                    <i class="fa-solid fa-box-open"></i> Pedidos
+                </a>
+                <a th:href="@{/incidencias}" class="nav-link" th:classappend="${active == 'incidencias'} ? ' active'">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Incidencias
+                </a>
+                <a th:href="@{/libros}" class="nav-link" th:classappend="${active == 'libros'} ? ' active'">
+                    <i class="fa-solid fa-book"></i> Libros
+                </a>
+                <a th:href="@{/usuarios}" class="nav-link" th:classappend="${active == 'usuarios'} ? ' active'"
+                    th:if="${session.usuarioRol == 'ADMINISTRADOR'}">
+                    <i class="fa-solid fa-users"></i> Usuarios
+                </a>
+                <a th:href="@{/dashboard}" class="nav-link" th:classappend="${active == 'dashboard'} ? ' active'">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a th:href="@{/admin/reportes}" class="nav-link" th:classappend="${active == 'reportes'} ? ' active'"
+                    th:if="${session.usuarioRol == 'ADMINISTRADOR'}">
+                    <i class="fa-solid fa-file-invoice"></i> Reportes
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <div th:fragment="prestatarioMenu(active)"
+        class="offcanvas offcanvas-start d-lg-none mobile-sidebar" tabindex="-1" id="mobileSidebar"
+        aria-labelledby="mobileSidebarTitle">
+        <div class="offcanvas-header border-bottom">
+            <a th:href="@{/}" class="brand-container text-decoration-none mb-0">
+                <img th:src="@{/img/Logo_LuzdelSaber.png}" alt="Luz del Saber" class="logo-img">
+                <div>
+                    <h5 id="mobileSidebarTitle" class="m-0 fw-bold text-dark">Luz del Saber</h5>
+                    <p class="m-0 text-warning fw-bold text-uppercase" style="font-size: 10px;">Reserva de libros</p>
+                </div>
+            </a>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar menú"></button>
+        </div>
+        <div class="offcanvas-body">
+            <p class="nav-section-title mt-0">Menú</p>
+            <nav class="nav flex-column">
+                <a th:href="@{/inicio}" class="nav-link" th:classappend="${active == 'inicio'} ? ' active'">
+                    <i class="fa-solid fa-layer-group"></i> Catálogo
+                </a>
+                <a th:href="@{/reservas}" class="nav-link" th:classappend="${active == 'reservas'} ? ' active'">
+                    <i class="fa-solid fa-bookmark"></i> Mis Reservas
+                </a>
+            </nav>
+        </div>
+    </div>
+</div>

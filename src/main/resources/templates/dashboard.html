@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Luz del Saber | Dashboard</title>
+    <link rel="icon" type="image/png" th:href="@{/img/Logo_LuzdelSaber.png}" href="/img/Logo_LuzdelSaber.png">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/inicio.css}">
@@ -47,12 +48,18 @@
                 </a>
             </nav>
         </aside>
+        <div th:replace="~{fragments/mobile-menu :: adminMenu('dashboard')}"></div>
 
         <main class="main-content flex-grow-1 min-vh-100">
             <div class="content-wrap">
                 <nav class="navbar navbar-expand-lg navbar-custom sticky-top bg-white">
-                    <div class="container-fluid d-flex align-items-center gap-3 gap-lg-4">
-                        <div class="d-flex align-items-center gap-3 gap-lg-4 flex-grow-1">
+                    <div class="container-fluid d-flex align-items-center flex-nowrap gap-2 gap-lg-4">
+                        <div class="d-flex align-items-center gap-2 gap-lg-4 flex-grow-1 flex-shrink-1">
+                            <button class="btn btn-outline-warning d-lg-none flex-shrink-0" type="button"
+                                data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"
+                                aria-controls="mobileSidebar" aria-label="Abrir menú">
+                                <i class="fa-solid fa-bars"></i>
+                            </button>
                             <a th:href="@{/}" class="text-decoration-none d-flex align-items-center gap-2">
                                 <img src="/img/Logo_LuzdelSaber.png" th:src="@{/img/Logo_LuzdelSaber.png}" alt="Logo"
                                     class="logo-img d-none d-md-block">
@@ -65,8 +72,9 @@
                 </nav>
 
                 <section class="orders-content dashboard-content">
-                    <div class="dashboard-grid">
-                        <div class="dashboard-card dashboard-hero-card">
+                    <div class="row g-4">
+                        <div class="col-12 col-xl-4">
+                        <div class="dashboard-card dashboard-hero-card h-100">
                             <div class="d-flex justify-content-between align-items-start gap-3">
                                 <div>
                                     <strong class="dashboard-hero-number"
@@ -91,9 +99,12 @@
                                 <small>No hay atenciones programadas proximamente.</small>
                             </div>
                         </div>
+                        </div>
 
-                        <div class="dashboard-card dashboard-stat-strip">
-                            <div class="dashboard-strip-item" th:each="metrica, iter : ${dashboard.metricas}"
+                        <div class="col-12 col-xl-8">
+                        <div class="dashboard-card dashboard-stat-strip h-100">
+                            <div class="row g-0 h-100">
+                            <div class="col-6 col-md-3 dashboard-strip-item" th:each="metrica, iter : ${dashboard.metricas}"
                                 th:if="${iter.index > 0 and iter.index < 5}">
                                 <div class="dashboard-metric-icon" th:classappend="${metrica.estilo}">
                                     <i class="fa-solid" th:classappend="${metrica.icono}"></i>
@@ -101,10 +112,13 @@
                                 <strong class="dashboard-number" th:text="${metrica.total}">0</strong>
                                 <span class="dashboard-detail" th:text="${metrica.titulo}">Indicador</span>
                             </div>
+                            </div>
+                        </div>
                         </div>
 
-                        <div class="dashboard-card dashboard-action-card"
+                        <div class="col-12 col-md-6 col-xl-2"
                             th:each="metrica, iter : ${dashboard.metricas}" th:if="${iter.index >= 5}">
+                        <div class="dashboard-card dashboard-action-card h-100">
                             <div class="dashboard-action-header">
                                 <div class="dashboard-metric-icon" th:classappend="${metrica.estilo}">
                                     <i class="fa-solid" th:classappend="${metrica.icono}"></i>
@@ -124,8 +138,10 @@
                                 Revisar
                             </a>
                         </div>
+                        </div>
 
-                        <div class="dashboard-card dashboard-chart-card">
+                        <div class="col-12 col-xl-8">
+                        <div class="dashboard-card dashboard-chart-card h-100">
                             <div class="dashboard-panel-header">
                                 <div>
                                     <h5 class="m-0 fw-bold">Atencion Inmediata</h5>
@@ -133,8 +149,8 @@
                                 </div>
                                 <a th:href="@{/pedidos}" class="btn btn-outline-warning btn-sm fw-bold">Gestionar</a>
                             </div>
-                            <div class="dashboard-focus-grid">
-                                <div>
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
                                     <h6 class="dashboard-section-label">Proximas reservas</h6>
                                     <div class="dashboard-focus-row" th:each="reserva : ${dashboard.proximasReservas}">
                                         <div>
@@ -148,7 +164,7 @@
                                         No hay reservas proximas.
                                     </div>
                                 </div>
-                                <div>
+                                <div class="col-12 col-md-6">
                                     <h6 class="dashboard-section-label">Prestamos vencidos</h6>
                                     <div class="dashboard-focus-row danger" th:each="prestamo : ${dashboard.prestamosVencidos}">
                                         <div>
@@ -164,8 +180,10 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
 
-                        <div class="dashboard-card dashboard-progress-card">
+                        <div class="col-12 col-xl-4">
+                        <div class="dashboard-card dashboard-progress-card h-100">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <strong class="dashboard-progress-total"
@@ -198,8 +216,10 @@
                                 <strong th:text="${dashboard.metricas[6].total}">0</strong>
                             </div>
                         </div>
+                        </div>
 
-                        <div class="dashboard-card dashboard-table-card">
+                        <div class="col-12 col-xl-6">
+                        <div class="dashboard-card dashboard-table-card h-100">
                             <div class="dashboard-panel-header">
                                 <div>
                                     <h5 class="m-0 fw-bold">Stock Bajo</h5>
@@ -237,8 +257,10 @@
                                 </table>
                             </div>
                         </div>
+                        </div>
 
-                        <div class="dashboard-card dashboard-table-card">
+                        <div class="col-12 col-xl-6">
+                        <div class="dashboard-card dashboard-table-card h-100">
                             <div class="dashboard-panel-header">
                                 <div>
                                     <h5 class="m-0 fw-bold">Reservas Recientes</h5>
@@ -280,6 +302,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
                         </div>
                     </div>
                 </section>

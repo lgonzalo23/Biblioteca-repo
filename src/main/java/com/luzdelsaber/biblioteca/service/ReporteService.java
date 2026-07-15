@@ -240,7 +240,7 @@ public class ReporteService {
                     "/reports/reporte_devoluciones_tardias.jrxml",
                     periodo,
                     "Porcentaje de Devoluciones Tardías",
-                    "Devoluciones tardías mensuales",
+                    "Porcentaje de Devoluciones Tardías",
                     porcentaje + "%",
                     "Número de préstamos mensuales", String.valueOf(totalPrestamos),
                     "Número de devoluciones tardías mensuales", String.valueOf(totalDevolucionesTardias),
@@ -281,7 +281,7 @@ public class ReporteService {
                     "/reports/reporte_incidencias_mensuales.jrxml",
                     periodo,
                     "Porcentaje de Incidencias Mensuales",
-                    "Incidencias mensuales",
+                    "Porcentaje de Incidencias Mensuales",
                     tasa + "%",
                     "Número de préstamos mensuales", String.valueOf(prestamos),
                     "Número de incidencias mensuales", String.valueOf(incidencias),
@@ -322,12 +322,12 @@ public class ReporteService {
                     "/reports/reporte_promedio_prestamos_usuario.jrxml",
                     periodo,
                     "Promedio de Préstamos por Usuario",
-                    "Promedio entre todos los prestatarios activos",
+                    "Promedio de Préstamos por Usuario",
                     promedio + " préstamos",
-                    "Préstamos realizados", String.valueOf(totalPrestamos),
-                    "Prestatarios activos", String.valueOf(usuariosActivos),
+                    "Número total de préstamos", String.valueOf(totalPrestamos),
+                    "Número total de usuarios activos", String.valueOf(usuariosActivos),
                     "", "",
-                    "Fórmula: préstamos realizados / total de prestatarios activos.");
+                    "Fórmula: número total de préstamos / número total de usuarios activos.");
         } catch (Exception ex) {
             throw new IllegalStateException("No se pudo generar el reporte de promedio por usuario.", ex);
         }
@@ -522,13 +522,13 @@ public class ReporteService {
                            baja.fecha_eliminacion,
                            baja.nombre_responsable,
                            baja.motivo
-                    FROM auditoria_eliminacion_logica baja
+                    FROM historial_movimientos_logicos baja
                     WHERE MONTH(baja.fecha_eliminacion) = ?
                       AND YEAR(baja.fecha_eliminacion) = ?
                       AND baja.tipo_movimiento = 'BAJA'
                       AND NOT EXISTS (
                           SELECT 1
-                          FROM auditoria_eliminacion_logica baja_posterior
+                          FROM historial_movimientos_logicos baja_posterior
                           WHERE baja_posterior.entidad = baja.entidad
                             AND baja_posterior.id_registro = baja.id_registro
                             AND baja_posterior.tipo_movimiento = 'BAJA'
@@ -536,7 +536,7 @@ public class ReporteService {
                       )
                       AND NOT EXISTS (
                           SELECT 1
-                          FROM auditoria_eliminacion_logica reactivacion
+                          FROM historial_movimientos_logicos reactivacion
                           WHERE reactivacion.entidad = baja.entidad
                             AND reactivacion.id_registro = baja.id_registro
                             AND reactivacion.tipo_movimiento = 'REACTIVACION'
@@ -587,71 +587,36 @@ public class ReporteService {
 
         try {
             Map<String, Object> resumenStock = jdbcTemplate.queryForMap("""
-                    SELECT COALESCE(SUM(
-                               CASE WHEN estado_libro <> 'NO_DISPONIBLE' THEN stock ELSE 0 END
-                           ), 0) AS ejemplares_disponibles,
+                    SELECT COALESCE(SUM(stock), 0) AS total_ejemplares,
                            COUNT(*) AS titulos_registrados,
                            COALESCE(SUM(
-                               CASE WHEN estado_libro <> 'NO_DISPONIBLE' AND stock <= 2 THEN 1 ELSE 0 END
-                           ), 0) AS titulos_stock_bajo,
-                           COALESCE(SUM(
-                               CASE WHEN estado_libro = 'NO_DISPONIBLE' THEN 1 ELSE 0 END
-                           ), 0) AS titulos_no_disponibles
+                               CASE WHEN stock <= 2 THEN 1 ELSE 0 END
+                           ), 0) AS titulos_stock_bajo
                     FROM libro
+                    WHERE estado_libro <> 'NO_DISPONIBLE'
                     """);
-
-            Integer ejemplaresComprometidos = jdbcTemplate.queryForObject("""
-                    SELECT COUNT(*)
-                    FROM reserva_detalle rd
-                    INNER JOIN libro l ON rd.id_libro = l.id_libro
-                    WHERE rd.estado_detalle_reserva IN ('ACTIVA', 'PRESTADA')
-                      AND l.estado_libro <> 'NO_DISPONIBLE'
-                    """, Integer.class);
-
-            Integer prestamosMes = jdbcTemplate.queryForObject("""
-                    SELECT COUNT(*)
-                    FROM prestamo
-                    WHERE MONTH(fecha_prestamo) = ?
-                      AND YEAR(fecha_prestamo) = ?
-                      AND estado_prestamo <> 'CANCELADO'
-                    """, Integer.class, periodo.mes(), periodo.anio());
 
             List<Map<String, Object>> inventario = jdbcTemplate.queryForList("""
                     SELECT l.titulo_libro AS titulo,
                            c.nombre_categoria AS categoria,
                            l.isbn AS isbn,
-                           l.stock AS stock,
-                           COUNT(p.id_prestamo) AS prestamos_mes,
-                           l.estado_libro AS estado_codigo
+                           l.stock AS stock
                     FROM libro l
                     INNER JOIN categoria c ON l.id_categoria = c.id_categoria
-                    LEFT JOIN prestamo p
-                           ON p.id_libro = l.id_libro
-                          AND MONTH(p.fecha_prestamo) = ?
-                          AND YEAR(p.fecha_prestamo) = ?
-                          AND p.estado_prestamo <> 'CANCELADO'
+                    WHERE l.estado_libro <> 'NO_DISPONIBLE'
                     GROUP BY l.id_libro, l.titulo_libro, c.nombre_categoria,
-                             l.isbn, l.stock, l.estado_libro
-                    ORDER BY CASE WHEN l.estado_libro = 'NO_DISPONIBLE' THEN 1 ELSE 0 END,
-                             l.stock ASC, l.titulo_libro ASC
-                    """, periodo.mes(), periodo.anio());
+                             l.isbn, l.stock
+                    ORDER BY l.stock ASC, l.titulo_libro ASC
+                    """);
 
             for (Map<String, Object> libro : inventario) {
                 libro.put("stock_texto", String.valueOf(numero(libro.get("stock"))));
-                libro.put("prestamos_texto", String.valueOf(numero(libro.get("prestamos_mes"))));
-                libro.put("estado", traducirEstadoLibro(String.valueOf(libro.get("estado_codigo"))));
             }
 
-            long disponibles = numero(resumenStock.get("ejemplares_disponibles"));
-            long comprometidos = valorOZero(ejemplaresComprometidos);
             Map<String, Object> parametros = parametrosBase(periodo);
-            parametros.put("ejemplaresDisponibles", String.valueOf(disponibles));
-            parametros.put("ejemplaresComprometidos", String.valueOf(comprometidos));
-            parametros.put("totalEjemplares", String.valueOf(disponibles + comprometidos));
+            parametros.put("totalEjemplares", String.valueOf(numero(resumenStock.get("total_ejemplares"))));
             parametros.put("titulosRegistrados", String.valueOf(numero(resumenStock.get("titulos_registrados"))));
             parametros.put("titulosStockBajo", String.valueOf(numero(resumenStock.get("titulos_stock_bajo"))));
-            parametros.put("titulosNoDisponibles", String.valueOf(numero(resumenStock.get("titulos_no_disponibles"))));
-            parametros.put("prestamosMes", String.valueOf(valorOZero(prestamosMes)));
             return generarPdf(
                     "/reports/reporte_stock.jrxml",
                     parametros,
@@ -781,16 +746,6 @@ public class ReporteService {
             case "CATEGORIA" -> "Categoría";
             case "AUTOR" -> "Autor";
             default -> entidad;
-        };
-    }
-
-    private String traducirEstadoLibro(String estado) {
-        return switch (estado) {
-            case "DISPONIBLE" -> "Disponible";
-            case "PRESTADO" -> "Prestado";
-            case "RESERVADO" -> "Reservado";
-            case "NO_DISPONIBLE" -> "No disponible";
-            default -> estado;
         };
     }
 

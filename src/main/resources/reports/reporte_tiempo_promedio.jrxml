@@ -112,7 +112,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Nº de devoluciones]]></text>
+				<text><![CDATA[Nº de préstamos mensuales]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="415" y="200" width="95" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef33c"/>
@@ -128,7 +128,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Sumatoria de minutos reales de uso]]></text>
+				<text><![CDATA[Sumatoria de tiempos de préstamo]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="415" y="218" width="95" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef33e"/>
@@ -150,7 +150,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Tiempo promedio de Préstamo]]></text>
+				<text><![CDATA[Tiempo Promedio de Préstamo]]></text>
 			</staticText>
 			<textField pattern="###0.0">
 				<reportElement x="415" y="236" width="95" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef340"/>
@@ -173,14 +173,14 @@
 				<textElement>
 					<font fontName="SansSerif" size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Número de devoluciones registradas: " + $P{totalPrestamos}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Número de préstamos mensuales: " + $P{totalPrestamos}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.0">
 				<reportElement x="0" y="320" width="515" height="20" uuid="7cfcb9ab-7815-4fa2-bc48-d3c2fa6212b3"/>
 				<textElement>
 					<font fontName="SansSerif" size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Tiempo promedio real del usuario con el libro: " + $P{tiempoPromedio} + " minutos"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Tiempo Promedio de Préstamo: " + $P{tiempoPromedio} + " minutos"]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>

@@ -123,7 +123,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Horario de Mayor Demanda (Intervalo)]]></text>
+				<text><![CDATA[Horario de Mayor Demanda de Préstamos]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="320" y="203" width="190" height="18" uuid="87d15cb1-44bb-4e2a-bb39-b9d9f5aef352"/>

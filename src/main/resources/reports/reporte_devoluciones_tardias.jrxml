@@ -35,7 +35,7 @@
             <textField><reportElement x="100" y="132" width="220" height="20" uuid="c9b8edfe-66d6-4afe-9437-b4b675a1291e"/><textElement><font fontName="SansSerif" size="11"/></textElement><textFieldExpression><![CDATA[$P{fechaEmision}]]></textFieldExpression></textField>
 
             <rectangle><reportElement x="0" y="175" width="515" height="22" backcolor="#EAEAEA" uuid="1e3cbb0f-1483-44ee-976b-d11ccd0fe950"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
-            <staticText><reportElement x="8" y="175" width="360" height="22" uuid="df36ddd9-88c2-4c73-a766-b466381b4720"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Devoluciones tardías mensuales]]></text></staticText>
+            <staticText><reportElement x="8" y="175" width="360" height="22" uuid="df36ddd9-88c2-4c73-a766-b466381b4720"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Porcentaje de Devoluciones Tardías]]></text></staticText>
             <textField textAdjust="ScaleFont"><reportElement x="370" y="175" width="137" height="22" uuid="f51b2829-1dc6-4029-bc85-0f02057e75dc"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{valorPrincipal}]]></textFieldExpression></textField>
 
             <staticText><reportElement x="0" y="225" width="200" height="20" uuid="29018184-7f18-4ea9-b343-0b1a47a3ce12"/><textElement><font fontName="SansSerif" size="12" isBold="true"/></textElement><text><![CDATA[Detalle del cálculo]]></text></staticText>

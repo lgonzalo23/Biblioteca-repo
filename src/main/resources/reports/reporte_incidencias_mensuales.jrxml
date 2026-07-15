@@ -29,7 +29,7 @@
             <textField><reportElement x="100" y="132" width="220" height="20" uuid="7f0bd477-109e-4cc3-a0a3-eb3be38ee9ef"/><textElement><font fontName="SansSerif" size="11"/></textElement><textFieldExpression><![CDATA[$P{fechaEmision}]]></textFieldExpression></textField>
 
             <rectangle><reportElement x="0" y="175" width="515" height="22" backcolor="#EAEAEA" uuid="19effabd-cbdb-450a-9e1d-94d5bd405c17"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
-            <staticText><reportElement x="8" y="175" width="360" height="22" uuid="6bac1de5-fb67-4bf9-a75c-d8f95d06792d"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Incidencias mensuales]]></text></staticText>
+            <staticText><reportElement x="8" y="175" width="360" height="22" uuid="6bac1de5-fb67-4bf9-a75c-d8f95d06792d"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="11"/></textElement><text><![CDATA[Porcentaje de Incidencias Mensuales]]></text></staticText>
             <textField textAdjust="ScaleFont"><reportElement x="370" y="175" width="137" height="22" uuid="d898dd43-5e4c-4377-8a36-8b034f85fb35"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="12" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{valorPrincipal}]]></textFieldExpression></textField>
 
             <staticText><reportElement x="0" y="225" width="200" height="20" uuid="d1c7a607-202e-43ec-b339-8aa5dba25dcb"/><textElement><font fontName="SansSerif" size="12" isBold="true"/></textElement><text><![CDATA[Detalle del cálculo]]></text></staticText>

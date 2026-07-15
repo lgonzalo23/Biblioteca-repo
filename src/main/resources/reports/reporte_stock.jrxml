@@ -9,23 +9,17 @@
     <parameter name="periodo" class="java.lang.String"/>
     <parameter name="fechaEmision" class="java.lang.String"/>
     <parameter name="logoPath" class="java.net.URL"/>
-    <parameter name="ejemplaresDisponibles" class="java.lang.String"/>
-    <parameter name="ejemplaresComprometidos" class="java.lang.String"/>
     <parameter name="totalEjemplares" class="java.lang.String"/>
     <parameter name="titulosRegistrados" class="java.lang.String"/>
     <parameter name="titulosStockBajo" class="java.lang.String"/>
-    <parameter name="titulosNoDisponibles" class="java.lang.String"/>
-    <parameter name="prestamosMes" class="java.lang.String"/>
 
     <field name="titulo" class="java.lang.String"/>
     <field name="categoria" class="java.lang.String"/>
     <field name="isbn" class="java.lang.String"/>
     <field name="stock_texto" class="java.lang.String"/>
-    <field name="prestamos_texto" class="java.lang.String"/>
-    <field name="estado" class="java.lang.String"/>
 
     <title>
-        <band height="280" splitType="Stretch">
+        <band height="208" splitType="Stretch">
             <image onErrorType="Blank"><reportElement x="0" y="0" width="100" height="75" uuid="f230a86a-1390-49f7-8d85-adc4a68cd29a"/><imageExpression><![CDATA[$P{logoPath}]]></imageExpression></image>
             <rectangle><reportElement x="120" y="0" width="662" height="75" backcolor="#FFFFFF" uuid="5de11204-1663-489f-882b-345c27e40e7f"/><graphicElement><pen lineWidth="1.0" lineColor="#000000"/></graphicElement></rectangle>
             <staticText><reportElement x="120" y="5" width="662" height="20" uuid="3ca76625-294b-40bb-a6b8-b935a7b0849e"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="13" isBold="true"/></textElement><text><![CDATA[Biblioteca Luz del Saber]]></text></staticText>
@@ -41,59 +35,41 @@
             <staticText><reportElement x="0" y="122" width="220" height="18" uuid="72eeae7b-f289-4a0a-831d-1cae648e1661"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="11" isBold="true"/></textElement><text><![CDATA[Resumen de stock]]></text></staticText>
 
             <rectangle><reportElement x="0" y="145" width="782" height="18" backcolor="#EAEAEA" uuid="adbbdbb2-7b2e-4f1d-940a-dd6799ad8305"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
-            <staticText><reportElement x="8" y="145" width="600" height="18" uuid="6fe89d5d-da45-4fa0-97ca-793bb42d4314"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><text><![CDATA[Ejemplares disponibles]]></text></staticText>
-            <textField><reportElement x="650" y="145" width="124" height="18" uuid="d5a0052b-6309-4c2d-bf08-dc9e66cc150e"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[$P{ejemplaresDisponibles}]]></textFieldExpression></textField>
+            <staticText><reportElement x="8" y="145" width="600" height="18" uuid="398e5e99-d167-4dad-98b6-f10f82279775"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><text><![CDATA[Total de ejemplares]]></text></staticText>
+            <textField><reportElement x="650" y="145" width="124" height="18" uuid="ac4c3b08-7ccf-4c1f-bd74-729350adf53c"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[$P{totalEjemplares}]]></textFieldExpression></textField>
 
-            <staticText><reportElement x="8" y="163" width="600" height="18" uuid="b19285e0-c455-4243-be6b-c30176bc3c9d"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><text><![CDATA[Ejemplares comprometidos]]></text></staticText>
-            <textField><reportElement x="650" y="163" width="124" height="18" uuid="3df79aed-cbf2-4f62-9f19-3c0322a9428c"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[$P{ejemplaresComprometidos}]]></textFieldExpression></textField>
+            <staticText><reportElement x="8" y="163" width="600" height="18" uuid="a40a263d-a33d-4060-84cb-54b8e54f1a44"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><text><![CDATA[Títulos registrados]]></text></staticText>
+            <textField><reportElement x="650" y="163" width="124" height="18" uuid="799a9d31-f135-475d-a668-81f5a0176516"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[$P{titulosRegistrados}]]></textFieldExpression></textField>
 
-            <rectangle><reportElement x="0" y="181" width="782" height="18" backcolor="#EAEAEA" uuid="c811742e-dcf7-48ad-bc6a-bcaeb9cd576d"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
-            <staticText><reportElement x="8" y="181" width="600" height="18" uuid="398e5e99-d167-4dad-98b6-f10f82279775"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><text><![CDATA[Total de ejemplares]]></text></staticText>
-            <textField><reportElement x="650" y="181" width="124" height="18" uuid="ac4c3b08-7ccf-4c1f-bd74-729350adf53c"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[$P{totalEjemplares}]]></textFieldExpression></textField>
-
-            <staticText><reportElement x="8" y="199" width="600" height="18" uuid="33836ab0-7964-4240-8911-315f75bfd40e"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><text><![CDATA[Préstamos del mes]]></text></staticText>
-            <textField><reportElement x="650" y="199" width="124" height="18" uuid="1ad027dc-54e0-422d-a334-9d589bf85d0c"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[$P{prestamosMes}]]></textFieldExpression></textField>
-
-            <rectangle><reportElement x="0" y="217" width="782" height="18" backcolor="#EAEAEA" uuid="11cf4dbc-20b2-422c-9561-2e7c50c272cd"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
-            <staticText><reportElement x="8" y="217" width="600" height="18" uuid="a40a263d-a33d-4060-84cb-54b8e54f1a44"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><text><![CDATA[Títulos registrados]]></text></staticText>
-            <textField><reportElement x="650" y="217" width="124" height="18" uuid="799a9d31-f135-475d-a668-81f5a0176516"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[$P{titulosRegistrados}]]></textFieldExpression></textField>
-
-            <staticText><reportElement x="8" y="235" width="600" height="18" uuid="11f8cd8e-3c89-43ba-a1df-a24e421807ad"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><text><![CDATA[Títulos con stock bajo]]></text></staticText>
-            <textField><reportElement x="650" y="235" width="124" height="18" uuid="56ef337c-1ca6-4b8c-84e8-c91470ab4689"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[$P{titulosStockBajo}]]></textFieldExpression></textField>
-
-            <rectangle><reportElement x="0" y="253" width="782" height="18" backcolor="#EAEAEA" uuid="da01f93e-c1d8-488e-83f8-87db9cb26018"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
-            <staticText><reportElement x="8" y="253" width="600" height="18" uuid="b194ccae-6a8c-4c44-9a04-354a39e2c81e"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><text><![CDATA[Títulos no disponibles]]></text></staticText>
-            <textField><reportElement x="650" y="253" width="124" height="18" uuid="ba4ae3f3-1f10-4a81-99e3-6e9003a91788"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[$P{titulosNoDisponibles}]]></textFieldExpression></textField>
+            <rectangle><reportElement x="0" y="181" width="782" height="18" backcolor="#EAEAEA" uuid="11cf4dbc-20b2-422c-9561-2e7c50c272cd"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
+            <staticText><reportElement x="8" y="181" width="600" height="18" uuid="11f8cd8e-3c89-43ba-a1df-a24e421807ad"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><text><![CDATA[Títulos con stock bajo]]></text></staticText>
+            <textField><reportElement x="650" y="181" width="124" height="18" uuid="56ef337c-1ca6-4b8c-84e8-c91470ab4689"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="9"/></textElement><textFieldExpression><![CDATA[$P{titulosStockBajo}]]></textFieldExpression></textField>
         </band>
     </title>
 
     <columnHeader>
         <band height="29">
             <rectangle><reportElement x="0" y="3" width="782" height="24" backcolor="#CCCCCC" uuid="93cd71ef-2be6-4c8f-967e-ffdc73ae3ede"/><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
-            <staticText><reportElement x="5" y="4" width="230" height="22" uuid="5a2835fe-470d-41b7-ad0f-2b11bd953de5"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><text><![CDATA[Libro]]></text></staticText>
-            <staticText><reportElement x="235" y="4" width="130" height="22" uuid="8e259dde-015c-4743-b516-83bb1a2f7a20"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><text><![CDATA[Categoría]]></text></staticText>
-            <staticText><reportElement x="365" y="4" width="120" height="22" uuid="147d3a10-f75b-41d2-8436-a9a6a25707d3"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><text><![CDATA[ISBN]]></text></staticText>
-            <staticText><reportElement x="485" y="4" width="70" height="22" uuid="4a334638-74b7-4ff2-8269-80c45f07a417"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><text><![CDATA[Stock]]></text></staticText>
-            <staticText><reportElement x="555" y="4" width="85" height="22" uuid="b76790d1-d0ca-4fbf-90c4-c0b17cb9c68c"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><text><![CDATA[Préstamos]]></text></staticText>
-            <staticText><reportElement x="640" y="4" width="137" height="22" uuid="8581435b-8917-4cf0-8a5d-47692a1df765"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><text><![CDATA[Estado]]></text></staticText>
+            <staticText><reportElement x="5" y="4" width="315" height="22" uuid="5a2835fe-470d-41b7-ad0f-2b11bd953de5"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><text><![CDATA[Libro]]></text></staticText>
+            <staticText><reportElement x="320" y="4" width="195" height="22" uuid="8e259dde-015c-4743-b516-83bb1a2f7a20"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><text><![CDATA[Categoría]]></text></staticText>
+            <staticText><reportElement x="515" y="4" width="165" height="22" uuid="147d3a10-f75b-41d2-8436-a9a6a25707d3"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><text><![CDATA[ISBN]]></text></staticText>
+            <staticText><reportElement x="680" y="4" width="97" height="22" uuid="4a334638-74b7-4ff2-8269-80c45f07a417"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><text><![CDATA[Stock]]></text></staticText>
         </band>
     </columnHeader>
 
     <detail>
         <band height="27" splitType="Prevent">
             <rectangle><reportElement x="0" y="0" width="782" height="27" backcolor="#F5F5F5" uuid="08d32e8f-688c-4dca-8e4e-7b09947ac82e"><printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() % 2 == 0]]></printWhenExpression></reportElement><graphicElement><pen lineWidth="0.0"/></graphicElement></rectangle>
-            <textField textAdjust="ScaleFont"><reportElement x="5" y="1" width="230" height="25" uuid="0db93875-a1b9-43f5-b2d5-79737fdb8092"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{titulo}]]></textFieldExpression></textField>
-            <textField textAdjust="ScaleFont"><reportElement x="235" y="1" width="130" height="25" uuid="1cd05694-8bdc-40bc-89ce-bd179acbbb26"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{categoria}]]></textFieldExpression></textField>
-            <textField textAdjust="ScaleFont"><reportElement x="365" y="1" width="120" height="25" uuid="5ceac540-2b9e-42e9-8932-aa03ac520e48"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{isbn}]]></textFieldExpression></textField>
-            <textField><reportElement x="485" y="1" width="70" height="25" uuid="b61edcef-cac8-4fa5-9318-c346f527418c"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{stock_texto}]]></textFieldExpression></textField>
-            <textField><reportElement x="555" y="1" width="85" height="25" uuid="c616f9df-0c71-48f0-8932-41f4c9c50b75"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{prestamos_texto}]]></textFieldExpression></textField>
-            <textField textAdjust="ScaleFont"><reportElement x="640" y="1" width="137" height="25" uuid="f68b16e8-ab1b-431a-8cb2-faa2c6bb5923"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression></textField>
+            <textField textAdjust="ScaleFont"><reportElement x="5" y="1" width="315" height="25" uuid="0db93875-a1b9-43f5-b2d5-79737fdb8092"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{titulo}]]></textFieldExpression></textField>
+            <textField textAdjust="ScaleFont"><reportElement x="320" y="1" width="195" height="25" uuid="1cd05694-8bdc-40bc-89ce-bd179acbbb26"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{categoria}]]></textFieldExpression></textField>
+            <textField textAdjust="ScaleFont"><reportElement x="515" y="1" width="165" height="25" uuid="5ceac540-2b9e-42e9-8932-aa03ac520e48"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{isbn}]]></textFieldExpression></textField>
+            <textField><reportElement x="680" y="1" width="97" height="25" uuid="b61edcef-cac8-4fa5-9318-c346f527418c"/><textElement textAlignment="Center" verticalAlignment="Middle"><font fontName="SansSerif" size="8"/></textElement><textFieldExpression><![CDATA[$F{stock_texto}]]></textFieldExpression></textField>
         </band>
     </detail>
 
     <pageFooter>
         <band height="25">
-            <staticText><reportElement x="0" y="4" width="520" height="18" uuid="1ee07845-5d40-470b-aa1f-f86d4d8de341"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7" isItalic="true"/></textElement><text><![CDATA[El stock corresponde al momento de emisión; los préstamos corresponden al periodo seleccionado.]]></text></staticText>
+            <staticText><reportElement x="0" y="4" width="520" height="18" uuid="1ee07845-5d40-470b-aa1f-f86d4d8de341"/><textElement verticalAlignment="Middle"><font fontName="SansSerif" size="7" isItalic="true"/></textElement><text><![CDATA[El stock corresponde al momento de emisión del reporte y solo considera libros disponibles.]]></text></staticText>
             <textField><reportElement x="682" y="4" width="100" height="18" uuid="4a86d320-7b5a-44c9-9427-131a5189a317"/><textElement textAlignment="Right" verticalAlignment="Middle"><font fontName="SansSerif" size="8" isItalic="true"/></textElement><textFieldExpression><![CDATA["Pág. " + $V{PAGE_NUMBER}]]></textFieldExpression></textField>
         </band>
     </pageFooter>

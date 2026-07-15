@@ -241,12 +241,6 @@ body {
     border-radius: 8px;
 }
 
-@media (max-width: 575.98px) {
-    .profile-summary-text {
-        display: none;
-    }
-}
-
 .profile-modal-icon {
     width: 44px;
     height: 44px;

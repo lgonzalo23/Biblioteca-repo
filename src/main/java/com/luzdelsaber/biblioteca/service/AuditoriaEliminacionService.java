@@ -52,7 +52,7 @@ public class AuditoriaEliminacionService {
             String nombreResponsable,
             String motivo) {
         jdbcTemplate.update("""
-                INSERT INTO auditoria_eliminacion_logica
+                INSERT INTO historial_movimientos_logicos
                     (entidad, id_registro, descripcion_registro, estado_anterior, estado_nuevo,
                      tipo_movimiento, id_usuario_responsable, nombre_responsable, motivo)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)

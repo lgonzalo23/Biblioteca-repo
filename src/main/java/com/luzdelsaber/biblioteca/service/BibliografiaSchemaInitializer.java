@@ -18,7 +18,8 @@ public class BibliografiaSchemaInitializer implements CommandLineRunner {
         crearTablaPrestamoSiNoExiste();
         crearTablaIncidenciaSiNoExiste();
         crearTablaSancionSiNoExiste();
-        crearTablaAuditoriaEliminacionSiNoExiste();
+        renombrarTablaAuditoriaEliminacionSiExiste();
+        crearTablaHistorialMovimientosLogicosSiNoExiste();
         adaptarTablaSancion();
         migrarTiposDeIncidenciaYSancion();
         agregarColumnaSiNoExiste("prestamo", "fecha_devolucion_real", "DATE NULL");
@@ -32,7 +33,7 @@ public class BibliografiaSchemaInitializer implements CommandLineRunner {
         agregarColumnaSiNoExiste("categoria", "estado_categoria", "VARCHAR(20) NOT NULL DEFAULT 'ACTIVO'");
         agregarColumnaSiNoExiste("autor", "estado_autor", "VARCHAR(20) NOT NULL DEFAULT 'ACTIVO'");
         agregarColumnaSiNoExiste(
-                "auditoria_eliminacion_logica",
+                "historial_movimientos_logicos",
                 "tipo_movimiento",
                 "VARCHAR(20) NOT NULL DEFAULT 'BAJA'");
         agregarColumnaSiNoExiste("reserva_detalle", "hora_reserva", "TIME NOT NULL DEFAULT '08:00:00'");
@@ -90,9 +91,15 @@ public class BibliografiaSchemaInitializer implements CommandLineRunner {
         agregarColumnaSiNoExiste("prestamo", "id_reserva", "INT NULL");
     }
 
-    private void crearTablaAuditoriaEliminacionSiNoExiste() {
+    private void renombrarTablaAuditoriaEliminacionSiExiste() {
+        if (existeTabla("auditoria_eliminacion_logica") && !existeTabla("historial_movimientos_logicos")) {
+            jdbcTemplate.execute("rename table auditoria_eliminacion_logica to historial_movimientos_logicos");
+        }
+    }
+
+    private void crearTablaHistorialMovimientosLogicosSiNoExiste() {
         jdbcTemplate.execute("""
-                CREATE TABLE IF NOT EXISTS auditoria_eliminacion_logica (
+                CREATE TABLE IF NOT EXISTS historial_movimientos_logicos (
                     id_auditoria BIGINT AUTO_INCREMENT PRIMARY KEY,
                     entidad VARCHAR(30) NOT NULL,
                     id_registro INT NOT NULL,
